@@ -127,10 +127,11 @@ happen. So the levers below keep exactly the value they have today rather
 than getting more valuable in September, and nothing on this page needs
 re-costing.
 
-GitHub's own pricing reference still footnotes $2/$10 as promotional
-through 2026-08-31. Copilot bills provider list pricing, so read that as a
-stale label rather than a second schedule — but GitHub has published nothing
-about its wording after that date. <!-- RECHECK:2026-09-01 -->
+GitHub's promotional footnote for the same $2/$10 is gone as of the
+2026-08-31 re-read: the row now reads unqualified standard, matching
+Anthropic's own page. Copilot bills provider list pricing either way, so
+nothing on this page re-costs. The stale-label caveat this paragraph used
+to carry is spent.
 
 ## Sources
 
@@ -140,7 +141,7 @@ than from published documentation. The rates and CLI behavior come from
 these external, publicly documented sources:
 
 - Usage-based billing announcement - the GitHub [announcement](https://github.blog/news-insights/company-news/github-copilot-is-moving-to-usage-based-billing/) of the 2026-06-01 move from premium requests to token-metered AI credits.
-- Models and pricing - the GitHub [pricing reference](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing) with the per-1M token rates for every model, the 1 credit = $0.01 conversion, and the Sonnet promo footnote.
+- Models and pricing - the GitHub [pricing reference](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing) with the per-1M token rates for every model and the 1 credit = $0.01 conversion.
 - Claude Sonnet 5 pricing - the Anthropic [pricing page](https://platform.claude.com/docs/en/about-claude/pricing), whose note anchored at `#claude-sonnet-5-introductory-pricing` states that $2/$10 "is now the standard price" and that the $3/$15 increase scheduled for 2026-09-01 "will not occur". The [launch post](https://www.anthropic.com/news/claude-sonnet-5) is the original source of the superseded promotional framing.
 - Copilot plans - the GitHub [plans page](https://github.com/features/copilot/plans) showing the monthly credit allowance on the Pro+ tier (listed there as $70 of total credits, i.e., 7,000 at $0.01 each) and the $39 monthly price. The `/usage` plan bar displays the same allowance directly as 7,000 AIC.
 - Included models retired - [coverage from heise](https://www.heise.de/en/news/GitHub-removes-free-models-from-Copilot-plans-11275252.html) of the June change dropping the free fallback models, the reason GPT-5 mini is no longer described as "included" above.

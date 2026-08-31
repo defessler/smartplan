@@ -1,6 +1,6 @@
 # smartplan
 
-**v4.109.0** · MIT · Model-tiering skills for AI coding agents.
+**v4.110.0** · MIT · Model-tiering skills for AI coding agents.
 
 Plan with the strong model. Implement with the cheaper model. Escalate on
 demonstrated failure, never on a hunch.
@@ -84,6 +84,7 @@ the site sources, the gates) is separate.
 
 ```
 .claude/skills/          the six skills, read by BOTH harnesses
+.claude/agents/          four tool-locked Claude Code agent seats
 .claude-plugin/          Claude Code marketplace manifest
 .github/plugin/          Copilot plugin + marketplace manifests
 .github/agents/          six pinned Copilot agent seats
