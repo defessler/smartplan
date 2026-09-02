@@ -22,6 +22,8 @@ from flow.md's Honest scope note, `claude-code.md`, `copilot.md` and
 - Effort is a cost lever, and not the one you think
 - Where a skill's cost actually lands
 - Sizing a fan-out, with both halves
+- Verified 2026-08-31 — controls, confirmation, and what is free
+- Two caps on the skill listing, not one
 - Cache invalidation is tiered, not all-or-nothing
 - An external yardstick for the benchmark corpus
 - What the community actually converged on
@@ -51,19 +53,31 @@ that changed.
 | 5-minute | 1.25× base input | 0.1× base input | 1st reuse |
 | 1-hour | 2× base input | 0.1× base input | 2nd reuse |
 
-Max **4 explicit cache breakpoints** per request. Claude Code auto-requests
-the free 1-hour TTL for the main conversation on a paid subscription; the
-API/Bedrock/Vertex default is 5-minute (`ENABLE_PROMPT_CACHING_1H=1` to opt
-in, at the 2× write cost) — and a subagent never gets the 1-hour tier,
-subscription or not (§2, Seam B). Every cache read resets the TTL clock;
-only a real idle gap longer than the TTL forces a cold rebuild.
+Max **4 explicit cache breakpoints** per request. Every cache read resets the
+TTL clock; only a real idle gap longer than the TTL forces a cold rebuild.
+
+**TTL is set per bucket, and the buckets are separate.** The main conversation
+takes `promptCacheTtl` / `CLAUDE_CODE_PROMPT_CACHE_TTL`; everything else,
+subagents included, takes `subagentPromptCacheTtl` /
+`CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` (both need Claude Code ≥ 2.1.242).
+Resolution runs **six levels**, first match winning: `FORCE_PROMPT_CACHING_5M=1`
+· the bucket's env var · the bucket's setting · a subagent's
+`experimental.cacheTtl` frontmatter (≥ 2.1.248) · `ENABLE_PROMPT_CACHING_1H=1`,
+which requests an hour for *both* buckets · the bucket default.
+
+**A subagent is not locked out of the 1-hour tier — it just defaults to five
+minutes** on every billing path, and a longer tier is settable per seat. One
+ceiling to know: level 4 is ignored while a Claude subscription is running on
+usage credits, so the per-seat knob bends in overage. Seam B's cold-write
+argument is unaffected either way, since a fresh subagent still warms its own
+prefix and pays its own write.
 
 **What invalidates the prefix — don't do these mid-run:**
 
 | Trigger | Why |
 | --- | --- |
 | Switching `/model` or `/effort` mid-session | Both are part of the cache key. (An effort switch now warns with a confirmation dialog before busting the cache.) |
-| Toggling fast mode mid-session | Fast mode adds a request header that is part of the cache key — the next request re-reads the entire history uncached. |
+| **First** fast-mode enable in a conversation | Fast mode adds a request header that is part of the cache key, so that one turn re-reads the whole history uncached — **at fast-mode rates**, which makes enabling it late in a long session the expensive case. Turning it off and on again later is free. `/clear` and `/compact` reset the once-per-conversation clock. |
 | Falling into usage-credit overage (subscription) | Silently drops the main conversation from the 1-hour to the 5-minute TTL — a long orchestrator session near plan limits loses its TTL margin exactly when spend matters. |
 | Churning the tool/MCP set | Tool defs live in the prefix; adding or removing one invalidates tools+system+messages together. |
 | A bare-name tool deny, e.g. `deny:["Bash"]` | Strips the tool definition, which busts the cache. A *scoped* rule like `Bash(rm *)` doesn't. |
@@ -71,9 +85,14 @@ only a real idle gap longer than the TTL forces a cold rebuild.
 
 Prefer **`/rewind`** over **`/clear`** to back out of a bad turn: `/rewind`
 truncates to a still-cached point, `/clear` discards the cache entirely.
-Monitor hit rate with **`/usage`** (cost plus a skills/subagents/MCP
-breakdown) or a statusline reading `cache_read_input_tokens` /
-`cache_creation_input_tokens` directly.
+Monitor hit rate with **`/usage`**: it breaks cost down by skills, subagents,
+plugins, Loops and per-MCP-server, and on v2.1.251+ prints a **Prompt cache
+(main) hit-ratio** line that makes a hand-rolled statusline redundant for
+subscribers. Watch its **behavior flags** rather than raw counters — "cache
+misses" is a named signal that fires on a 10% threshold, so it tells you the
+prefix is breaking without your having to diff two numbers yourself. A
+statusline reading `cache_read_input_tokens` / `cache_creation_input_tokens`
+still works where `/usage` isn't available.
 
 **Re-verified 2026-07-11** (code.claude.com/docs/en/prompt-caching +
 /skills), three additions that change dispatch construction:
@@ -268,14 +287,16 @@ API-axis and cannot be reached from inside Claude Code or Copilot.
 | MCP tools presented as code on a filesystem | 150,000 → 2,000 tokens (**98.7%**) on one worked example | No — API axis |
 | Tool Search Tool | **85%** cut, plus selection accuracy 49→74% (Opus 4) and 79.5→88.1% (Opus 4.5) | No — API axis |
 | Programmatic tool calling | 43,588 → 27,297 avg (**37%**) on complex research, accuracy up on two benchmarks | No — API axis |
-| Memory tool + context editing | **39%** combined, **84%** on a 100-turn eval | Partly |
-| Context editing **alone** | **29%** | Partly |
+| Memory tool + context editing | **39%** better *performance over baseline* on agentic search — not a token cut — plus **84%** token reduction on a 100-turn web-search eval | Partly |
+| Context editing **alone** | **29%** better *performance over baseline*, same unit and eval as the 39% above | Partly |
 | Tool-response verbosity enum | 206 → 72 tokens (**~1/3**) on one Slack tool | Yes, if you author the tool |
 
-**The 29% is the finding that changes what to port.** The 39%/84% pair was
-already in this file. The third figure was not: **context editing on its own
-delivers 29%**, so most of the combined gain comes from pruning stale tool
-results rather than from the memory tool. If you can only build one half,
+**Read the units before you size a port.** 39% and 29% are
+performance-over-baseline on the same eval, so comparing them is valid;
+**neither is a token saving**, and only the 84% is. The comparison that
+matters still holds: **context editing on its own delivers 29 of the 39
+points**, so most of the combined gain comes from pruning stale tool results
+rather than from the memory tool. If you can only build one half,
 build the pruning.
 
 **The tool-count threshold is the actionable half of the Tool Search
@@ -381,6 +402,73 @@ Two hard bounds to respect while decomposing:
   streaming response eats its own window: on a 5-minute TTL, a 4-minute
   response leaves roughly 1 minute of usable cache. This bites exactly the
   long agentic turns a fan-out dispatches.
+
+## Verified 2026-08-31 — controls, confirmation, and what is free
+
+**Confirm the TTL a session actually used, rather than inferring it.** Run
+`claude -p "hello" --output-format json` and read `usage.cache_creation`:
+one-hour writes land under `ephemeral_1h_input_tokens`, five-minute writes
+under `ephemeral_5m_input_tokens`. That turns "which tier did I get" from a
+guess into a check.
+
+**Claude Code staggers a workflow fan-out for you now.** In a fan-out of
+same-prefix agents it briefly holds all but the first, so the rest read the
+prefix the first one cached instead of each paying a cold write. The manual
+stagger in `flow.md` step 3 is still the right instinct on other harnesses and
+for hand-rolled dispatch, but on Claude Code workflows it is no longer work
+you have to do.
+
+**Agent teams cost about 7× a standard session** when teammates run in plan
+mode, because each teammate keeps its own context window and runs as a
+separate instance. Size a team against that multiplier, not against a
+subagent's.
+
+**Kill switches, if you need to prove caching is the variable.**
+`DISABLE_PROMPT_CACHING` turns it off everywhere; `DISABLE_PROMPT_CACHING_HAIKU`
+/ `_SONNET` / `_OPUS` / `_FABLE` do it per model. Claude Code warns at startup
+when caching is off this way (since 2.1.108), so a silent misconfiguration
+announces itself.
+
+**Two spend mysteries were harness bugs, not your prompt.** 2.1.248 fixed a
+prompt-cache miss (and lost extended-thinking context) recurring roughly
+hourly in long sessions, caused by tool definitions re-rendering after an
+OAuth token refresh. Check your version before designing around an
+unexplained hourly cost spike.
+
+**Adding a plugin mid-session is free.** A plugin's skills, commands, agents,
+hooks, monitors and themes append *after* the existing conversation, so the
+next request pays for that content once and still reads everything before it
+from the cache. This is the rare mid-run change that does not invalidate.
+
+**Automatic caching is now the recommended default on the API axis** — a
+single top-level `cache_control` field, with the system managing breakpoints
+as the conversation grows. The 4-breakpoint cap it replaces now fails loudly:
+exceeding it returns a 400 rather than degrading silently.
+
+**Extended thinking splits by model.** Non-tool results with extended thinking
+preserve thinking blocks on Opus 4.5+ and Sonnet 4.6+; earlier models strip
+them, which invalidates the cache.
+
+**Budget in tokens, not characters, across model generations.** Claude 4.7 and
+later, plus Mythos Preview, use a newer tokenizer producing roughly **30% more
+tokens for the same text**. Sonnet 4.6 and earlier use the previous one. Every
+byte budget in this repo is measured in bytes for exactly this reason — a
+character count is stable across that change and a token count is not.
+
+## Two caps on the skill listing, not one
+
+The 1,536-character per-skill description cap is the one this repo tracks
+(gate (k)). There is a second above it: **the listing budget scales at 1% of
+the model's context window**, and when it overflows Claude Code drops
+descriptions **starting with the skills you invoke least**, so the ones you
+use most keep their full text. A family that installs six descriptions is
+competing against every other installed skill for that 1%.
+
+**Truncation keeps the START of a skill body.** So the most important
+instruction belongs near the top of `SKILL.md`, above everything explanatory —
+which is independently why `smartplan`'s routing call sits on the first line.
+Re-invoking a skill whose rendered content is unchanged adds a note rather
+than a second copy, so repeat invocation is cheap.
 
 ## Cache invalidation is tiered, not all-or-nothing
 

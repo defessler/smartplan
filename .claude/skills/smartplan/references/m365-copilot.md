@@ -30,10 +30,25 @@ rules, and smartplan's fit differs sharply across them:
 | **Declarative agent** (M365 Copilot) | **No** | 8,000-char instructions, one inline string, no runtime file reference, no progressive disclosure, no frontier-model pick |
 | **Copilot Studio — GitHub Copilot harness** | **Yes, partially** | Ships a real `SKILL.md` Skills feature and a per-agent model picker |
 | **Copilot Studio — standard harness** | Policy only, no skills | Has model choice and a `reason` escalation keyword, but its "Skills" is a different, legacy feature |
+| **Copilot Cowork** | **Maybe — unprobed** | Microsoft documents direct conversion of Claude plugin packages, bundled skills included |
 
 So the honest shape is: **a mapping doc plus a narrow export for the GitHub
-Copilot harness.** The declarative-agent path is closed, and that is a
-structural fact, not a limitation to engineer around.
+Copilot harness.** The *declarative-agent* path is closed, and that is a
+structural fact rather than a limitation to engineer around.
+
+**But "M365 is closed to this family" is now too strong.** Microsoft's Cowork
+customization page documents a fourth path: "If your file is a Claude or other
+compatible plugin package, Cowork automatically converts it into a publishable
+package, including any bundled skills and external connectors it contains."
+<!-- claim:m365-cowork-converts-claude-packages --> The same page accepts a
+bare `.md` holding a single `SKILL.md` (1 MB cap), or a `.zip`/`.skill`
+archive with `SKILL.md` at its root (10 MB compressed, 50 MB uncompressed,
+100 files).
+
+Read that as a **lead, not a shipping path**. Nobody here has probed whether a
+bundled `references/` tree survives the conversion, and that is precisely the
+property this family depends on. The 100-file cap also sits close to the
+release bundle's 51. Probe before any export doc promises it.
 
 ## Declarative agents — why the family can't ship there
 
@@ -186,9 +201,11 @@ Copilot Studio source, and four of them are traps:
    question as ZCode, and for the same reason.
 4. **The "Skills | 100 per agent" quota is a name collision, not a limit on
    these skills.** That row sits on a page banner-scoped to the **standard**
-   harness and its own gloss reads "Azure Bot Framework skills" — the legacy
-   Azure Bot Service skill protocol, a different feature reusing the word.
-   Citing it as a cap on `SKILL.md` skills would be wrong.
+   harness. (The "Azure Bot Framework skills" gloss belongs to the Messages
+   RPM row in a different table on that page, not to this one, so the
+   name-collision case rests on the banner scoping alone — weaker, but still
+   enough for the hedge.) Citing it as a cap on `SKILL.md` skills would be
+   wrong.
 
 The name rule is real but wrongly framed: *"Use only lowercase letters,
 numbers, and hyphens. Don't start or end the name with a hyphen"* describes
@@ -286,7 +303,7 @@ Not a GUI-only surface:
   new/add/provision/deploy/package/validate/publish/preview/install/uninstall.
   `atk new -c declarative-agent` scaffolds one directly.
 - **Work IQ Dev Tools** — binary `wiqd`, official Microsoft
-  (github.com/microsoft/wiqd), preview v0.11.0, with
+  (github.com/microsoft/wiqd), preview v0.12.2, with
   `wiqd agent create|validate|provision|package|eval` and an alpha
   `wiqd plugin` tree.
 
@@ -297,7 +314,7 @@ Not a GUI-only surface:
 - **M365 Copilot (Enterprise add-on):** $30.00 user/month paid yearly, or
   $31.50 paid monthly on an annual commitment.
 - **M365 Copilot Business (SMB):** $18.00 user/month paid yearly on
-  promotional pricing **through 2026-09-30** (regular $21.00), or $25.20
+  promotional pricing **through 2026-12-31** (regular $21.00), or $25.20
   billed monthly. <!-- RECHECK:2026-10-01 -->
 - **Bundles:** Business Premium with Copilot $32.00; Business Standard with
   Copilot $23.50, both user/month paid yearly.
@@ -317,8 +334,9 @@ accessing or using extensibility features (Copilot connectors, agents,
 plugins)."** Declarative agents incur no hosting cost — Microsoft hosts them.
 Custom engine agents you host yourself.
 
-Pay-as-you-go per-credit price is **not published** — the Azure pricing page
-renders it literally as "$-".
+Pay-as-you-go is **$0.01 per Copilot Credit**, uniform across all 37 listed
+regions. (An Azure pricing page read without a browser renders it literally as
+"$-", which is a scraping artifact, not an unpublished price.)
 
 ## What smartplan actually becomes here
 

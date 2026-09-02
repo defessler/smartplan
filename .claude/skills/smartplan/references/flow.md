@@ -70,11 +70,13 @@ invoke anything.**
    requires** (`claude-code.md`): once it exists, quote it and dispatch.
    The gate **re-arms for the delta** when the plan materially changes
    mid-flight; re-gate the changed slice, not the whole plan. **Dynamic
-   workflows are out of scope for gated work:** their subagents always run
-   `acceptEdits` whatever the session mode says, and the launch prompt is
-   skipped under bypass permissions, `claude -p` and the Agent SDK. Launch
-   one anyway and the gate moves to the launch boundary — approve before it
-   starts, because nothing stops it after.
+   workflows are out of scope for gated work:** a workflow takes no mid-run
+   user input beyond permission prompts, and its launch prompt is skipped
+   under bypass permissions, `claude -p` and the Agent SDK. (Its agents
+   inherit the session's permission mode unless a definition's
+   `permissionMode` overrides.) Launch one anyway and the gate moves to the
+   launch boundary — approve before it starts, because nothing stops it
+   after.
 3. **Dispatch leaves in parallel** with your harness's lever (§A/§B). A
    dispatch is a *subagent with its own model* — never in-context work by
    the session model. Fire every ready, disjoint-FILES leaf **concurrently**;
@@ -82,7 +84,11 @@ invoke anything.**
    cache entry is readable only once its first response starts streaming —
    dispatch ONE leaf, await first output, then fire the rest so siblings
    read the shared prefix at 0.1× instead of each paying the cold 1.25×
-   write. Sonnet-tier leaves take the plan's task text; Cheap leaves take a
+   write.
+   **Claude Code workflows now do this for you** (a ~5s hold on all but the
+   first), so the manual stagger is for other harnesses and hand-rolled
+   dispatch.
+   Sonnet-tier leaves take the plan's task text; Cheap leaves take a
    compiled brief (**`brief.md`**) *plus* the `smartexec` protocol. Track
    every transition in **`run-state.md`** (one row per leaf) and render each
    into chat as ONE compact **dispatch-board line** —
@@ -210,12 +216,16 @@ neither with a section here (this file is byte-capped). **ZCode** → load
 most of this flow **cannot ship there**, so read its verdict table first.
 
 ### §A · Claude Code
-- **Lever:** per-call `model:` on each dispatch. **Wave guarantee:**
-  `export CLAUDE_CODE_SUBAGENT_MODEL=sonnet` before an implementer wave,
-  then **unset it** after — since v2.1.196 `=inherit` is merely identical to
-  unset, not a pin to the session model. **Clear it before any verify
-  dispatch**: it outranks the per-call `model:` a Strong verifier needs, so
-  leaving it pinned silently downgrades the gate to Sonnet-judging-Sonnet.
+- **Lever:** per-call `model:` on each dispatch — **since v2.1.251 that beats
+  `CLAUDE_CODE_SUBAGENT_MODEL`**, which now sets a *default* rather than
+  overriding everything. So a Strong verifier's per-call `model:` lands even
+  with the env var pinned. **Wave guarantee:**
+  `export CLAUDE_CODE_SUBAGENT_MODEL=sonnet` before an implementer wave, then
+  **unset it** after — it still catches every leaf that names no model, and
+  since v2.1.196 `=inherit` is merely identical to unset, not a pin to the
+  session model. On a pre-2.1.251 binary the old order holds and the env var
+  *does* outrank the per-call value, so clear it before verify dispatches
+  there or the gate silently becomes Sonnet-judging-Sonnet.
   Parallel edit leaves get `isolation: worktree` (costly — only for real
   parallel edits). Plan-feeding audits dispatch as `fork`: warm cache, but
   it **always runs the session model and ignores `model:` silently** — a

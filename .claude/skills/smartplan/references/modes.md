@@ -27,9 +27,13 @@ A non-default mode is recorded per leaf in `run-state.md`'s note column;
 the floors below don't move, whatever the default is.
 
 **The default follows the billing meter.** No per-token meter runs on a
-flat subscription (Claude Code), so the quality column's extras — Opus
-planner, one-strike escalation, 3-verifier panel — cost only wall-clock,
-and are worth taking by default. Copilot meters credits per token, where
+flat subscription (Claude Code) inside plan limits, so the quality column's
+extras — Opus planner, one-strike escalation, 3-verifier panel — cost only
+wall-clock, and are worth taking by default. **Two exceptions bill even
+there:** fast mode always draws usage credits (at $10/$50 per MTok), and
+Fable 5 — what the `best` alias resolves to — can draw them depending on
+plan and seat tier. So the max-quality row's "Fable freely" is conditional
+on your seat, not free everywhere. Copilot meters credits per token, where
 T27 measured `budget` at equal quality for **60% of balanced's corrected
 cost** — the Copilot export ships that default
 hard-coded. Neither is free: max-quality still spends wall-clock and

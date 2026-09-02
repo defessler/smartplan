@@ -64,9 +64,7 @@ of the per-invocation read.*
   a `SendMessage` auto-resumes in the background with its full history, so
   flow.md's one same-tier retry rides the executor's warm cache instead of
   a cold rebuild. Tier-safe on ≥2.1.211. The §B analog is `--resume`.
-- **Hard ceilings:** 200 spawns/session (v2.1.212+; finished subagents
-  count, so a long run drains it invisibly;
-  `CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION` raises, `/clear` resets); **20
+- **Hard ceilings:** **20
   concurrent** (v2.1.217; `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`; exempt
   under ultracode); `--max-budget-usd` halts running background subagents
   at the cap. **Depth 3** since v2.1.219
@@ -113,6 +111,18 @@ measures nothing. One separate path *does* log a greppable line,
 `Subagent model "X" is not in the availableModels allowlist; inheriting
 the parent model instead`, so grep the log before calling it a #43869 hit.
 
+**Check `/tasks` first.** The task list and agent detail dialogs now print
+the **model and effort level each subagent actually ran at**, read per seat
+rather than reconstructed from an aggregate token breakdown. That is a
+sharper #43869 oracle than the `/usage` route below; keep `/usage` and the
+JSONL caveat as cross-checks.
+
+**A second silent de-tiering path:** fallback model chains now cover
+subagents (v2.1.247), so a configured chain can move a pinned leaf onto a
+different model mid-wave while the session model reads unchanged. The
+parent-side error text carries the model name, which is the one detection
+lever. Track it alongside allowlist substitution and #43869.
+
 **Partial fixes:** v2.1.211 stopped an override reverting to the parent on
 resume or follow-up, so multi-turn dispatches are tier-safe only on
 ≥2.1.211, and v2.1.222 covers the allowlist case. #43869 stays open, so
@@ -134,8 +144,11 @@ zero routing risk, at the cost of the fan-out and the Cheap floor.
 
 ## Caching-aware fan-out
 
-Each fresh subagent pays a *cold* cache-write on a **5-minute TTL** (the
-1-hour TTL is main-conversation-only), so weigh leaf count against
+Each fresh subagent pays a *cold* cache-write, defaulting to a **5-minute
+TTL** — liftable to an hour via `subagentPromptCacheTtl`,
+`CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL`, or per-agent `experimental.cacheTtl`,
+though a subscription running on usage credits ignores the per-agent `1h`
+(see `caching.md`). So weigh leaf count against
 per-spawn cache cost and prefer a `fork` for a leaf that genuinely needs
 full context. The async Batch API 50% discount never touches any of this,
 since `/batch`, subagents and Agent Teams are all interactive. Full
@@ -163,12 +176,20 @@ Three dispatch-construction rules (each live-measured 2026-07-11):
 ## Adjacent primitives (know when NOT to use them)
 
 - **Agent Teams** (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, experimental):
-  teammates coordinate via shared state and *don't inherit the lead's
-  model* — an easy un-tiered fleet. Reserve for adversarial /
-  competing-hypothesis review. Subagent fan-out stays the default. If
-  used: `/config`'s "Default teammate model" sets the fleet tier, a
-  teammate from a subagent definition honors its `tools` + `model`, and
-  teammates inherit the lead's *effort*. `TeammateIdle`/`TaskCompleted`
+  teammates coordinate via shared state and **do fall back to the lead's
+  model** — still an easy un-tiered fleet, by the opposite mechanism: an
+  unnamed, unconfigured teammate lands on the lead's *priciest* model.
+  Precedence is four steps, first match winning: the model your spawn prompt
+  names · a subagent definition's `model:` (where `inherit` picks the lead's)
+  · `CLAUDE_CODE_SUBAGENT_MODEL` when set to anything but `inherit` · the
+  lead's current model. **Before v2.1.251 the env var came first.** Name the
+  model in the spawn prompt to be sure. Reserve teams for adversarial /
+  competing-hypothesis review. Subagent fan-out stays the default.
+  **A live hazard for named-seat dispatch:** with teams enabled, a named seat
+  like `smartplan-implementer` launches as a *teammate* and reports via idle
+  notification rather than the result the Integrate step waits for. Headless
+  arms (`claude -p`) stay on the subagent path and are unaffected.
+  Teammates inherit the lead's *effort*. `TeammateIdle`/`TaskCompleted`
   hooks (exit 2 blocks) enforce smartcheck-before-done.
 - **Dynamic workflows** (scripted `pipeline()`/`parallel()`, schemas,
   resumable; auto-planned at `/effort ultracode`, v2.1.203+): the
@@ -181,9 +202,11 @@ Three dispatch-construction rules (each live-measured 2026-07-11):
   + `effort: low|…|max`), though the guidance is to *omit* `model` and
   inherit the session. <!-- claim:cc-workflow-guidance-omit-model -->
   It's an **execution engine** for step-3 at scale, not a policy
-  replacement: its agents run acceptEdits with no human gate, so gate
-  BEFORE the script runs, route tiers in the script, and ride the verify
-  floor as scripted stages. Security sweeps → Anthropic's **Claude
+  replacement: a workflow takes no mid-run user input beyond permission
+  prompts, so gate BEFORE the script runs, route tiers in the script, and
+  ride the verify floor as scripted stages. Its agents inherit the session's
+  permission mode unless a definition's `permissionMode` overrides, and the
+  launch itself carries a mode-dependent approval prompt. Security sweeps → Anthropic's **Claude
   Security** plugin, which already ships this shape.
 
 ## Mechanical enforcement (optional, shipped)
@@ -216,7 +239,10 @@ contested resolution order (#43869, above), so confirm the tier with
   the flow needs the result synchronously); **forking is on by default
   since v2.1.232** — Claude can pick `subagent_type: fork` unprompted, so
   the tier caveat above now bites on dispatches you never asked for, and
-  `CLAUDE_CODE_FORK_SUBAGENT` no longer gates it; untyped Agent calls still
+  `CLAUDE_CODE_FORK_SUBAGENT` is still live and the default flip is
+  **interactive-only** — a `claude -p` or Agent SDK arm runs with fork off
+  unless the variable is `1`, so an interactive and a headless arm of one
+  measurement differ in more than the harness; untyped Agent calls still
   resolve general-purpose; `/subtask` is the in-session fork (v2.1.212) while
   `/fork` copies the session into a new background one.
 - **Explore/Plan agent types skip CLAUDE.md + git status** (docs) — route
@@ -230,8 +256,17 @@ contested resolution order (#43869, above), so confirm the tier with
   `disable-model-invocation: true` removes a description entirely;
   `skillListingBudgetFraction` / `skillListingMaxDescChars` cap the whole
   listing.
-- **Env vars:** `ANTHROPIC_DEFAULT_HAIKU_MODEL` (background-task model),
-  `DISABLE_NON_ESSENTIAL_MODEL_CALLS`, `CLAUDE_CODE_AUTO_COMPACT_WINDOW` /
+- **Env vars:** `ANTHROPIC_DEFAULT_MODEL` (v2.1.236+) is a **fifth link in
+  the session-model precedence chain**, below `/model`, `--model` and
+  `ANTHROPIC_MODEL`, and it can silently repoint new sessions — check it
+  before trusting a tiering measurement on a shared box. The `best` alias
+  is a **moving target by design** (it resolves to Fable 5 today), so
+  never pin a benchmark arm to it. `ANTHROPIC_DEFAULT_HAIKU_MODEL`
+  (background-task model),
+  `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` (the documented traffic lever;
+  it reaches model-adjacent calls only indirectly, and no switch exists today
+  that suppresses background model calls specifically),
+  `CLAUDE_CODE_AUTO_COMPACT_WINDOW` /
   `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` (earlier compaction shrinks per-turn
   re-reads on long sessions — but the compact itself busts the prefix;
   measure before adopting).

@@ -59,10 +59,10 @@ implements or verifies).
 | --- | --- | --- | --- | --- | --- | --- |
 | Fable 5 | Reasoning | 10 / 50 | TB2.1 83.8 — #1 on the official board (re-confirmed 2026-07-24) · vendor SWE-Pro 80.3 | planner-only | 2026-07 · benchmarked 2026-07-20 | Max tier: hardest architecture/decomposition decisions only; never a fail-twice target, never a verifier |
 | Mythos 5 | Reasoning | 10 / 50 (cache-read 1.00; 5m write 12.50, 1h write 20; batch 5 / 25) | none published — absent from the boards this file tracks, and Anthropic publishes no benchmark for it | **not a seat — limited availability** | 2026-08-28 | Added 2026-08-28 after a sweep found the pricing page carries it and this registry did not, in a file whose own summary line claims to give the Anthropic lineup strongest to cheapest. Priced identically to Fable 5 on every axis including cache and batch. Gated behind a limited-availability programme rather than generally callable, so it is carried for lineup completeness, not as a candidate — the same reasoning that added the DeepSeek row. Uses the newer tokenizer (~30% more tokens for the same text), so its effective cost sits above Fable 5's at the same list rate. `caching.md`'s minimum-cacheable-prefix table already knew about it, which is how the gap showed |
-| Claude Opus 5 | Reasoning | 5 / 25 | **vals.ai SWE-bench Verified 97.0, rank 1** (board updated 2026-08-05, re-read 2026-08-06, ahead of GPT-5.6 Sol 96.2 and Fable 5 95.0); still no Terminal-Bench official-board entry as of 2026-08-06 (TB2.1 unchanged since its 07-11 snapshot) | **default (planner + Strong verifier)** | 2026-07-25 · promoted 2026-08-05 | Same price as Opus 4.8. As of 2026-08-05 Anthropic lists it Active/current and the default on Max, Team Premium, Enterprise PAYG and the Claude API, with 4.8 moved under Legacy on the overview page. **Promoted on that evidence, not on benchmarks** (none had landed as of 2026-08-05), because a same-class same-price up-move is what § How to edit calls cheap to be wrong about, and the predecessor is now the vendor's legacy row. Revisit if the first board entry lands below 4.8. On Claude Code ≥2.1.219 the `opus`/`default` aliases — and opusplan's plan phase — resolve to it. Copilot CLI-selectable since v1.0.75 (Pro+/Max-gated); T30 (07-25) saw it serve where 4.8 was Pro-gate-refused on 07-11 |
+| Claude Opus 5 | Reasoning | 5 / 25 | **vals.ai SWE-bench Verified 97.0, rank 1** (board updated 2026-08-05, re-read 2026-08-06, ahead of GPT-5.6 Sol 96.2 and Fable 5 95.0); **that absence ended: Terminal-Bench 4.0 ranks it #1 at 51.8% ± 3.4%** (read 2026-09-02) — the "no official-board entry" note here described TB2.1 and is retired | **default (planner + Strong verifier)** | 2026-07-25 · promoted 2026-08-05 | Same price as Opus 4.8. As of 2026-08-05 Anthropic lists it Active/current and the default on Max, Team Premium, Enterprise PAYG and the Claude API, with 4.8 moved under Legacy on the overview page. **Promoted on that evidence, not on benchmarks** (none had landed as of 2026-08-05), because a same-class same-price up-move is what § How to edit calls cheap to be wrong about, and the predecessor is now the vendor's legacy row. Revisit if the first board entry lands below 4.8. On Claude Code ≥2.1.219 the `opus`/`default` aliases — and opusplan's plan phase — resolve to it. Copilot CLI-selectable since v1.0.75 (Pro+/Max-gated); T30 (07-25) saw it serve where 4.8 was Pro-gate-refused on 07-11 |
 | Opus 4.8 | Reasoning | 5 / 25 | **vals.ai SWE-V 88.6** confirmed (read first-hand from the board's own data 2026-08-23) — note the board carries a SECOND row under the identical label, `claude-opus-4-8-claude-code` at 85.8 · SWE-bench Pro 69.2 **(vendor — absent from Scale's public board, checked 2026-08-12)** · SWE-bench Verified 88.6 · TB2.1 78.9 — official board #5 (2026-07-24) | active (same-price fallback) | 2026-07-09 · demoted from default 2026-08-05 | Held the planner + Strong verifier default 07-09 → 08-05 on price + SWE-bench (GPT-5.5 edges it on TB2.1, 83.1 vs 78.9, but is Pro-gated and pricier on output). **Succession resolved 2026-08-05:** Opus 5 takes the default at identical price. 4.8 stays Active and costs the same, so it's the drop-in fallback when an Opus 5 seat is unavailable. Retire not before 2027-05-28 |
 | GPT-5.5 | Reasoning | 5 / 30 (>272K: 10 / 45) | **vals.ai SWE-V 82.6** (read first-hand from the board's own data 2026-08-23) — the board carries two more rows under the same display label, codex 76.4 and factory 76.2 · SWE-bench Pro 58.6 **(vendor — absent from Scale's public board, checked 2026-08-12)** · TB2.1 83.1 — official board #2 (2026-07-24) | Pro-plan-gated on Copilot | 2026-07-09 · refined 2026-07-20 | **Refined 2026-07-20 (supported-models):** still GA and CLI-selectable, but Pro = Not included — which is why T18's Pro-roster observation missed it. (The supported-models page dropped its per-plan column before 2026-08-28, so that source is spent; re-derive gating from get-started/plans at the next sweep.) Flagship-superseded by the GPT-5.6 family; on Pro the live cross-family peer is GPT-5.6 Terra |
-| GPT-5.6 Sol | Reasoning | **2 / 10 promotional on GitHub's table through 2026-09-03** (>272K: 4 / 15) — **the primaries disagree on the expiry: OpenAI's own pages say "at least through November 21, 2026"** (read 2026-08-28). Standard **4 / 20 (>272K: 8 / 30) is a printed OpenAI figure** (2026-08-28), vindicating the 2026-08-22 arithmetic it was derived by. Past 272K bills the **WHOLE request** at 2× input / 1.5× output — a cliff, not a marginal tier (model page) | TB2.1 88.8 vendor-only — still absent from the official board (re-checked 2026-07-24); vals.ai SWE-V 96.2 (independent, not the official board) | provisional (Copilot-exposed) | 2026-07-09 (GA day) · re-researched 2026-07-20 | Pro+-gated. Elite agentic scores but measured weak on open-brief architecture (Every 56/100 vs Fable 90) and METR's highest eval-gaming rate — never grades work against visible tests; not a planner swap. Full caution set: the model guide |
+| GPT-5.6 Sol | Reasoning | **2 / 10 promotional on GitHub's table through 2026-09-03** (>272K: 4 / 15) — **the primaries disagree on the expiry: OpenAI's own pages say "at least through November 21, 2026"** (read 2026-08-28). Standard **4 / 20 (>272K: 8 / 30) is a printed OpenAI figure** (2026-08-28), vindicating the 2026-08-22 arithmetic it was derived by. Past 272K bills the **WHOLE request** at 2× input / 1.5× output — a cliff, not a marginal tier (model page) | **Terminal-Bench 4.0 #4 at 37.3% ± 3.8%** (read 2026-09-02), so the vendor-only/absent framing that applied on TB2.1 is retired; the older 88.8 was a TB2.1 vendor figure; vals.ai SWE-V 96.2 (independent, not the official board) | provisional (Copilot-exposed) | 2026-07-09 (GA day) · re-researched 2026-07-20 | Pro+-gated. Elite agentic scores but measured weak on open-brief architecture (Every 56/100 vs Fable 90) and METR's highest eval-gaming rate — never grades work against visible tests; not a planner swap. Full caution set: the model guide |
 | Gemini 3.1 Pro | Reasoning | 2 / 12 (>200K: 4 / 18) | **vals.ai SWE-V 78.8** (read first-hand from the board's own data 2026-08-23) (row `Gemini 3.1 Pro Preview (02/26)`) · SWE-bench Pro **46.1, rank 5 (Scale public board)** · TB2.1 65.8 — official board **rank 14**, tied with Gemini 3 Pro also at 14, next row skips to 16 (re-read 2026-08-12) | **RETIRING from Copilot 2026-09-01 — seat handed to Gemini 3.6 Flash** | 2026-07-12 · corrected 2026-08-12 | **MEASURED (T18): ties GPT-5.6 Terra on seeded C++ recall (14/15 each over 2 fixtures) at 47% the cost (8.69 vs 18.53 cr), esp. UE5.** **Two corrections from the 2026-08-12 board re-read:** the old "SWE-bench Pro 54.2" appears nowhere on Scale's board (which says 46.1) and was an unlabelled vendor figure reading as board-sourced; and the TB2.1 rank is 14, not 15 — this file's own 2026-07-20 ledger row had it right and the 2026-08-06 pass introduced the error. **The cost case needs re-measuring:** Terra repriced to an identical 2 / 12, so this seat's list-price advantage over Terra is gone. Slug `gemini-3.1-pro-preview`. Never a planner swap. **Seat vacated 2026-08-16:** Copilot retires this model 2026-09-01 and T34 (2026-08-05) cleared Gemini 3.6 Flash as the successor at 8/8 recall on the seeded custom fixture, cost indistinguishable. All routing sites (`check.md`, `cpp-gamedev-check.md`, `copilot.md`, the Copilot verifier seat) now name 3.6 Flash. Anthropic-side and other harnesses are unaffected by the Copilot retirement date. Added 2026-08-31: GitHub's roster listed it as **Public preview, never GA** — the only non-Anthropic model on the 31-row roster in that state, retired straight out of preview, which contextualizes why the seat went to a GA model (3.6 Flash) rather than a same-model upgrade |
 | Sonnet 5 | Implementer | 2 / 10 | **vals.ai SWE-V 79.6** (read first-hand from the board's own data 2026-08-23) — correcting **85.2**, which appears nowhere on that board for Sonnet 5 in any subset, and which this file had carried unsourced · TB2.1 74.6 — official board #10 (2026-07-24) | default (implementer floor + Cheap-leaf verifier) | 2026-07-09 · repriced 2026-08-12 | ~9 pts behind Opus 4.8 on vals.ai SWE-V (79.6 vs 88.6), ~17 behind Opus 5 — the floor argument. **The $2/$10 introductory rate became Anthropic's standard price on 2026-08-10**; the 2026-09-01 step to $3/$15 was cancelled and will not occur. GitHub's billing page dropped the promotional footnote by 2026-08-31, so the $2/$10 now reads unqualified standard on both vendors <!-- claim:sonnet5-standard-price --> |
 | Grok 4.5 | Implementer | 2 / 6 · **past 200K bills 4 / 12 on the WHOLE request** (a cliff, not a marginal tier) · cached in 0.50 (1.00 long tier) | Terminal-Bench 2.1 **rank 4, 79.3%** (read 2026-08-14) — above Opus 4.8's 78.9 at a fifth of Opus's output price · vals.ai SWE-bench Verified 86.60, rank 10 | candidate | 2026-08-14 | GA on Copilot since **2026-07-28**, every paid plan **including plain Pro**. Billing: input and output match xAI list, but **cached input does not** — GitHub bills 4.5 at 0.50 / 1.00 against xAI list 0.30 / 0.60, while 4.6 matches at both sources (re-read 2026-08-31), so this row's cache figures are what a Copilot dispatch pays, not xAI list. 500K native; the picker read 328K on 2026-08-06 and GitHub publishes no per-model picker cap, so the two numbers measure different things. xAI runs these directly with no logging, no disk write and no retention of any kind — stricter than Fable 5's 30-day safety-classifier retention. Business/Enterprise admin-enable, off by default. **Boards put it in Reasoning territory at an Implementer price**, which is the shape that earns a deliberate trial, not a default |
@@ -98,6 +98,68 @@ strongest → cheapest: Fable 5 > Opus 5 > Opus 4.8 > Sonnet 5 > Haiku 4.5.
 *Anthropic rows re-verified 2026-08-05 against the pricing, models-overview,
 deprecations, effort and prompt-caching docs.*
 
+- **Seven Copilot-selectable models have no row here** (live roster read
+  2026-09-02, CLI 1.0.81, Pro account — availability is per-plan, so treat
+  this as one seat's view rather than general availability):
+  `claude-fable-5.1`, `claude-opus-4.7`, `claude-opus-4.8-fast`,
+  `gemini-3.7-flash`, `grok-4.6`, `mai-code-1.1-flash`, `gpt-5.4-mini`.
+  `claude-fable-5.1` matters most — a Max-tier successor with no class, no
+  price and no seat verdict here. **None is seated until researched**; the
+  registry's default-vs-candidate discipline exists exactly so a new slug
+  cannot be routed to on sight.
+- **The 2026-09-01 Copilot retirement completed.** The same read confirms
+  Opus 4.5, Opus 4.6, Sonnet 4.5, Sonnet 4.6, Gemini 3.1 Pro and Raptor mini
+  are all gone from the picker. The Gemini 3.1 Pro row below is retained as a
+  retirement record, not a routing option.
+- **Terminal-Bench 4.0 replaced 2.1, and it reorders the field.** Read in a
+  browser 2026-09-02 (the table renders client-side and returns nothing to a
+  plain fetch). Resolution rate ± 95% CI, agent in parens:
+
+  | # | Model | Agent | Rate | Cost |
+  |---|---|---|---|---|
+  | 1 | **Opus 5** (max) | Claude Code | **51.8% ± 3.4%** | $6.0k |
+  | 2 | Fable 5 (max) | Claude Code | 44.5% ± 3.8% | $7.3k |
+  | 3 | **GLM-5.3** (max) | Claude Code | 41.8% ± 3.2% | **$2.7k** |
+  | 4 | GPT-5.6 Sol (max) | Codex | 37.3% ± 3.8% | $2.5k |
+  | 5 | Opus 4.8 (max) | Claude Code | 23.6% ± 3.6% | $6.5k |
+  | 6 | GPT-5.6 Terra (max) | Codex | 21.5% ± 3.3% | $1.7k |
+  | 7 | **Grok 4.6** (high) | Grok Build | 20.3% ± 3.1% | $3.6k |
+  | 8 | GPT-5.6 Luna (max) | Codex | 17.3% ± 2.8% | $0.3k |
+  | 9= | Grok 4.5 (high) | Grok Build | 12.4% ± 2.6% | $2.1k |
+  | 9= | **Sonnet 5** (max) | Claude Code | 12.4% ± 3.1% | $9.6k |
+
+  **Two claims in the rows below are now false and are marked stale there:**
+  Opus 5 has a board entry (it is #1), and GPT-5.6 Sol has one (#4) — both
+  were recorded here as absent. **The spread also widens sharply**: on TB2.1
+  Sonnet 5 sat ~4 points behind Opus 4.8 and ~6 behind the leader; on 4.0 it
+  is at *a quarter* of Opus 5's rate and ties Grok 4.5 for 9th. A harder
+  benchmark separates the tiers this family routes between far more than 2.1
+  did, which strengthens the implementer-floor argument rather than weakening
+  it. Every TB2.1 figure in the rows below is **historical**.
+- **GLM-5.3 is the cost story on that board** — 41.8% at $2.7k against Opus
+  5's 51.8% at $6.0k, and Sonnet 5's 12.4% at $9.6k. Not a seat change on one
+  board read, but the cheapest credible planner-class result recorded here.
+- **vals.ai SWE-bench Verified, full order read in a browser 2026-09-02**
+  (board updated 8/30/2026; rows ranked by total tasks resolved). Top 12:
+  Opus 5 · **DeepSeek V4 Pro 0813** · GPT-5.6 Sol · **Grok 4.6** · GPT-5.6
+  Terra · GLM 5.3 · Fable 5 · Kimi K3 · GPT-5.6 Luna · GLM 5.3 Flash ·
+  DeepSeek V4 Flash 0731 · Opus 4.8. Sonnet 5 sits **24th**. Overall
+  percentages confirmed on this read: Opus 5 97.00, DeepSeek V4 Pro 96.40,
+  Kimi K3 93.40, Opus 4.8 88.60, Grok 4.5 86.60.
+- **Four unseated models now have board positions**, which is what turns them
+  from roster noise into a real gap: **Grok 4.6** is 4th here and 7th on TB
+  4.0 — above GPT-5.6 Terra, GLM 5.3 and Fable 5 on this board — while
+  **DeepSeek V4 Pro 0813** is 2nd and appears nowhere in this registry.
+  **Opus 4.7** (21st) and **Gemini 3.7 Flash** (23rd) both sit above Sonnet 5.
+  None is seated on a board read alone; the point is that the registry's
+  ordering no longer matches the evidence.
+- **Scale's SWE-bench Pro board re-read 2026-09-02, and it moved host** to
+  `labs.scale.com` (the old `scale.com/leaderboard/...` now 308s). Gemini 3.1
+  Pro holds **46.10 ± 3.60, rank 5**, unchanged. The absence of Opus 4.8,
+  Opus 5, GPT-5.5 and GPT-5.6 is re-confirmed — so the 69.2 and 58.6 figures
+  carried here stay marked vendor-only. One drift: `claude-opus-4-6
+  (thinking)` is **rank 4 now, not 3**, displaced by a new `Muse Spark 1.1`
+  at 61.50.
 - **The 5:2:1 ladder is list price, not effective cost.** Opus 5, Opus 4.8,
   Sonnet 5 and Fable 5 use the newer tokenizer (~30% more tokens for the same
   text); **Haiku 4.5 is the only Anthropic row here still on the old one**. So
