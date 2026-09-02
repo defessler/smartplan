@@ -7,6 +7,19 @@ cheaper models where the work is mechanical — *implementation fan-out*.
 Escalate only when a cheaper tier actually fails, and keep a human at the
 plan boundary. Harnesses: Claude Code (§A) · Copilot CLI (§B).
 
+## Contents
+
+- Fan out only on independent work
+- The flow
+- Model-role matrix
+- Quality↔cost mode (one dial; default max-quality, budget on Copilot)
+- Dispatch — pick your harness
+- Reach for the built-in instead
+- Escalation report (attach to every escalation)
+- Budget / rate-cap pressure
+- Honest scope note (don't oversell)
+- Evolving this skill
+
 ## Fan out only on independent work
 
 **Independence is a precondition you TEST FOR, not one you assume.** Fan out
@@ -49,7 +62,10 @@ invoke anything.**
    mapping → consult **`references/routing.md`**.
 2. **Gate:** present the plan for human review; persist the approved plan.
    Quote the human's go-signal **verbatim** into each brief's AUTHORIZATION —
-   plan approval and execution authorization are different events. **That
+   plan approval and execution authorization are different events. **The
+   request that started the task is NEITHER** — "get them done" and "wall
+   clock matters" authorize the work, never the plan, so a gate that quotes
+   them has not run. **That
    approval is also the user request the Opus-5 don't-dispatch injection
    requires** (`claude-code.md`): once it exists, quote it and dispatch.
    The gate **re-arms for the delta** when the plan materially changes

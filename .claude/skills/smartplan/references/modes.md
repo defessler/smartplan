@@ -5,6 +5,17 @@ calls the flow already makes; it never overrides the invariants at the
 bottom. Model names and prices below are illustrative — `model-classes.md`
 is the registry and wins on any drift.*
 
+## Contents
+
+- Setting it
+- The matrix
+- The caveman register (output-side language compression)
+- Mode-invariant floors (no mode may dial these)
+- Harness mapping
+- Measured economics + budget personas (Copilot, live 2026-07-13)
+- Honest note
+- Budget preflight (budget / max-savings — print before the work)
+
 ## Setting it
 
 Resolution order (first wins): an explicit per-invocation ask

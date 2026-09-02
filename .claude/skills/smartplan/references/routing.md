@@ -11,6 +11,19 @@ Start at the floor; escalate one tier only on fail-twice (canonical rule:
 flow.md). Never route above the floor "to be safe," never below it to save
 pennies.
 
+## Contents
+
+- Tier ladder
+- Routing table
+- The second dial — effort
+- Seat eligibility — mapping a user-named roster
+- C++ gamedev task classes
+- What a wave costs (T33 · T35, 2026-08-05, Copilot Pro)
+- Session-limit pressure (caps are a routing signal)
+- Hard floors for the Cheap class (non-negotiable)
+- Harness dispatch notes
+- Outcome record and amendments
+
 ## Tier ladder
 
 Strongest → cheapest (live roster: `/model`). **`model-classes.md` owns

@@ -6,6 +6,19 @@
 Load this only on Copilot CLI — for dispatch mechanics beyond flow.md §B's
 summary, budget decisions, fan-out sizing, or repo setup.
 
+## Contents
+
+- The four levers (most reliable first)
+- AI-credit economics (billing changed 2026-06-01)
+- Context caps (picker, 2026-08-06)
+- Per-seat model control isn't guaranteed here (checked 2026-08-05)
+- Dispatch engine — task tool vs /fleet (updated 2026-07-09)
+- Command naming — plugin sp, executor hidden (why it's set up this way)
+- Marketplace install vs project-local — they don't merge
+- Standing levers (set once, help every session)
+- Testing against Copilot cheaply (the probe-cost playbook, 2026-07-12)
+- Running real UE5 work cheaply on Copilot (not just probing, 2026-07-12)
+
 ## The four levers (most reliable first)
 
 | # | Lever | How |

@@ -11,6 +11,15 @@ adds the positive register — what the prose should *do*, not just avoid.
 Sources are listed at the bottom; the load-bearing ones are rowed in root
 the development repo's claim ledger.
 
+## Contents
+
+- The pillars (in priority order)
+- Formatting habits
+- Phrasing guidance
+- Worked example
+- Profile self-check
+- Sources (fetched 2026-07-10)
+
 ## The pillars (in priority order)
 
 1. **Vary the rhythm.** Uniform sentence length is what detectors score as

@@ -65,6 +65,16 @@ Epic-standard validation`).
 
 ## Protocol
 
+Copy this checklist and check off items as you go:
+
+```
+- [ ] 1. {{STANDARDS}} resolved — before reading a line of code
+- [ ] 2. Files gathered and read in full
+- [ ] 3. Breaking hunt done — every class swept, clean sweeps recorded
+- [ ] 4. Checklist walked — every row PASS, FAIL, or N/A
+- [ ] 5. Report written, BREAKING first
+```
+
 1. **Gather files.** Identify files in scope (from a changelist via your
    VCS's describe/diff, or user-specified paths). Read each file in full.
 2. **Hunt breaking defects first**, before a single style row. Sweep every

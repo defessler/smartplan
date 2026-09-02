@@ -55,6 +55,17 @@ tables fine. This skill's own em-dash style is never the output's style.
 
 ## Protocol
 
+Copy this checklist and check off items as you go:
+
+```
+- [ ] 1. IDENTIFY the VCS and resolve the ref
+- [ ] 2. DESCRIBE — message, author, date, files
+- [ ] 3. DIFF and READ the text files
+- [ ] 4. Binary assets named, never invented
+- [ ] 5. Drafted from the Output template
+- [ ] 6. Saved to {{WIKI_DIR}}, filename matching the H1
+```
+
 1. **IDENTIFY** the VCS and resolve the change ref.
 2. **DESCRIBE** the change: message, author, date, affected files.
 3. **Understand the code.** For changed **text** files, **DIFF** for the delta

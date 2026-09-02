@@ -9,6 +9,17 @@ Load this only when the target is a Microsoft 365 Copilot surface. **Read the
 verdict first — most of this family does not ship here, and knowing which
 half does saves a wasted build.**
 
+## Contents
+
+- The verdict, up front
+- Declarative agents — why the family can't ship there
+- Copilot Studio — the one surface that can carry a skill
+- Hard limits (declarative agents)
+- MCP
+- There is a CLI — three, in fact
+- Money
+- What smartplan actually becomes here
+
 ## The verdict, up front
 
 M365 Copilot is not one surface. It is three delivery targets with different

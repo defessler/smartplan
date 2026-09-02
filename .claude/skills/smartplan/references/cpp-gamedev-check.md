@@ -46,6 +46,22 @@ these six shared-blind-spot categories, family decorrelation is worth more
 than the last few benchmark points, so the cheaper decorrelated judge is the
 right default on a UE5 gameplay leaf — not the priciest same-goal one.
 
+## Contents
+
+- Engine Profile gate
+- Protocol
+- 1. Ownership & lifetime
+- 2. Undefined behavior
+- 3. Performance hot-path
+- 4. Threading model
+- 5. Build & header hygiene
+- 6. Determinism & serialization
+- Severity — what blocks
+- Report
+- Hard rules
+- Pitfall catalog — VERIFY FIRST source
+- Changelog / edge-case log
+
 ## Engine Profile gate
 
 The leaf's Engine Profile (`vanilla` default · `custom` · `unreal` —

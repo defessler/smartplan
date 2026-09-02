@@ -12,6 +12,21 @@ CLAUDE.md / the tool surface / the orchestrator's own thread. Cross-referenced
 from flow.md's Honest scope note, `claude-code.md`, `copilot.md` and
 `routing.md`.
 
+## Contents
+
+- Caching & context economy
+- Language compression — which side of the token to compress
+- External levers (API-axis + dispatch construction)
+- Measured levers, ranked by published saving (swept 2026-08-12)
+- What does NOT save tokens (checked, so nobody re-derives it)
+- Effort is a cost lever, and not the one you think
+- Where a skill's cost actually lands
+- Sizing a fan-out, with both halves
+- Cache invalidation is tiered, not all-or-nothing
+- An external yardstick for the benchmark corpus
+- What the community actually converged on
+- Anthropic's own guidance pushes toward inline, twice
+
 ## Caching & context economy
 
 Model tiering (`routing.md`, same directory) buys a cheaper *rate* — but only

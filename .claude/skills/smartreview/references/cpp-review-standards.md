@@ -25,6 +25,16 @@ tagged **[P]** are project choices where the engine is silent — adapt those
 freely, in any profile. Three of them (indentation, line length,
 local-variable case) live in the driver's profile and ship unfilled.
 
+## Contents
+
+- Project Profile
+- Severity map
+- Per-file checklist
+- Provenance & Epic-standard validation
+- Report
+- Hard rules (this doc's additions)
+- Changelog / edge-case log
+
 ## Project Profile
 
 <!-- ENGINE-PROFILE-HOME -->

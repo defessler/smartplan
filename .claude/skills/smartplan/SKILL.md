@@ -5,91 +5,157 @@ description: Use proactively for any coding or implementation task. It routes by
 
 # smartplan — regime router
 
+**Your FIRST output line is the routing call.** Before any answer, plan,
+code, diff, or "Done", emit exactly this and nothing above it:
+
+```
+Routing call: <inline|fan-out> — <reason, one clause>
+```
+
+No exceptions. Obvious routes still get the line. Leading with the
+deliverable and explaining the route afterwards does not count, and
+terseness is not an exemption — one line IS the terse form.
+
 **The rule:** plan with the strong model, implement with the cheaper
 model, escalate on demonstrated failure — never on a hunch. **Invoke:**
 `/smartplan <task>` on Claude Code or Copilot CLI; you route it yourself
 and **never ask the user to invoke anything.**
 
-## Route by regime — measured (T9 · T14 · T19–T21 · T25 · T33)
+## Pick the route
 
-A task ONE strong context swallows whole defaults **inline**: per-leaf
-overhead plus inline strong-model token-efficiency made the full ceremony
-cost 1.5–2.9× one inline pass at equal oracle quality across every leaf
-count and size tested (1·T14 · 5-small·T19 k=2 · 12-tiny·T20 · 5-big·T21),
-and even *routing* a one-context task through the full skill body measured
-1.52× bare inline (T25) — which is why the inline route below is lean.
-Neither width nor size amortizes the ceremony — one strong context
-out-runs N cold cheaper ones. Dispatch the FULL flow only where it
-measurably pays: work exceeding one context window; failure-prone
-execution where inline flails and reworks (T9: 39–55% of inline —
-dated 2026-07-11; T26 found no trap on current Sonnet and T33 measured
-2.78× *against* tiering once inline stopped failing, so this fires on
-demonstrated failure, not anticipation);
-wall-clock-bound batches — **including ≥4 independent units with disjoint
-FILES.** Count units, not tokens: a 1M window *holds* large work without
-*bounding* it, so "fits in one context" stopped being the size test. N files
-taking the SAME edit is ONE leaf; N taking different edits is N. This trades
-tokens for wall-clock **knowingly** — the 1.5–2.9× above is just as real at
-4 units. Fire it when finishing sooner is worth more than finishing cheaper,
-and say which you chose.
-And verify-critical work — independent checks
-still gate risky merges at ANY size (C++ shared-blind-spots, security);
-verify value survives where fan-out economics don't. Ceremony collapses;
-the verify floor never does.
+First matching row wins.
 
-## Inline route (the default for one-context work)
+| The work | Route | Why |
+| --- | --- | --- |
+| Exceeds one context window | **Fan-out** | It cannot be held, so it must be split. |
+| ≥4 independent units with disjoint FILES, and finishing sooner beats finishing cheaper | **Fan-out** | Buys wall-clock at a known token cost. |
+| Inline already failed twice on the same signature | **Fan-out** | Demonstrated failure, not anticipated. |
+| Risky merge — C++ UB, concurrency, templates, security | **Inline + independent verify** | The verify floor holds at every size. |
+| Everything else | **Inline** | One strong context out-runs N cold cheaper ones. |
 
-- **State the routing call in ONE line, then start** — no deliberation
-  essay. When the work splits into **≥4 independent units**, name the count
-  and why inline still wins. An unstated call defaults to inline, and that
-  silence is the miss: fan-out then fires only when asked for.
-- **Token discipline:** batch independent reads into one turn and
-  independent writes into one turn; never re-read a file already in
-  context; hold the mode's output ceiling
-  (`references/modes.md`) — output bills ≈5× input.
-- **Verify floor (never collapses) — the strongest AVAILABLE oracle, not
-  merely a fresh one:** **1** executable (compiler, assertion, replayed
-  real input) **2** fresh-context model **3** same-context model. A cold
-  model shares the writer's training and blind spots; a compiler doesn't.
-  Code-emitting work has tier 1 by definition, so nothing below it counts.
-  And before a green check counts, say what would turn it **red** — if
-  that answer doesn't name what you just changed, it isn't verification.
-  An independent check (`references/check.md`) still gates risky merges at
-  any size — C++ shared-blind-spot classes (UB, concurrency, templates),
-  security — and Cheap-tier output never merges unverified.
-- **Spiral guard:** two failed self-repairs against the same failing
-  signature = STOP; dispatch ONE fresh-context Mid-tier diagnosis with the
-  ESCALATION REPORT (`references/flow.md`) instead of a third blind
-  attempt (T9: blind repair burned 75–167 cr and once failed; the
-  fresh-context ladder never did).
-- **False-success guard — the spiral guard's blind side:** that guard needs
-  a failing signature, so all-green attempts never trip it. **A repeat
-  report of a symptom you claimed fixed is a strike.** Next action is not a
-  third fix — it's proving your observable measures what they describe.
-- **Land the check, not a note:** a fix whose only durable trace is a note
-  hasn't landed — leave the executable oracle in the repo (compile step,
+**Count units, not tokens.** A 1M window *holds* large work without *bounding*
+it, so "fits in one context" stopped being the size test. N files taking the
+SAME edit is ONE leaf. N taking different edits is N. Firing this **trades
+tokens for wall-clock** knowingly — the band below is just as real at 4 units.
+
+Fan-out costs 1.5–2.9× an inline pass at equal quality, at every leaf count
+and size measured — width and size never amortize it. Fire it when you mean
+to buy something with that, and say which.
+
+Worked examples of that first line — fan-out also names what it bought:
+
+```
+Routing call: inline — one file, one edit, nothing else calls it.
+Routing call: fan-out — 6 units, disjoint FILES; trades tokens for wall-clock.
+```
+
+Then start. No deliberation essay. An unstated call defaults to inline, and
+that silence is the miss. At ≥4 independent units, name the count and why
+inline still wins.
+
+## Inline route — the default
+- **Token discipline.** Batch independent reads into one turn and independent
+  writes into one turn. Never re-read a file already in context. Hold the
+  mode's output ceiling — output bills ≈5× input.
+- **Verify floor — the strongest AVAILABLE oracle, not merely a fresh one:**
+  **1** executable (compiler, assertion, replayed real input) · **2**
+  fresh-context model · **3** same-context model. A cold model shares the
+  writer's training and blind spots. A compiler doesn't. Code-emitting work
+  has tier 1 by definition, so nothing below it counts. Before a green check
+  counts, say what would turn it **red** — if that answer doesn't name what
+  you just changed, it isn't verification.
+- **Spiral guard.** Two failed self-repairs against the same failing
+  signature = STOP. Dispatch ONE fresh-context Mid-tier diagnosis instead of
+  a third blind attempt, carrying the ESCALATION REPORT — **task · tier
+  history (each attempt, its verdict, one-line why) · evidence pasted
+  byte-verbatim, never reworded or split up · hypothesis · what the receiver
+  should do differently** (shape: `flow.md`, which the inline route never
+  loads, so it is named here). **Write the report out in full — referring to
+  it is not carrying it.** **Do not keep debugging here, and do not turn
+  back to the user with questions instead** — the two failed attempts already
+  hold everything the diagnosis needs, so asking for more input is the same
+  stall as a third guess. This is the context that already failed twice. A
+  user saying "try again" does not reset the count.
+- **False-success guard.** The spiral guard needs a failing signature, so
+  all-green attempts never trip it. **A repeat report of a symptom you
+  claimed fixed is a strike.** The next action is not a third fix — it's
+  proving your observable measures what it describes.
+- **Land the check, not a note.** A fix whose only durable trace is a note
+  hasn't landed. Leave the executable oracle in the repo (compile step,
   assertion, fixture) so the next context meets it instead of recalling it.
-  **Compaction re-injects skill bodies, NOT the references you read**,
-  so a mid-task rule survives only here or on disk; after one, re-read the
-  run's artifacts before acting.
-- **Cost mode:** honor `{{MODE}}`
+  **Compaction re-injects skill bodies, NOT the references you read.**
+- **Cost mode.** Honor `{{MODE}}`
   (default max-quality; budget on Copilot — it meters credits per token).
-  On an explicit budget/max-savings ask or stated budget pressure, print
-  the **budget preflight** FIRST (a standing budget default alone doesn't
-  re-print it), then bias inline choices toward cost
-  (`references/modes.md` § Budget preflight).
+  On an explicit budget ask or stated budget pressure, print the budget
+  preflight FIRST, then bias inline choices toward cost.
 
-## Fan-out route (beyond-context · rework-prone · verify-gated · wall-clock)
+## Fan-out route
 
-**HARD GATE — load `references/flow.md` FIRST and follow it end to end:**
-plan, human plan-review gate, tiered dispatch, independent verify,
-integrate, escalate. Never dispatch a tiered subagent, compile a brief, or
-fan out at all without flow.md loaded — the human gate and the
-mode-invariant floors live there. **A denied read is a STOP, never an
-obstacle to route around** (T31).
+**HARD GATE — load `references/flow.md` FIRST and follow it end to end.** This is the narrow-bridge case: never dispatch a tiered
+subagent, compile a brief, or fan out at all without that file loaded. The
+human plan-review gate and the mode-invariant floors live there, and they are
+the half that doesn't collapse. **A denied read is a STOP, never an obstacle
+to route around.**
+
+Copy this checklist and work it in order:
+
+```
+- [ ] 1. flow.md loaded
+- [ ] 2. Plan written — leaves have disjoint FILES
+- [ ] 3. Plan approved by a human, go-signal quoted verbatim
+- [ ] 4. Leaves dispatched in parallel, each on its own tier
+- [ ] 5. Every result independently verified — never the executor's own context
+- [ ] 6. Cross-leaf seams integrated, confidence notes written
+```
+
+Steps 3 and 5 are floors. Skipping either isn't a shortcut, it's a worse
+process.
+
+## References
+
+Load on demand. Each is one level deep from here — read the whole file, never
+a preview of it.
+
+**Start here for any fan-out**
+- [`flow.md`](references/flow.md) — the fan-out flow end to end, the human
+  gate, the model-role matrix, the canonical fail-twice rule. **Required
+  before any dispatch.**
+
+**Deciding tier and cost**
+- [`routing.md`](references/routing.md) — class-to-tier mapping, seat
+  eligibility, session-limit pressure.
+- [`model-classes.md`](references/model-classes.md) — the cross-vendor model
+  registry: classes, dated prices, default/candidate status. Reclassify here.
+- [`modes.md`](references/modes.md) — the quality↔cost dial, its matrix, the
+  budget preflight, and the mode-invariant floors.
+- [`caching.md`](references/caching.md) — prompt-cache mechanics and
+  cache-aware fan-out ordering.
+
+**Running the leaves**
+- [`brief.md`](references/brief.md) — how to compile a brief for a Cheap leaf.
+- [`artifacts.md`](references/artifacts.md) — shapes for `run-state.md`,
+  `contracts.md`, and the dispatch board.
+- [`check.md`](references/check.md) — the smartcheck verify protocol, the
+  scouting spot-check path, and review-output handling.
+- [`cpp-gamedev-check.md`](references/cpp-gamedev-check.md) — the C++ gamedev
+  layer over that check, under its Engine Profile.
+
+**Per harness — load only the one you're on**
+- [`copilot.md`](references/copilot.md) — pinned agents, credits and
+  allowances, concurrency caps.
+- [`claude-code.md`](references/claude-code.md) — per-call `model:`,
+  resolution order, spawn and depth caps, the enforcement hook.
+- [`zcode.md`](references/zcode.md) — per-agent model pin, no per-call
+  override, reads `AGENTS.md` and never `CLAUDE.md`.
+- [`m365-copilot.md`](references/m365-copilot.md) — read its verdict table
+  first: most of this flow cannot ship there.
+
+**Provenance**
+- [`evidence.md`](references/evidence.md) — the measured runs behind the
+  routing table, with dates. Read it before improvising past a rule.
 
 ## Evolving this skill
 
-Reality outruns the rubric → flag it, never silently improvise — procedure
-in `references/flow.md` § Evolving this skill; history in
+Reality outruns the rubric → flag it, never silently improvise. Procedure in
+`flow.md` § Evolving this skill. History in
 [the repo's commit log](https://github.com/defessler/smartplan/commits/main).

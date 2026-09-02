@@ -13,6 +13,15 @@ those verbs return the right thing per tool.
 - **DIFF** — the content delta of text files.
 - **READ** — one file's full contents at the change's revision.
 
+## Contents
+
+- IDENTIFY — which VCS, and what's the ref
+- Perforce
+- Git
+- Binary / asset files (both VCS)
+- Adding a third VCS
+- Sources (verified 2026-07-06)
+
 ## IDENTIFY — which VCS, and what's the ref
 
 Detect the VCS from the working directory, not from a guess:

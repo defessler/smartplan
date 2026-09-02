@@ -1,7 +1,7 @@
 {
   "name": "sp",
   "description": "The smartplan family, a regime router for coding work: one-context tasks run inline, and the plan → fan-out → verify loop (with its human plan-review gate) is for beyond-context scale, rework-prone execution, verify-gated work, and wall-clock batches. Ships smartplan (entry point + flow policy, carrying smartroute routing, smartbrief-style briefs, and smartcheck verification as references) and smartexec (executor payload), plus four companion seats: smartreview (code review in three ranked categories, game-breaking bugs first, then best practices, then conventions, a language-agnostic driver + swappable per-project standards doc, shipped default C++ gamedev engine-profiled), smartwiki (VCS-neutral stakeholder change writeups), smartvoice (optional house voice via per-user auto-resolved profiles), and smartdiagram (curated interactive architecture diagrams). C++ game development (Unreal, custom engine, or vanilla) is a primary use case of the family.",
-  "version": "4.110.0",
+  "version": "4.113.0",
   "source": "./",
   "skills": [
     "./.claude/skills"

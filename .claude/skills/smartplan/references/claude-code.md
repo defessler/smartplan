@@ -4,6 +4,17 @@
 Claude Code, wiring enforcement, or making a caching/budget call. Not part
 of the per-invocation read.*
 
+## Contents
+
+- The lever, precisely
+- Opus 5 seats: two gaps that read as model failure
+- Whether the tier lands — contested; say so and route around it
+- Caching-aware fan-out
+- Adjacent primitives (know when NOT to use them)
+- Mechanical enforcement (optional, shipped)
+- Structural tool-lockdown (shipped seats)
+- Cost levers (researched 2026-07-13 — sources: the development repo's research notes)
+
 ## The lever, precisely
 
 - **Resolution order** (documented): `CLAUDE_CODE_SUBAGENT_MODEL` env var >

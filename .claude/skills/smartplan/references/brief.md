@@ -15,6 +15,22 @@ artifact, consumable now or later, on any harness.
 fail on *missing context* and *open scope*. A brief removes both. Spend the
 strong model here, once, so the cheap tier can't wander.
 
+## Contents
+
+- Authoring rules
+- The brief template
+- AUTHORIZATION
+- TASK
+- FILES
+- CHANGE
+- VERIFY FIRST
+- CONVENTIONS
+- ACCEPTANCE
+- NON-GOALS
+- IF BLOCKED
+- Dispatch
+- Changelog / edge-case log
+
 ## Authoring rules
 
 1. **One concern per brief.** If you need the word "and" to describe the

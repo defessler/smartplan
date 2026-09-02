@@ -13,6 +13,16 @@ per-repo spec file. The 80/20 rule this skill exists for: rendering is mechanica
 
 ## Procedure
 
+Copy this checklist and check off items as you go:
+
+```
+- [ ] 1. Scouted — columns, nodes, flows, health, each from a real symbol
+- [ ] 2. Spec authored and checked into the repo
+- [ ] 3. Rendered — the script validated every reference
+- [ ] 4. Published as an Artifact
+- [ ] 5. On an update: drift-checked every node symbol FIRST
+```
+
 1. **Scout the system** (read, don't guess): the repo's CLAUDE.md / README / design docs,
    module or package boundaries, the handful of load-bearing types/functions, and — the part
    auto-tools always miss — *verification evidence* (test results, known limitations, TODO

@@ -6,6 +6,13 @@ class. **Edit this file by hand to reclassify a model** — the policy files
 never carry their own rosters. Seat rules live in `routing.md` § Seat
 eligibility; this file only answers "who is in each class."*
 
+## Contents
+
+- How to edit
+- The classes
+- The registry
+- Notes
+
 ## How to edit
 
 - **Add a model:** one row in the registry below. Classify by published

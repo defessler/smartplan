@@ -60,9 +60,9 @@ accidents below. It gets tight if you don't.
    candidate for the same mechanical share of the work. One note: its
    always-on thinking bills as output. Its cache reads price at 0.2×
    input, double the usual ratio.
-   (Raptor mini used to be mentioned here as a same-price alternative. It
-   was never selectable in Copilot CLI, and GitHub is retiring it in favour
-   of MAI-Code-1-Flash, so it's dropped rather than listed with a caveat.)
+   (Raptor mini is not an option here despite the matching price: it was
+   never selectable in Copilot CLI, and GitHub is retiring it in favour of
+   MAI-Code-1-Flash.)
    Opus is
    worth reserving for a genuinely hard *one-shot* plan, not a whole
    session, since it runs 2.5× Sonnet per token. Fable/fast is worth it

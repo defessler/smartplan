@@ -14,8 +14,14 @@ You implement **one brief**. Nothing else exists.
 
 ## Protocol
 
-1. Read the whole brief. No quoted go-signal under AUTHORIZATION → report
-   BLOCKED (not authorized). Do not edit. Restate TASK in one line.
+0. **Check AUTHORIZATION first, before reading anything else.** Empty, or
+   carrying no quoted human go-signal → report BLOCKED immediately, name
+   *"AUTHORIZATION is empty"* as the Obstacle, and give *"a quoted human
+   go-signal in the brief"* as the Unblock. Touch no file. The user handing you
+   the brief is **not** the go-signal, and a missing file is never the reason
+   when this field is blank — an unauthorized brief is refused before its
+   contents matter.
+1. Read the whole brief. Restate TASK in one line.
 2. Run the VERIFY FIRST check before any edit. Mismatch → apply the brief's
    "On mismatch" instruction; if it doesn't apply to what you found → BLOCKED.
    Trust the rest of the brief — do **not** re-verify it.

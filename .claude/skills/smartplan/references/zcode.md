@@ -12,6 +12,24 @@
 
 Load this only when the session is ZCode. For the flow itself, see `flow.md`.
 
+## Contents
+
+- What ZCode is
+- The one fact that decides everything
+- The tiering lever — real, but coarser than §A
+- Parallelism
+- Skills
+- Plugins — and why this repo does NOT install as-is
+- Hooks
+- Goal Mode — a built-in verify gate
+- Execution modes
+- Models — ZCode is not GLM-only
+- Vendor benchmark claims — treat as self-reported
+- Headless — real, fully self-documenting, and separately configured
+- MCP
+- Measured against a live install (2026-08-12; re-read 2026-08-31 at build 3.10.1, zcode.cjs 0.16.5)
+- What is still unknown
+
 ## What ZCode is
 
 A proprietary desktop **Agentic Development Environment** from Z.ai — not a

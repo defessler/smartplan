@@ -11,6 +11,14 @@ Part of the [`smartvoice`](../SKILL.md) skill's keyed voice profile layer — no
 
 ---
 
+## Contents
+
+- 1. How-To page: Deep reference variant
+- 2. How-To page: Tutorial variant
+- 3. How-To page: Setup/config variant
+- 4. Design Spec
+- 5. Documentation (landing) page
+
 ### 1. How-To page: Deep reference variant
 
 A good starting point when the page **documents a deep, nested data hierarchy**. Title: `How To: <Feature>`.

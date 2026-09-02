@@ -8,6 +8,18 @@ The depth layer behind [`SKILL.md`](../SKILL.md) § *Avoiding the generic AI voi
 
 **Evidence is dated and drifts.** Measured rows come from post-2022 corpus work: Kobak et al.'s excess-vocabulary study over ~15M PubMed abstracts (*Science Advances* 2025, arXiv:2406.07016), Liang et al. on LLM-shifted vocabulary in conference peer reviews (arXiv:2403.07183) and on LLM-modified text across ~950k arXiv, bioRxiv, and Nature papers (arXiv:2404.01268), Reinhart et al.'s genre-matched human-vs-LLM parallel corpus (*PNAS* 122(8)), and Yakura et al. on the same words rising in unscripted podcast speech (arXiv:2409.01754). Practitioner rows come from detection guides and editorial practice, including Wikipedia's *Signs of AI writing* catalog. The word cluster moves by model generation: the 2023–24 wave ("delve", "tapestry", "meticulous") is fading in generator output while staying burned in reader recognition, so a fading word is still worth cutting when its avoidance cost is zero. Surveyed 2026-07-22.
 
+## Contents
+
+- How to read the verdicts
+- Density beats presence
+- Scope by sense
+- Replace on sight
+- Constructions
+- Displacement
+- What's measured, and what's folklore (re-swept 2026-07-26)
+- Not tells
+- Self-check
+
 ## How to read the verdicts
 
 - **Avoid** - no technical sense worth keeping in engineering prose. Replace or delete on sight.

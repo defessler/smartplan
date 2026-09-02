@@ -14,6 +14,15 @@ from pathlib import Path
 
 TEMPLATE = Path(__file__).resolve().parent.parent / "assets" / "template.html"
 
+SPEC_MARKER = "/*__SPEC__*/null"
+TITLE_MARKER = "__TITLE__"
+
+# SKILL.md sets the curation rule at ~20 nodes. The check sits two above it so a
+# diagram at exactly the guideline never trips an off-by-one, while anything
+# that has drifted into a hairball still does. Raising this is a curation
+# decision, not a rendering one - merge nodes or split the diagram instead.
+MAX_NODES = 22
+
 
 def fail(msg: str) -> None:
     print(f"wiring spec error: {msg}", file=sys.stderr)
@@ -44,7 +53,7 @@ def validate(spec: dict) -> None:
         node_ids.add(n["id"])
         if not 0 <= n["col"] < ncols:
             fail(f"node '{n['id']}' col {n['col']} out of range")
-    if len(node_ids) > 22:
+    if len(node_ids) > MAX_NODES:
         fail(f"{len(node_ids)} nodes - raise the altitude (skill rule: <= ~20)")
 
     edge_keys = set()
@@ -98,16 +107,37 @@ def main() -> int:
     ap.add_argument("-o", "--out", required=True)
     args = ap.parse_args()
 
-    spec = json.loads(Path(args.spec).read_text(encoding="utf-8"))
+    try:
+        raw = Path(args.spec).read_text(encoding="utf-8")
+    except OSError as exc:
+        fail(f"cannot read spec {args.spec}: {exc.strerror}")
+    try:
+        spec = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        fail(f"{args.spec} is not valid JSON: {exc.msg} at line {exc.lineno}, column {exc.colno}")
+    if not isinstance(spec, dict):
+        fail(f"{args.spec} must hold a JSON object, got {type(spec).__name__}")
     validate(spec)
 
-    template = TEMPLATE.read_text(encoding="utf-8")
+    try:
+        template = TEMPLATE.read_text(encoding="utf-8")
+    except OSError as exc:
+        fail(f"cannot read the renderer template at {TEMPLATE}: {exc.strerror}")
     # "</" would terminate the surrounding <script> block mid-string.
     payload = json.dumps(spec, ensure_ascii=False).replace("</", "<\\/")
-    html = template.replace("/*__SPEC__*/null", payload, 1)
-    html = html.replace("__TITLE__", spec["title"] + (" — " + spec["titleSuffix"] if spec.get("titleSuffix") else ""), 1)
+    suffix = spec["titleSuffix"] if spec.get("titleSuffix") else ""
+    title = spec["title"] + (" \u2014 " + suffix if suffix else "")
+    if SPEC_MARKER not in template:
+        fail(f"template {TEMPLATE} no longer contains its {SPEC_MARKER} marker")
+    html = template.replace(SPEC_MARKER, payload, 1)
+    if TITLE_MARKER not in html:
+        fail(f"template {TEMPLATE} no longer contains its {TITLE_MARKER} marker")
+    html = html.replace(TITLE_MARKER, title, 1)
 
-    Path(args.out).write_text(html, encoding="utf-8", newline="\n")
+    try:
+        Path(args.out).write_text(html, encoding="utf-8", newline="\n")
+    except OSError as exc:
+        fail(f"cannot write {args.out}: {exc.strerror}")
     print(f"wrote {args.out}")
     return 0
 

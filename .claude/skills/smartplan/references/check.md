@@ -22,6 +22,22 @@ never a FAIL reason. A reviewer told to find gaps reports some even when
 the work is sound, because that's what it was asked to do, and chasing
 every finding becomes over-engineering (`code.claude.com/docs/en/best-practices`).
 
+## Contents
+
+- Protocol
+- C++ gamedev leaves
+- Scouting / recon leaves
+- Review / audit output — findings are a work queue, not a verdict
+- Script-assisted verification (mechanical leaves)
+- Batch verification (same-class waves)
+- Compression / rewrite leaves
+- Reflective sweep — answer before rendering the verdict
+- Verdict: PASS
+- Verdict: FAIL
+- Verdict: UNKNOWN
+- Hard rules
+- Changelog
+
 ## Protocol
 
 1. Read the brief (AUTHORIZATION / TASK / FILES / CHANGE / VERIFY FIRST /
