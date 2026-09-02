@@ -376,7 +376,7 @@ safe to customize when adopting the doc for a new project.
 | E3 Ternary parenthesization | [P] | House style. |
 | F2 Cast ternary | [P] | House style around the confirmed validity principle. |
 | F3 World/subsystem validity | [U] | Confirmed defensive practice for UObject handles. |
-| G1 UFUNCTION decoration | [U]/[P] | **Corrected 2026-07-22.** `BlueprintPure`/`BlueprintCallable` are real specifiers and the decoration policy is project-specific [P]. The `AddUObject`-needs-`UFUNCTION` clause the row used to carry was **wrong**: only `AddDynamic` binds by name through reflection, so only it requires the macro [U]. No `Category` policy is mandated here. |
+| G1 UFUNCTION decoration | [U]/[P] | `BlueprintPure`/`BlueprintCallable` are real specifiers and the decoration policy is project-specific [P]. **`AddUObject` does not need `UFUNCTION`:** only `AddDynamic` binds by name through reflection, so only it requires the macro [U]. No `Category` policy is mandated here. |
 | G2 Trivial getters inline | [P] | Common house style. |
 | G3 Reference-return safety | [U] | **Confirmed.** Epic: **never** `const` on a return type (inhibits move semantics); return `const T&` only for stable-lifetime references, else by value. |
 | H1 Log category macro | [P] | `DEFINE_LOG_CATEGORY_STATIC` / `DECLARE_LOG_CATEGORY_EXTERN` are real. The category *name* is project-specific → `{{LOG}}`. |

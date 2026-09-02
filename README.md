@@ -1,6 +1,6 @@
 # smartplan
 
-**v4.115.0** · MIT · Model-tiering skills for AI coding agents.
+**v4.117.0** · MIT · Model-tiering skills for AI coding agents.
 
 Plan with the strong model. Implement with the cheaper model. Escalate on
 demonstrated failure, never on a hunch.
@@ -8,6 +8,26 @@ demonstrated failure, never on a hunch.
 This is the **release** repo: the runtime only. Install it in Claude Code or
 GitHub Copilot CLI and the skills self-trigger from their descriptions. You
 don't have to invoke anything by hand.
+
+## Does it work?
+
+Six scenarios, run with the skill and without it, on three model tiers, three
+independent judges grading every response.
+
+| | With the skill | Without |
+| --- | --- | --- |
+| **All cases** | **53 / 54** | 4 / 18 |
+| Haiku 4.5 | 16 / 18 | |
+| Sonnet 5 | 17 / 18 | |
+| Opus 5 | 16 / 18 | |
+
+It carries on the cheap seat, not just the tier it was written on.
+
+**Two caveats ride with those numbers.** The no-skill arm was *told* not to use
+the skill rather than prevented from it, and the run is a hand-built stand-in
+for the vendor's own eval harness while that is in early access. One of the six
+cases passes without the skill too — a bare model already ranks a memory bug
+above naming nits — and it stays in the suite for exactly that reason.
 
 ## Install
 
