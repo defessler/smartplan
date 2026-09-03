@@ -15,6 +15,7 @@ pennies.
 
 - Tier ladder
 - Routing table
+- Seat-aware pre-flight — when the seat is below the work
 - The second dial — effort
 - Seat eligibility — mapping a user-named roster
 - C++ gamedev task classes
@@ -68,6 +69,38 @@ seats. Routing down shrinks the window you fanned out to get.
 **Escalation:** governed by flow.md's fail-twice rule (Cheap → Mid →
 Strong; Strong strike-out → orchestrator takes the leaf over). Attempts
 persist in `run-state.md`.
+
+## Seat-aware pre-flight — when the seat is below the work
+
+The table above routes by the work's *shape* and never asks which model is
+holding it: same answer on Haiku as on Opus. The gap that leaves is the
+case where a cheap seat spends more failing than a strong one spends
+landing it. Run this **before** starting, not after a bounce.
+
+**The constraint that shapes it:** the weak seat is the one applying the
+test, so a signal needing strong judgment to read fails exactly when it is
+needed. Every signal here is countable without reasoning.
+
+Below Strong, escalate the **verify** one tier above the seat when any one
+holds:
+
+1. **No executable oracle.** Name the command that goes red. If none
+   exists the only judge is judgment, and that is the seat's weakest axis.
+2. **The acceptance check won't fit on one line.** The ex-ante proxy for a
+   bounce, and bounces are where the money goes (hard floor #4).
+3. **The change crosses a public interface or a second caller.** Countable
+   from the diff, and blast radius is what a cheap seat under-reads.
+4. **It sits on a never-Cheap row** — concurrency, UB, templates,
+   security, determinism/serialization.
+
+That escalates the verify, not the work: the seat still does it and a
+stronger judge reads the diff. Verification is input-dominated, so it is
+the cheap half of the quality budget. **Two or more signals and the work
+itself starts Mid** — at that density the bounce is likelier than not.
+
+This is prediction, which the class floors above already do. What stays
+banned is escalating on a hunch: no signal fires, start at the floor and
+let fail-twice do its job.
 
 ## The second dial — effort
 

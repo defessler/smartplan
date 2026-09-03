@@ -249,10 +249,14 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
     to shared-blind-spot risk. **On Copilot, confirm the Opus pin actually
     lands** — T30 (2026-07-25) saw Opus 4.8 *and* 5 serve un-gated on a
     previously-refusing account, so check rather than assume the Pro+/Max
-    gate. Where it is gated the Strong verifier is the cross-family
+    gate. Where it is gated the Strong verifier is the
     cross-family peer (Gemini 3.6 Flash / GPT-5.6 Terra, per Family
     decorrelation below), *never* a silent fall-back to
     Sonnet-judging-Sonnet. Name the actual verifier at the gate.
+  - **Inline work counts.** The floor reads *executor*, not *subagent* —
+    a session seat that wrote the diff IS the executor, so a below-Strong
+    seat clearing its own inline work is the self-review banned below.
+    `routing.md` § Seat-aware pre-flight names when to spend the verify.
   - **Strong executor → Strong verifier, fresh context, prefer a different
     family.** No stronger tier exists, so independence does what strength
     can't; self-preference bias grows with capability. (Fable is never a

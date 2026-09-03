@@ -63,7 +63,11 @@ inline still wins.
   writer's training and blind spots. A compiler doesn't. Code-emitting work
   has tier 1 by definition, so nothing below it counts. Before a green check
   counts, say what would turn it **red** — if that answer doesn't name what
-  you just changed, it isn't verification.
+  you just changed, it isn't verification. **Seat-aware:** below Strong,
+  escalate the VERIFY one tier above your seat when the work has no
+  executable oracle, crosses a second caller, or is a never-Cheap class —
+  concurrency, UB, templates, security. Countable signals, never a hunch
+  (`routing.md` § Seat-aware pre-flight).
 - **Spiral guard.** Two failed self-repairs against the same failing
   signature = STOP. Dispatch ONE fresh-context Mid-tier diagnosis instead of
   a third blind attempt, carrying the ESCALATION REPORT — **task · tier
@@ -96,6 +100,11 @@ subagent, compile a brief, or fan out at all without that file loaded. The
 human plan-review gate and the mode-invariant floors live there, and they are
 the half that doesn't collapse. **A denied read is a STOP, never an obstacle
 to route around.**
+
+**A lone verify dispatch is not a fan-out.** The table's *inline +
+independent verify* row is an inline route, and so is an escalated
+seat-aware verify — send the `smartplan-verifier` seat at the tier you
+named and carry on. Your harness reference owns the lever.
 
 Copy this checklist and work it in order:
 
