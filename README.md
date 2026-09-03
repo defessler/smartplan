@@ -1,6 +1,6 @@
 # smartplan
 
-**v4.119.0** · MIT · Model-tiering skills for AI coding agents.
+**v4.120.0** · MIT · Model-tiering skills for AI coding agents.
 
 Plan with the strong model. Implement with the cheaper model. Escalate on
 demonstrated failure, never on a hunch.
