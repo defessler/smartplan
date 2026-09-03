@@ -93,6 +93,14 @@ holds:
 4. **It sits on a never-Cheap row** — concurrency, UB, templates,
    security, determinism/serialization.
 
+**Escalating emits an artifact, never an intention.** Write the missing
+check, or write the verify brief out in full — the leaf, the acceptance,
+what would turn it red. Measured: detection is the easy half and enactment
+is the half that fails. Every with-skill response named its signal
+correctly, then a third of them stopped at "should be verified", "the next
+step is a test", or handed the run back to the user. That last one is the
+stall the spiral guard already bans, arriving by a different door.
+
 That escalates the verify, not the work: the seat still does it and a
 stronger judge reads the diff. Verification is input-dominated, so it is
 the cheap half of the quality budget. **Two or more signals and the work

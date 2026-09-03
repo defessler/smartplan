@@ -66,8 +66,11 @@ inline still wins.
   you just changed, it isn't verification. **Seat-aware:** below Strong,
   escalate the VERIFY one tier above your seat when the work has no
   executable oracle, crosses a second caller, or is a never-Cheap class —
-  concurrency, UB, templates, security. Countable signals, never a hunch
-  (`routing.md` § Seat-aware pre-flight).
+  concurrency, UB, templates, security. Countable signals, never a hunch.
+  **Escalating emits an artifact, never an intention** — write the missing
+  check, or write the verify brief out in full. "Should be verified", "the
+  next step is a test", and handing the run to the user are one miss wearing
+  three faces (`routing.md` § Seat-aware pre-flight).
 - **Spiral guard.** Two failed self-repairs against the same failing
   signature = STOP. Dispatch ONE fresh-context Mid-tier diagnosis instead of
   a third blind attempt, carrying the ESCALATION REPORT — **task · tier
