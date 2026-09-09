@@ -17,7 +17,8 @@ deliverable and explaining the route afterwards does not count, and
 terseness is not an exemption — one line IS the terse form.
 
 **The rule:** plan with the strong model, implement with the cheaper
-model, escalate on demonstrated failure — never on a hunch. **Invoke:**
+model, escalate on demonstrated failure — never on a hunch, never above
+your seat unasked. **Invoke:**
 `/smartplan <task>` on Claude Code or Copilot CLI; you route it yourself
 and **never ask the user to invoke anything.**
 
@@ -71,6 +72,15 @@ inline still wins.
   check, or write the verify brief out in full. "Should be verified", "the
   next step is a test", and handing the run to the user are one miss wearing
   three faces (`routing.md` § Seat-aware pre-flight).
+- **Seat ceiling.** Your seat is the model this session runs as — the
+  system prompt or `/model` names it; can't name it → treat it as Mid.
+  **Nothing dispatches at a tier above your seat until the user says
+  yes**: an escalated verify, the spiral diagnosis, a fail-twice target,
+  an Opus or Fable planner. Write the artifact first, then ask in ONE
+  line — what it's for, which model, that the brief is already written —
+  and dispatch on the yes. One yes covers that tier for the rest of the
+  session. At or below the seat needs no ask. The ask names a spend, so
+  it is not the question-stall the spiral guard bans.
 - **Spiral guard.** Two failed self-repairs against the same failing
   signature = STOP. Dispatch ONE fresh-context Mid-tier diagnosis instead of
   a third blind attempt, carrying the ESCALATION REPORT — **task · tier
@@ -81,8 +91,10 @@ inline still wins.
   it is not carrying it.** **Do not keep debugging here, and do not turn
   back to the user with questions instead** — the two failed attempts already
   hold everything the diagnosis needs, so asking for more input is the same
-  stall as a third guess. This is the context that already failed twice. A
-  user saying "try again" does not reset the count.
+  stall as a third guess. The seat-ceiling ask is the one exception, and
+  it goes out with the report already written. This is the context that
+  already failed twice. A user saying "try again" does not reset the
+  count.
 - **False-success guard.** The spiral guard needs a failing signature, so
   all-green attempts never trip it. **A repeat report of a symptom you
   claimed fixed is a strike.** The next action is not a third fix — it's
@@ -114,7 +126,8 @@ Copy this checklist and work it in order:
 ```
 - [ ] 1. flow.md loaded
 - [ ] 2. Plan written — leaves have disjoint FILES
-- [ ] 3. Plan approved by a human, go-signal quoted verbatim
+- [ ] 3. Plan approved by a human, go-signal quoted verbatim, every
+         above-seat tier named in the plan it approves
 - [ ] 4. Leaves dispatched in parallel, each on its own tier
 - [ ] 5. Every result independently verified — never the executor's own context
 - [ ] 6. Cross-leaf seams integrated, confidence notes written

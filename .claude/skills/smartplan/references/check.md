@@ -246,7 +246,8 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
   - **Mid executor → Strong (Opus-or-comparable) verifier.** Critique
     quality scales with judge capability (larger critics miss materially
     fewer real bugs), and Sonnet judging Sonnet adds self-preference risk
-    to shared-blind-spot risk. **On Copilot, confirm the Opus pin actually
+    to shared-blind-spot risk. On a seat below Strong that dispatch is
+    an ask first (SKILL.md § Seat ceiling). **On Copilot, confirm the Opus pin actually
     lands** — T30 (2026-07-25) saw Opus 4.8 *and* 5 serve un-gated on a
     previously-refusing account, so check rather than assume the Pro+/Max
     gate. Where it is gated the Strong verifier is the
@@ -268,7 +269,9 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
   spots — prefer a cross-family verifier when the harness offers one, at
   minimum a different instance. Current picks (registry is the source of
   truth, re-pinned 2026-08-16): on Copilot, Cheap leaves → **Gemini 3.6
-  Flash** or **GPT-5.4**, never mini/nano tiers. Sonnet/Opus leaves →
+  Flash** (or Sonnet 5); **GPT-5.4** only when the executor is not an
+  OpenAI model, since GPT-5.6 Luna holds the Cheap seat from 2026-09-07
+  and would be same-family; never mini/nano tiers. Sonnet/Opus leaves →
   **Gemini 3.6 Flash** (0.75/3.75, the cost-sensitive default and the
   ungated Strong verifier on Copilot Pro) or **GPT-5.6 Terra** only when
   its thoroughness edge earns ~2× the cost. **Measured (T18): Gemini ties

@@ -62,7 +62,9 @@ invoke anything.**
    mapping → consult **`references/routing.md`**.
 2. **Gate:** present the plan for human review; persist the approved plan.
    Quote the human's go-signal **verbatim** into each brief's AUTHORIZATION —
-   plan approval and execution authorization are different events. **The
+   plan approval and execution authorization are different events. The
+   plan names every seat above the session's own, so the go-signal covers
+   them (SKILL.md § Seat ceiling). **The
    request that started the task is NEITHER** — "get them done" and "wall
    clock matters" authorize the work, never the plan, so a gate that quotes
    them has not run. **That
@@ -85,6 +87,12 @@ invoke anything.**
    dispatch ONE leaf, await first output, then fire the rest so siblings
    read the shared prefix at 0.1× instead of each paying the cold 1.25×
    write.
+   **Stagger only when it pays:** the wait costs one extra orchestrator
+   turn, which re-reads the whole session context at cache-read price,
+   so stagger only when (N−1) × shared prefix × the leaf's cold-write
+   premium exceeds orchestrator context × its cache-read rate.
+   Measured 2026-09-07: seven Haiku scouts under an ~80K-token Fable
+   seat, stagger loses by about 4×; fire that wave in one turn.
    **Claude Code workflows now do this for you** (a ~5s hold on all but the
    first), so the manual stagger is for other harnesses and hand-rolled
    dispatch.
@@ -124,7 +132,7 @@ invoke anything.**
 
 ## Model-role matrix
 
-Lineup, strongest → cheapest: **Fable 5 > Opus 5 > Opus 4.8 > Sonnet 5
+Lineup, strongest → cheapest: **Fable 5.1 > Opus 5 > Opus 4.8 > Sonnet 5
 > Haiku 4.5.** <!-- claim:anthropic-model-lineup --> The full cross-vendor
 roster (classes, dated prices, default/candidate/provisional status) is the
 hand-editable registry **`references/model-classes.md`** — reclassify there,
@@ -141,11 +149,13 @@ at the gate — full procedure in `routing.md` § Seat eligibility. An explicit
 | --- | --- | --- |
 | **Default** | **Opus 5** | Multi-file, cross-cutting, ambiguous, or any plan whose blast radius you can't bound at a glance. |
 | Drop down (on fit) | Sonnet 5 · Haiku 4.5 | The plan is unmistakably small, bounded, single-domain, unambiguous. |
-| Max (opt-in) | **Fable 5** | The hardest architecture/decomposition decisions. **Planning only.** |
+| Max (opt-in) | **Fable 5.1** | The hardest architecture/decomposition decisions. **Planning only.** |
 
 **Bias toward staying on Opus when unsure** — a planning flaw reproduces
 across every executor (N× blast radius), so the drop-down is a *certainty*
-move — the inverse of the implementer seat below.
+move — the inverse of the implementer seat below. On a seat below Opus
+the default planner is itself an ask: fold it into step 1's question, or
+ask it alone (SKILL.md § Seat ceiling).
 **Audit/review/synthesis that feeds a plan is planner-seat work** — same N×
 radius — capped at Opus, never Fable. Its findings are a **work queue, not
 a verdict**: reproduce before acting, log every cap (`check.md` § Review).
@@ -187,7 +197,9 @@ context), never a cold re-dispatch (Claude Code: `SendMessage` auto-resumes
 the completed subagent, tier-safe ≥2.1.211; Copilot: `--resume`). **Two
 strikes** — two FAILs, a FAIL after a repaired-BLOCKED, or two post-repair
 BLOCKEDs — **escalate exactly one tier** with the ESCALATION REPORT
-attached. Never silently re-run; never skip tiers. Attempt counts persist in
+attached. A target above the session seat is asked for first, report
+already written (SKILL.md § Seat ceiling).
+Never silently re-run; never skip tiers. Attempt counts persist in
 `run-state.md` and survive a resume. **Terminal case:** an Opus strike-out
 has no higher implementer tier (Max/Fable is planning-only, never an
 escalation target) — the orchestrator takes the leaf over itself,

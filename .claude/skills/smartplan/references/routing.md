@@ -9,7 +9,8 @@ governed by the escalation rule.
 loaded. Every class has a floor — the cheapest tier that reliably lands it.
 Start at the floor; escalate one tier only on fail-twice (canonical rule:
 flow.md). Never route above the floor "to be safe," never below it to save
-pennies.
+pennies, and never above the session seat unasked (SKILL.md § Seat
+ceiling).
 
 ## Contents
 
@@ -32,7 +33,7 @@ which model sits in each tier** — edit classifications there, not here.
 
 | Tier | Anchor model | Character |
 | --- | --- | --- |
-| **Max** | Fable 5 *(where exposed)* | Hardest architecture/decomposition *decisions* only. Never research, audit, or implementation. |
+| **Max** | Fable 5.1 *(where exposed)* | Hardest architecture/decomposition *decisions* only. Never research, audit, or implementation. |
 | **Strong** | Opus 5 (+ cross-vendor Reasoning-class peers) | Planning escalation, cross-cutting judgment, brief-writing at fan-out. |
 | **Mid** | The newest Sonnet | Near-frontier implementer and default verifier. The workhorse floor. |
 | **Cheap** | Haiku 4.5 (+ Mechanical-class peers) | Tightly-scoped leaves behind a verifier. Fails *silently* — never unverified. |
@@ -67,8 +68,9 @@ seats. Routing down shrinks the window you fanned out to get.
 | Conversation, judgment calls, tradeoffs with the human | Session's model | Honor the live choice. |
 
 **Escalation:** governed by flow.md's fail-twice rule (Cheap → Mid →
-Strong; Strong strike-out → orchestrator takes the leaf over). Attempts
-persist in `run-state.md`.
+Strong; Strong strike-out → orchestrator takes the leaf over). A target
+above the session seat is asked for first. Attempts persist in
+`run-state.md`.
 
 ## Seat-aware pre-flight — when the seat is below the work
 
@@ -105,6 +107,11 @@ That escalates the verify, not the work: the seat still does it and a
 stronger judge reads the diff. Verification is input-dominated, so it is
 the cheap half of the quality budget. **Two or more signals and the work
 itself starts Mid** — at that density the bounce is likelier than not.
+
+**A tier above the seat is an ask before it is a dispatch** (SKILL.md §
+Seat ceiling). The artifact rule and the ask compose rather than
+compete: write the check or the brief, ask in one line, dispatch on the
+yes. What waits on the user is the spend, never the writing.
 
 This is prediction, which the class floors above already do. What stays
 banned is escalating on a hunch: no signal fires, start at the floor and

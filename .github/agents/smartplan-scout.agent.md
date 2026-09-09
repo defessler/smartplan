@@ -1,7 +1,7 @@
 ---
 name: smartplan-scout
 description: Read-only context-gathering seat — invoke to find files/symbols/usages across a subsystem and compress them into a small context pack before planning or implementation starts. Triggers on "find where X is defined/used", "map this subsystem", "what touches Y" — never on requests to fix, change, or write anything.
-model: claude-haiku-4.5  # documented slug; slug CONFIRMED in the development repo's claim ledger; ignored/downgraded when the session runs a 0x-cost-tier (free) model — github/copilot-cli#2758
+model: gpt-5.6-luna  # Copilot slug per model-classes.md and the development repo's claim ledger (repriced 0.20/1.20 2026-08-12); seated 2026-09-07 at the author's direction on board evidence, T-record outstanding; Haiku 4.5 is the fallback if the picker lacks it — github/copilot-cli#2758 downgrade caveat still applies
 disable-model-invocation: true  # scouting is a step the orchestrator schedules, not a seat Copilot should pick on its own — auto-selecting it starts a fan-out shape before the regime router has decided the work needs one
 tools: ["read", "grep", "glob"]  # least-privilege read-only: no write, no edit, no shell, no MCP. Identifiers measured live on Copilot CLI 1.0.75, 2026-08-05, by listing a probe seat's resolved tools: read→view, and grep/glob pass through. The prior `search` entry resolves to NOTHING, so this seat shipped with no search tool at all while its own body told it to grep and glob. Omitting `tools` grants ALL tools incl. MCP — the development repo's notes § Copilot CLI
 ---

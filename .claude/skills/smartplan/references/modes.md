@@ -26,18 +26,20 @@ the shipped default — **max-quality** here, **budget** on Copilot CLI.
 A non-default mode is recorded per leaf in `run-state.md`'s note column;
 the floors below don't move, whatever the default is.
 
-**The default follows the billing meter.** No per-token meter runs on a
-flat subscription (Claude Code) inside plan limits, so the quality column's
-extras — Opus planner, one-strike escalation, 3-verifier panel — cost only
-wall-clock, and are worth taking by default. **Two exceptions bill even
-there:** fast mode always draws usage credits (at $10/$50 per MTok), and
-Fable 5 — what the `best` alias resolves to — can draw them depending on
-plan and seat tier. So the max-quality row's "Fable freely" is conditional
-on your seat, not free everywhere. Copilot meters credits per token, where
-T27 measured `budget` at equal quality for **60% of balanced's corrected
-cost** — the Copilot export ships that default
-hard-coded. Neither is free: max-quality still spends wall-clock and
-rate-limit headroom, so step down when a session races a weekly cap.
+**The default follows the harness.** Copilot meters credits per token,
+and T27 measured `budget` at equal quality for **60% of balanced's
+corrected cost**, so budget is the Copilot default and the Copilot
+export ships it hard-coded.
+
+On Claude Code the default is **max-quality**, by the author's choice.
+A subscription carries no per-token bill inside plan limits, but its
+five-hour and weekly windows are a meter of their own, fast mode draws
+usage credits at $10/$50 per MTok, and a Fable-class seat can draw them
+too, depending on plan and seat tier — so max-quality's extras (Opus
+planner, one-strike escalation, 3-verifier panel) spend real headroom.
+The 2026-09-07 cost audit measured budget at parity and proposed it on
+both harnesses. The author kept max-quality here. Step down per
+invocation when a session races a cap, and say so at the gate.
 
 ## The matrix
 
@@ -46,7 +48,7 @@ rate-limit headroom, so step down when a session races a weekly cap.
 | Planner seat | Opus; Fable freely for the hardest decomposition (planning only, as ever) | Opus, no drop-down | Opus default, drop on fit | Sonnet default; Opus only for cross-cutting or ambiguous plans | Sonnet always; flag when a plan needed more |
 | Implementer floor | Sonnet for mechanical, Opus for correctness-sensitive | Today's floors; doubt rounds up to Mid | Class floors (`routing.md`) | Cheap wherever the check is scriptable, incl. borderline-mechanical | Cheap for anything checkable; Mid only via fail-twice |
 | Verify | Verifier one tier above executor (capped at Strong — Strong leaves get a fresh cross-family Strong verifier, never Fable), no session-diff exception; 3-verifier decorrelated panel on correctness-sensitive leaves | No session-diff exception; Strong verify on Mid leaves | `check.md` tiering + the documented session-diff exception; credit-billed harness → check.md's credit-billed default (script-first, sampled batch) | Exception preferred where legal; script pre-checks first | Script checks wherever scriptable; single Mid-verifier cap (an escalated-to-Mid leaf keeps its Strong/cross-family verifier — `check.md` hard rule); sampling on homogeneous waves ≥5 — verify ⌈N/3⌉, all on any failure (**accepts silent-failure risk on unsampled leaves; said out loud at the gate**) |
-| Escalation | One strike escalates | fail-twice (canonical) | fail-twice | fail-twice | fail-twice; a Reserve (Opus) dispatch needs an explicit user OK |
+| Escalation | One strike escalates | fail-twice (canonical) | fail-twice | fail-twice | fail-twice |
 | Effort | high/max everywhere | high on plan + verify | Harness defaults; low on Cheap leaves | low on Cheap + mechanical Mid | low everywhere but the plan turn |
 | Output register | Full prose allowed (templates still apply) | Terse templates (`check.md` § Verdict budget) | Terse templates + telegraphic agent-consumed prose (caveman *lite*) | Caveman *full* on all agent-consumed prose | Caveman *ultra* — fragments |
 | Fan-out | ≤3 leaves/wave, extra Integrate attention | 3–5 | 3–5 (flow default) | Size to survive caps; wider cheap waves | Width stops paying past ≥5 (T27); batch/sample the verify |
@@ -102,6 +104,10 @@ micro-leaves where it can't pay.
   acceptance re-runs over pasted claims.
 - **Attempt bookkeeping** — strikes persist in `run-state.md` at every
   mode.
+- **The seat ceiling** — no mode dispatches above the session seat
+  unasked (`SKILL.md` § Seat ceiling). max-quality's Opus floors and
+  Fable planner are asks on a Sonnet seat, and max-savings' Reserve
+  dispatch is the same ask, not a mode extra.
 - **Byte-verbatim code/paths/errors** in every register.
 
 ## Harness mapping
@@ -147,8 +153,8 @@ free ride):
 | max-savings | ~14.4 *(clean est.)* | 63% | ~104 | ~486 |
 
 Personas: **flat-subscription (Claude Code)** → any mode; `max-quality`
-ships as the default there, and what argues for stepping down is
-wall-clock or a rate-limit cap, never token price. **~$40/mo ≈ Copilot Pro+
+ships as the default there by the author's choice, and the rate windows
+are what it spends. **~$40/mo ≈ Copilot Pro+
 (7,000 cr)** → every mode lands incl. real Opus rows; budget default,
 balanced where per-leaf model verify is wanted.
 **Copilot Pro (1,500 cr)** → budget default, max-savings for

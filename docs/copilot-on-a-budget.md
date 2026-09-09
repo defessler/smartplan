@@ -23,8 +23,10 @@ only four:
   Haiku 4.5 is half of that. GPT-5 mini comes in at $0.25/$2, which makes
   it roughly 8× cheaper than Sonnet on input and 5× on output. (It used to
   be an "included" model under the old premium-request billing. Under
-  credits it's metered per token like everything else.) Opus 4.8 sits at
-  $5/$25. Fable/fast tops out at $10/$50.
+  credits it's metered per token like everything else.) GPT-5.6 Luna
+  undercuts it at $0.20/$1.20, the cheapest model on this page on both
+  axes. Opus 4.8 sits at $5/$25. Fable/fast tops out at $10/$50. Fable
+  5.1 lists at that same $10/$50. Fable 5 is legacy as of 2026-09-07.
 - How much context - this is the trap. The whole context gets
   re-read every turn (cache-read, ~$0.2/M on Sonnet). A big context
   gets paid *per turn*, not once.
@@ -53,11 +55,16 @@ accidents below. It gets tight if you don't.
    context, or for failure-prone work. For most tasks, one focused
    session is the cheapest option.
 2. **Right-size the model. Don't leave the session on a premium one.**
-   Sonnet is the floor. Drop mechanical, boilerplate, rename,
-   and codemod work to GPT-5 mini. It's roughly 8× cheaper than Sonnet on
-   input. On a real task, it came in at about 39% of the Haiku cost. Kimi
-   K2.7 Code ($0.95/$4, the first open-weight option) is a natural A/B
-   candidate for the same mechanical share of the work. One note: its
+   Sonnet 5 is the fail-twice target. Route mechanical, boilerplate, rename, codemod
+   work, and every other coding leaf outside a never-Cheap class
+   (concurrency, UB, templates, security, determinism/serialization) to
+   GPT-5.6 Luna first. It prices at $0.20/$1.20 and scores above Sonnet
+   5 on both independent boards. GPT-5 mini is a still-cheaper trial
+   candidate. It runs roughly 8× cheaper than Sonnet on input. Its one
+   measured run came in at about 39% of the Haiku cost. That's a single
+   data point (T16, n=1). Kimi K2.7 Code ($0.95/$4, the first
+   open-weight option) is a natural A/B candidate for the same
+   mechanical share of the work. One note: its
    always-on thinking bills as output. Its cache reads price at 0.2×
    input, double the usual ratio.
    (Raptor mini is not an option here despite the matching price: it was

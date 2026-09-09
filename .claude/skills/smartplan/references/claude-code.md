@@ -36,6 +36,9 @@ of the per-invocation read.*
   workflow script. Copilot's `--effort` is session-global. Plan the effort
   drop into the seat, not the dispatch.
   <!-- claim:cc-agent-call-has-no-effort-param -->
+- **Naming your seat** for SKILL.md § Seat ceiling: the system prompt's
+  model line, or `/model` and `/status`. A per-call `model:` above it
+  waits on the user's yes; the brief doesn't.
 - **`/fast` is not a cheap tier.** Fast mode runs Opus with faster output —
   same model, not a smaller one (Opus 5/4.8). It buys latency, never
   budget, and the header is part of the cache key, so toggling it mid-run

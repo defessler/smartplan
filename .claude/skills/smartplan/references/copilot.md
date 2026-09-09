@@ -110,25 +110,30 @@ the WHOLE request — a cliff, not a margin. Grok Code Fast 1 stays deprecated
 (2026-05-15) and is a separate model.
 
 Seat verdicts, cross-vendor. Prices and board numbers live in
-`model-classes.md`, whose non-Anthropic rows are dated 2026-07 and unchecked
-since, so re-verify before leaning on one.
+`model-classes.md`.
 
 - Planner is **Opus 5** (registry default since 2026-08-05, same 5/25 and
   same Pro+/Max gate as 4.8, which stays the fallback). GPT-5.5 is Pro-plan-gated (confirmed
   2026-07-20, which is why T18 missed it) and loses on price and on SWE-Pro,
   though it edges Opus on TB2.1 (83.1 vs 78.9, 07-24). The Geminis are
   cheaper and trail further. Neither is a planner swap.
-- **Coding leaves: try GPT-5.6 Luna first** (standing preference, 2026-08-20).
-  **0.20 / 1.20**, ~10x under Sonnet 5 in, and *above* it on SWE-V (93.0 vs
-  79.6). Board evidence only, no T-record — keep it behind the verifier.
-- Mid/verifier stays **Sonnet 5**. **GPT-5.4** and **Gemini 3.6 Flash** are
+- **Coding leaves: GPT-5.6 Luna is the Copilot floor** (seated 2026-09-07 at
+  the author's direction, from the 2026-08-20 preference). **0.20 / 1.20**,
+  ~10x under Sonnet 5 in, and above it on both independent boards (SWE-V
+  93.0 vs 79.6, TB4.0 17.3% vs 12.4%). `@smartplan-implementer-cheap` and
+  `@smartplan-scout` pin it; Sonnet 5 is the fail-twice target; never-Cheap
+  classes (security, C++ UB, concurrency, templates) start at Sonnet 5.
+  Board evidence plus author direction, no T-record — every result stays
+  behind the cross-family verifier, and a bounce rate past ~20-30%
+  reclassifies it back.
+- Mid/verifier stays **Sonnet 5**. **Gemini 3.6 Flash** and **GPT-5.4** are
   the verifier-diversity picks per `check.md`'s Family decorrelation rule,
-  Gemini the cheaper of the two (3.1 Pro held this seat until Copilot's
+  Gemini the cheaper and the only one cross-family from Luna (3.1 Pro held this seat until Copilot's
   scheduled 2026-09-01 retirement; T34 cleared the swap).
-- Cheap stays **Haiku 4.5**. **GPT-5 mini** is roughly 4x cheaper in and 2.5x
-  cheaper out, and its effectiveness is contested, so trial it deliberately
-  with outcomes watched rather than defaulting to it off secondhand benchmark
-  blogs.
+- **Haiku 4.5** is the Copilot fallback when the picker lacks Luna, and
+  stays the Claude Code Cheap floor (Luna is not on that harness). GPT-5
+  mini stays a deliberate-trial candidate, never a default off secondhand
+  benchmark blogs.
 
 **GPT-5.6 family (Sol / Terra / Luna, in Copilot's roster since
 2026-07-10):** prices, board numbers, and seat placements live in
