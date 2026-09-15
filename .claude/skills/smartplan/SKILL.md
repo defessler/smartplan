@@ -80,7 +80,11 @@ inline still wins.
   line — what it's for, which model, that the brief is already written —
   and dispatch on the yes. One yes covers that tier for the rest of the
   session. At or below the seat needs no ask. The ask names a spend, so
-  it is not the question-stall the spiral guard bans.
+  it is not the question-stall the spiral guard bans. **A Cheap seat
+  never asks.** Nothing leaves it priced above its own model, whatever
+  the answer would be. It writes the artifact, stops, and names the
+  session model the work needs. That stop is the one hand-back allowed
+  (`routing.md` Cheap hard floor #6).
 - **Spiral guard.** Two failed self-repairs against the same failing
   signature = STOP. Dispatch ONE fresh-context Mid-tier diagnosis instead of
   a third blind attempt, carrying the ESCALATION REPORT — **task · tier
@@ -91,10 +95,10 @@ inline still wins.
   it is not carrying it.** **Do not keep debugging here, and do not turn
   back to the user with questions instead** — the two failed attempts already
   hold everything the diagnosis needs, so asking for more input is the same
-  stall as a third guess. The seat-ceiling ask is the one exception, and
-  it goes out with the report already written. This is the context that
-  already failed twice. A user saying "try again" does not reset the
-  count.
+  stall as a third guess. The seat-ceiling ask, or a Cheap seat's stop, is
+  the one exception, and it goes out with the report already written.
+  This is the context that already failed twice. A user saying "try
+  again" does not reset the count.
 - **False-success guard.** The spiral guard needs a failing signature, so
   all-green attempts never trip it. **A repeat report of a symptom you
   claimed fixed is a strike.** The next action is not a third fix — it's
@@ -104,7 +108,7 @@ inline still wins.
   assertion, fixture) so the next context meets it instead of recalling it.
   **Compaction re-injects skill bodies, NOT the references you read.**
 - **Cost mode.** Honor `{{MODE}}`
-  (default max-quality; budget on Copilot — it meters credits per token).
+  (default max-quality; max-savings on Copilot — it meters credits per token).
   On an explicit budget ask or stated budget pressure, print the budget
   preflight FIRST, then bias inline choices toward cost.
 

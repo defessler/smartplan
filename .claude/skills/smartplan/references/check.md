@@ -242,7 +242,9 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
   the full diff may verify leaves it did not author.
   - **Cheap executor → Mid (Sonnet) verifier.** A Cheap verifier only for
     fully scripted, zero-judgment checks, via
-    `scripts/smartcheck-mechanical.sh`.
+    `scripts/smartcheck-mechanical.sh`. A Cheap seat gets no further than
+    that script on its own work, inline included (`routing.md` Cheap
+    hard floor #6).
   - **Mid executor → Strong (Opus-or-comparable) verifier.** Critique
     quality scales with judge capability (larger critics miss materially
     fewer real bugs), and Sonnet judging Sonnet adds self-preference risk

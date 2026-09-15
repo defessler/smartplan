@@ -38,7 +38,9 @@ of the per-invocation read.*
   <!-- claim:cc-agent-call-has-no-effort-param -->
 - **Naming your seat** for SKILL.md § Seat ceiling: the system prompt's
   model line, or `/model` and `/status`. A per-call `model:` above it
-  waits on the user's yes; the brief doesn't.
+  waits on the user's yes; the brief doesn't. A Haiku seat never waits
+  on a yes. It sends no `model:` above Haiku at all (`routing.md` Cheap
+  hard floor #6).
 - **`/fast` is not a cheap tier.** Fast mode runs Opus with faster output —
   same model, not a smaller one (Opus 5/4.8). It buys latency, never
   budget, and the header is part of the cache key, so toggling it mid-run

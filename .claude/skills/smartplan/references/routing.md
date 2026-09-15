@@ -69,8 +69,8 @@ seats. Routing down shrinks the window you fanned out to get.
 
 **Escalation:** governed by flow.md's fail-twice rule (Cheap → Mid →
 Strong; Strong strike-out → orchestrator takes the leaf over). A target
-above the session seat is asked for first. Attempts persist in
-`run-state.md`.
+above the session seat is asked for first. A Cheap seat stops instead
+(hard floor #6). Attempts persist in `run-state.md`.
 
 ## Seat-aware pre-flight — when the seat is below the work
 
@@ -111,7 +111,8 @@ itself starts Mid** — at that density the bounce is likelier than not.
 **A tier above the seat is an ask before it is a dispatch** (SKILL.md §
 Seat ceiling). The artifact rule and the ask compose rather than
 compete: write the check or the brief, ask in one line, dispatch on the
-yes. What waits on the user is the spend, never the writing.
+yes. What waits on the user is the spend, never the writing. A Cheap
+seat skips the ask and stops with the artifact written (hard floor #6).
 
 This is prediction, which the class floors above already do. What stays
 banned is escalating on a hunch: no signal fires, start at the floor and
@@ -218,6 +219,16 @@ per-leaf price.
 5. **C++ isn't automatically cheap.** Template metaprogramming, engine
    internals, perf hot-paths, and determinism-critical code are never
    Cheap-floor — they fail silently in ways a clean compile won't catch.
+6. **Never dispatch above its own price.** A Cheap seat, the session
+   model or a leaf, hands work only to the same model, a model priced no
+   higher on input or output (`model-classes.md`), or a script. It never
+   asks for more. Work that needs a stronger model needs a stronger
+   session, which the user picks. Planning stays off this seat (#1). Its
+   fan-out is mechanical leaves whose check is fully scripted
+   (`check.md` § Tiering). Where the work needs more (a Mid verify, the
+   spiral diagnosis, a fail-twice target, a never-Cheap class), it
+   writes the brief or the ESCALATION REPORT in full, stops, and names
+   the session model to switch to.
 
 ## Harness dispatch notes
 

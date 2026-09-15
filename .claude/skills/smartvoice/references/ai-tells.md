@@ -6,7 +6,7 @@ The depth layer behind [`SKILL.md`](../SKILL.md) § *Avoiding the generic AI voi
 
 **Register, not a blacklist.** No term here is banned by spelling. Every row is scoped by sense or by rate, because the same word is a tell in one clause and the correct technical term in the next. A pass that swaps words without reading the sentence makes prose worse, not more human.
 
-**Evidence is dated and drifts.** Measured rows come from post-2022 corpus work: Kobak et al.'s excess-vocabulary study over ~15M PubMed abstracts (*Science Advances* 2025, arXiv:2406.07016), Liang et al. on LLM-shifted vocabulary in conference peer reviews (arXiv:2403.07183) and on LLM-modified text across ~950k arXiv, bioRxiv, and Nature papers (arXiv:2404.01268), Reinhart et al.'s genre-matched human-vs-LLM parallel corpus (*PNAS* 122(8)), and Yakura et al. on the same words rising in unscripted podcast speech (arXiv:2409.01754). Practitioner rows come from detection guides and editorial practice, including Wikipedia's *Signs of AI writing* catalog. The word cluster moves by model generation: the 2023–24 wave ("delve", "tapestry", "meticulous") is fading in generator output while staying burned in reader recognition, so a fading word is still worth cutting when its avoidance cost is zero. Surveyed 2026-07-22.
+**Evidence is dated and drifts.** Measured rows come from post-2022 corpus work: Kobak et al.'s excess-vocabulary study over ~15M PubMed abstracts (*Science Advances* 2025, arXiv:2406.07016), Liang et al. on LLM-shifted vocabulary in conference peer reviews (arXiv:2403.07183) and on LLM-modified text across ~950k arXiv, bioRxiv, and Nature papers (arXiv:2404.01268), Reinhart et al.'s genre-matched human-vs-LLM parallel corpus (*PNAS* 122(8)), and Yakura et al. on the same words rising in unscripted podcast speech (arXiv:2409.01754). Practitioner rows come from detection guides and editorial practice, including Wikipedia's *Signs of AI writing* catalog. The word cluster moves by model generation: the 2023–24 wave ("delve", "tapestry", "meticulous") is fading in generator output while staying burned in reader recognition, so a fading word is still worth cutting when its avoidance cost is zero. Surveyed 2026-07-22. The five constructions added 2026-09-15 (change narration, arguing with no one, borrowed authority, a restated heading, and the use-mention exemption under *Not tells*) come from blader/humanizer v3.0.0 (MIT), which realigned its patterns to that same Wikipedia catalog on 2026-09-06. Each was checked against this file and the resolved profile before landing, and each carries the carve-out that check turned up.
 
 ## Contents
 
@@ -36,7 +36,7 @@ Check rate, not membership: pick the three abstractions the document leans on an
 
 The literal column is correct usage and takes no penalty. Flag only the metaphorical sense.
 
-**Rows that ask for a number:** if you don't have it, cut the claim instead. Never manufacture a measurement, a delta, or a before-and-after count to satisfy a row, because an invented figure is worse than the word it replaced.
+**Rows that ask for a number:** if you don't have it, cut the claim instead. Never manufacture a measurement, a delta, or a before-and-after count to satisfy a row, because an invented figure is worse than the word it replaced. A number you do have needs its baseline. "40% faster" says nothing until it names what it beat, and on which workload.
 
 | Term | Verdict | Keep untouched (literal) | Write instead |
 |---|---|---|---|
@@ -98,6 +98,10 @@ Stronger signal than any word, and the half a vocabulary sweep always misses. Th
 - **Manner-adverb failure vocabulary.** "silently", "loudly", "cleanly", "quietly" describing how code fails. One or two are precise ("a silent out-of-bounds write" contrasts with an assert). A dozen is a register. Say what observably happens: "matches nothing and still exits 0" beats "quietly dies".
 - **Anthropomorphized tooling.** "the engine treats this as a hard line, not a wish", "Epic agrees", "the compiler wants". Attribute to the artifact and cite it. A written standard really can mandate something; a codebase cannot agree, want, or eat anything. **Carve-out:** the soft epistemic hedges "tries to" and "attempts to" describing best-effort system behavior are protected by the resolved profile's § *In-voice, never flag* and by § *Not tells* below. The tell is attributing belief, preference, or endorsement, not describing what a system attempts.
 - **Recycled boilerplate in fresh dress.** The same claim restated a few hundred words later with different metaphors, or four sections ending on structurally identical sentences with the nouns swapped. Say it once, then cross-reference.
+- **Change narration.** "was added to replace the old loop", "now uses X instead of Y", "no longer needs a restart", on a reference page or in a code comment, describing what the current design replaced when the reader needs what it does. History belongs in changelogs, release notes, and migration guides. **Carve-out:** the resolved profile's § *Hedging*'s admit-iteration note stays, because telling a reader an example asset is stale is a fact about the page they're reading now.
+- **Arguing with no one.** "To be clear", "This isn't about X", "Don't get me wrong", "A tempting approach would be…, but", answering an objection or rejecting an option nobody raised. Cut the defense and state the claim. Keep an alternative a reader would actually weigh. A design spec's rejected-alternatives section is exactly that. It stays.
+- **Borrowed authority.** "Experts recommend", "studies show", "industry best practice is", standing in for a source. Name the source and what it says, or let the claim stand on its own evidence. Never invent the citation to fill the gap. A missing citation alone isn't a tell, since most technical prose is unsourced.
+- **A heading restated as its first sentence.** A `## Caching` heading followed by "Caching matters." before the real content starts. Delete the restatement. **Carve-out:** a profile's stock page opener (the resolved profile's "This page is meant as a quick reference on…") states the page's scope on purpose and stays.
 
 ## Displacement
 
@@ -146,6 +150,7 @@ Do not "fix" these. Each is either a house-voice choice that outranks any extern
 - Soft hedges ("attempts to", "mostly", "at time of writing", "should be able to") - measured research finds machine text *under*-hedges next to human technical writing, so concrete hedges are part of what reads human. Only vague hedges ("may potentially") are tells.
 - Team "we/our", second-person "you", warmth, and the `Term - description` separator - deliberate register and list machinery under the profiles that use them.
 - Deliberate terminology repetition - reusing the exact term for one concept is the fix for synonym cycling, not a tic. Only *abstraction* repetition counts against the density rule.
+- Mentions, not uses - a watched phrase inside a quotation, a title, a proper name, an error string, or a passage that discusses the phrase is being mentioned. This file is one long example of that.
 
 ## Self-check
 
@@ -154,3 +159,5 @@ Do not "fix" these. Each is either a house-voice choice that outranks any extern
 - Rationale paragraphs don't all close the same way.
 - Every metaphor row above is either literal in context or replaced.
 - Nothing on the *Not tells* list got "corrected".
+- Searched once more for what a rewrite most often leaves behind: a not-X-but-Y contrast, a one-line closer, a dash, a triad, a bold label.
+- No reference page or code comment narrates what the current design replaced.

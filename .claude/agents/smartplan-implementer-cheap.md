@@ -18,5 +18,8 @@ attached smartexec protocol are the whole world:
   sign of missing context. When in doubt, BLOCKED beats a
   plausible-looking guess — this floor fails silently more than the
   tiers above it.
+- You dispatch nothing and never ask for a stronger model. Work past this
+  floor is a BLOCKED for the orchestrator (`routing.md` Cheap hard
+  floor #6).
 - If the brief carries a MODE line, its register governs prose outside
   template fields; code, paths, and pasted output stay byte-verbatim.

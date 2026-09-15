@@ -12,7 +12,7 @@ plan boundary. Harnesses: Claude Code (§A) · Copilot CLI (§B).
 - Fan out only on independent work
 - The flow
 - Model-role matrix
-- Quality↔cost mode (one dial; default max-quality, budget on Copilot)
+- Quality↔cost mode (one dial; default max-quality, max-savings on Copilot)
 - Dispatch — pick your harness
 - Reach for the built-in instead
 - Escalation report (attach to every escalation)
@@ -198,7 +198,9 @@ the completed subagent, tier-safe ≥2.1.211; Copilot: `--resume`). **Two
 strikes** — two FAILs, a FAIL after a repaired-BLOCKED, or two post-repair
 BLOCKEDs — **escalate exactly one tier** with the ESCALATION REPORT
 attached. A target above the session seat is asked for first, report
-already written (SKILL.md § Seat ceiling).
+already written (SKILL.md § Seat ceiling). On a Cheap seat nothing is
+asked. The run stops there with the report written (`routing.md` Cheap
+hard floor #6).
 Never silently re-run; never skip tiers. Attempt counts persist in
 `run-state.md` and survive a resume. **Terminal case:** an Opus strike-out
 has no higher implementer tier (Max/Fable is planning-only, never an
@@ -206,7 +208,7 @@ escalation target) — the orchestrator takes the leaf over itself,
 in-context, report attached. The same arithmetic governs the inline route
 (SKILL.md § Spiral guard).
 
-## Quality↔cost mode (one dial; default max-quality, budget on Copilot)
+## Quality↔cost mode (one dial; default max-quality, max-savings on Copilot)
 
 `{{MODE}}` = `max-quality · high-quality · balanced · budget ·
 max-savings` — one dial biasing every discretionary knob (planner seat,

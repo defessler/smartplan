@@ -22,14 +22,18 @@ Resolution order (first wins): an explicit per-invocation ask
 (`/smartplan --mode budget …`, or plain words — "budget mode", "max
 quality for this one") → a brief's MODE line (per-leaf override,
 `brief.md` § Dispatch) → the `{{MODE}}` token set once for the project →
-the shipped default — **max-quality** here, **budget** on Copilot CLI.
+the shipped default — **max-quality** here, **max-savings** on Copilot CLI.
 A non-default mode is recorded per leaf in `run-state.md`'s note column;
 the floors below don't move, whatever the default is.
 
-**The default follows the harness.** Copilot meters credits per token,
-and T27 measured `budget` at equal quality for **60% of balanced's
-corrected cost**, so budget is the Copilot default and the Copilot
-export ships it hard-coded.
+**The default follows the harness.** Copilot meters credits per token.
+It ships the savings end of the dial, **max-savings**, which measured
+equal quality at **54%** of balanced's cost on a 5-leaf mechanical wave
+(T8) and at **32%** on judgment-class work (T13). The Copilot export
+ships it hard-coded. It samples the verify on homogeneous waves of five
+or more and says so at the gate (§ Honest note). On T27's 3-leaf wave,
+budget ran slightly cheaper (13.6 vs ~14.4 cr). Step up to `budget` for
+a narrow wave, or wherever every leaf should keep its model verify.
 
 On Claude Code the default is **max-quality**, by the author's choice.
 A subscription carries no per-token bill inside plan limits, but its
@@ -43,7 +47,7 @@ invocation when a session races a cap, and say so at the gate.
 
 ## The matrix
 
-| Knob | **max-quality** (default) | high-quality | balanced | **budget** (default on Copilot) | max-savings |
+| Knob | **max-quality** (default) | high-quality | balanced | budget | **max-savings** (default on Copilot) |
 | --- | --- | --- | --- | --- | --- |
 | Planner seat | Opus; Fable freely for the hardest decomposition (planning only, as ever) | Opus, no drop-down | Opus default, drop on fit | Sonnet default; Opus only for cross-cutting or ambiguous plans | Sonnet always; flag when a plan needed more |
 | Implementer floor | Sonnet for mechanical, Opus for correctness-sensitive | Today's floors; doubt rounds up to Mid | Class floors (`routing.md`) | Cheap wherever the check is scriptable, incl. borderline-mechanical | Cheap for anything checkable; Mid only via fail-twice |
@@ -107,7 +111,9 @@ micro-leaves where it can't pay.
 - **The seat ceiling** — no mode dispatches above the session seat
   unasked (`SKILL.md` § Seat ceiling). max-quality's Opus floors and
   Fable planner are asks on a Sonnet seat, and max-savings' Reserve
-  dispatch is the same ask, not a mode extra.
+  dispatch is the same ask, not a mode extra. A Cheap seat doesn't ask
+  at all. Nothing leaves it priced above its own model (`routing.md`
+  Cheap hard floor #6).
 - **Byte-verbatim code/paths/errors** in every register.
 
 ## Harness mapping
@@ -155,10 +161,10 @@ free ride):
 Personas: **flat-subscription (Claude Code)** → any mode; `max-quality`
 ships as the default there by the author's choice, and the rate windows
 are what it spends. **~$40/mo ≈ Copilot Pro+
-(7,000 cr)** → every mode lands incl. real Opus rows; budget default,
-balanced where per-leaf model verify is wanted.
-**Copilot Pro (1,500 cr)** → budget default, max-savings for
-wide waves; max-quality/high-quality run Pro-degraded **only if the Opus pin
+(7,000 cr)** → every mode lands incl. real Opus rows; max-savings default,
+budget for narrow waves, balanced where per-leaf model verify is wanted.
+**Copilot Pro (1,500 cr)** → max-savings default, budget for narrow
+waves; max-quality/high-quality run Pro-degraded **only if the Opus pin
 actually refuses** — T30 saw it serve un-gated (mapping above). **Measured at wave scale (T8, 5-leaf arms,
 matched-pair tasks, 50-case hidden oracle):** max-savings delivered
 **identical quality at 54% of balanced cost** (5.34 vs 9.98 cr/leaf) on
@@ -191,7 +197,7 @@ cr, both sampling ⌈N/3⌉.
 
 On an **explicit** `budget`/`max-savings` ask or a stated tight budget,
 print this first, then run the max-savings column above (a standing
-budget default alone doesn't re-print it). It confirms the **launch
+default alone doesn't re-print it). It confirms the **launch
 levers the skill can't set itself** (the human's, at session start):
 
 1. **Model:** Auto (10% off, cache-safe) or explicit cheap; never
