@@ -85,6 +85,7 @@ Everything swappable lives in `references/` (part of this skill): load the profi
 - [`ai-tells.md`](references/ai-tells.md) — the researched tell layer: per-term carve-outs and replacements, the structural tics (reveal colon, fixed consequence closer, contrastive tail, template rhythm), the density rule, and the *not tells* list. Universal, not profile-scoped — load it on any slop pass, including under `{{VOICE_PROFILE}} = none`.
 - [`document-templates.md`](references/document-templates.md) — OPTIONAL scaffolds for brand-new documents (deep-reference, tutorial, setup/config, spec, landing). Part of the keyed profile (not `defaultvoice.md`); prefer an existing document's own template; adapt freely.
 - [`terminology.md`](references/terminology.md) — capitalization, approved abbreviations, prose mechanics, canonical-spellings table. Part of the keyed profile (not `defaultvoice.md`); the lookup when editing an existing page.
+- [`scripts/install_voice.py`](scripts/install_voice.py) installs a profile's resident rules as always-on instructions plus a Stop hook, for Claude Code and Copilot CLI, subagents included.
 
 ## Family fit and tiering
 

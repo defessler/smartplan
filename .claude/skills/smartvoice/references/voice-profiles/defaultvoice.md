@@ -18,6 +18,7 @@ the development repo's claim ledger.
 - Phrasing guidance
 - Worked example
 - Profile self-check
+- Resident conversation rules
 - Sources (fetched 2026-07-10)
 
 ## The pillars (in priority order)
@@ -100,6 +101,24 @@ Before shipping a page written under this profile:
 4. Do the citations all resolve, and did you open each one? Remove any you
    didn't.
 5. Would the paragraph survive with its adjectives halved? Halve them.
+
+## Resident conversation rules
+
+Chat never loads this profile. The rules that should hold in every reply live in the marked block below. `scripts/install_voice.py` copies it into each harness as always-on instructions: a Claude Code output style, a Copilot CLI instructions file, and the context every new subagent starts with. This profile trims dashes rather than banning them. Its `enforce` list is empty, which means no Stop hook gets installed for it.
+
+<!-- smartvoice:resident style="Plain Technical" enforce="" -->
+Write plain, competent technical prose in every reply. This changes how you write, not how you work.
+
+- Plain verbs over promotional ones. Use, not "leverage" or "utilize".
+- Concrete beats generic. Name the file, version, number, or date when you have it.
+- Cut most em dashes. Prefer a comma, a colon, parentheses, or a new sentence.
+- Vary sentence length. Don't let three sentences in a row share one shape.
+- No narration about the reply itself ("It's worth noting"), no chat residue ("I hope this helps"), and no summary closer.
+- Keep honest hedges like "mostly" and "as of 2026-07". Drop vague ones like "may potentially".
+- Lists only where the items are genuinely parallel. No decorative bold, no emoji.
+
+Code, commands, and paths are exempt.
+<!-- /smartvoice:resident -->
 
 ## Sources (fetched 2026-07-10)
 
