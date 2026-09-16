@@ -28,7 +28,7 @@ Each probe is a prompt you type, plus a PASS rubric of things you can
 **see**: files in the repo root and lines in the chat. Grade against the
 artifacts, not against the model's narration ("I dispatched to Haiku" is a
 claim; a `run-state.md` row and a dispatch-board line are evidence — and on
-Claude Code even those record *intent*, per the Honest scope note's #43869
+Claude Code even those record *intent*, per `claude-code.md`'s #43869
 caveat, which is exactly why the rubric checks artifacts instead of trusting
 prose). Run probes in a scratch repo or on a throwaway branch — probe 2
 creates and edits files.
@@ -43,9 +43,9 @@ depends on these.
 
 **PASS when all of:**
 - The flow does NOT run a full plan+gate ceremony — it either routes the
-  leaf down-tier (dispatch-board line shows a Mechanical-class model) or
-  states the sub-threshold one-off carve-out and does one bounded inline
-  edit, **explicitly saying which**.
+  leaf down-tier (the dispatch-board line shows the Cheap seat's model, not
+  the session model) or emits a one-line `Routing call: inline — …` and
+  does one bounded inline edit, **explicitly saying which**.
 - One dispatch-board line appears if dispatched (`▶ 1 running: …`).
 - Nothing else in the repo changed (`git status` shows only the target
   file, plus `run-state.md` if the leaf was dispatched).
@@ -56,14 +56,16 @@ priciest-seat-doing-cheap-work failure the family exists to prevent.
 
 ## Probe 2 — small fan-out (the full loop)
 
-**Type:** `/smartplan create docs/probe/a.md, docs/probe/b.md,
-docs/probe/c.md and docs/probe/d.md, each containing a 3-line summary of a
-different reference file from .claude/skills/smartplan/references/`
+**Type:** `/smartplan finishing sooner beats finishing cheaper here: create
+docs/probe/a.md, docs/probe/b.md, docs/probe/c.md and docs/probe/d.md, each
+containing a 3-line summary of a different reference file from
+.claude/skills/smartplan/references/`
 
-**Four files, not three, and the count is load-bearing** — four independent
-units with disjoint files is exactly the fan-out threshold `SKILL.md` states.
-At three a correct router now stays inline and this probe would fail on
-doctrine rather than on a defect.
+**Both halves of that prompt are load-bearing.** `SKILL.md`'s fan-out row
+fires on four independent units with disjoint files *and* a stated
+preference for finishing sooner over finishing cheaper. Drop either half and
+a correct router lands on "Everything else" and stays inline. The probe
+would then fail on doctrine rather than on a defect.
 
 **PASS when all of:**
 - A plan with ~4 independent leaves is **presented at a gate** and waits
@@ -93,16 +95,16 @@ w.md, x.md, y.md, z.md`
 
 **PASS when all of:**
 - The plan **does not seat Opus for the renames**: it states the reseating
-  (Opus → planner/verifier seats; the renames → a Mechanical-class model
+  (Opus → planner/verifier seats; the renames → the Cheap seat
   per `model-classes.md`) at the gate, in so many words.
 - You are offered the explicit override ("seat it anyway") rather than
   silently obeyed or silently refused.
 - If you take the override: the leaf's `run-state.md` note records a
   deliberate over-tier. If you don't, **either** outcome passes — a
-  Mechanical-class dispatch, **or** an inline edit that explicitly states the
-  sub-threshold carve-out. *(Clarified 2026-08-12 after T38. The clause used
-  to demand a Mechanical dispatch, which contradicted Probe 1's carve-out for
-  exactly this size of task. A fresh agent picked the carve-out and cited this
+  Cheap-seat dispatch, **or** an inline edit whose `Routing call: inline`
+  line says why. *(Clarified 2026-08-12 after T38. The clause used
+  to demand a Mechanical dispatch, which contradicted the inline default for
+  exactly this size of task. A fresh agent routed inline and cited this
   repo's own 1.5-2.9x ceremony measurement to justify it. The refusal path is
   what this probe tests, not the dispatch.)*
 

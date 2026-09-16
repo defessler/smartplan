@@ -11,7 +11,7 @@ because it's thin.
 - Where fan-out still wins
 - The rework-prone regime, and why it stopped firing
 - Verify value outlives fan-out economics
-- Old patterns (superseded findings)
+- Old patterns
 - Re-running these
 
 ## Why the ceremony costs more than it saves
@@ -35,10 +35,12 @@ equal oracle quality**.
 | T20 | 12 tiny leaves | ceremony costs more |
 | T21 | 5 big leaves | ceremony costs more |
 | T25 | one-context task routed through the full skill body | **1.52× bare inline** |
+| T22–T24 | 12, 3 and 5 leaves, Copilot credits | **2.3–4.2×** |
 
-Every leaf count and size tested landed in that band. **Neither width nor size
-amortizes the ceremony** — that's the finding, and it's why the inline route
-in `SKILL.md` is lean enough to cost almost nothing to read.
+Every token-billed run landed in that band. On Copilot credits fan-out
+ran worse, 2.3–4.2× (T22–T24). **Neither width nor size amortizes the
+ceremony** — that's the finding, and it's why the inline route in
+`SKILL.md` is lean enough to cost almost nothing to read.
 
 T25 is the sharpest one: merely *routing* a one-context task through the full
 skill body cost 1.52× just running it. A router that deliberates is a router
@@ -88,9 +90,11 @@ parity. The larger figure came from comparing against a bare inline run that
 skipped work the routed run did.
 
 **"80–90% of Opus."** Uncited folklore about the Sonnet floor, removed. The
-real, sourced gap is **85.2 vs 88.6 on SWE-bench Verified** (Sonnet 5 System
-Card, 2026-06-30) — near-frontier, and worth stating with its source rather
-than as a range somebody remembered.
+sourced
+figures come from two classes, never mixed into one gap. Vendor: Sonnet 5's
+**85.2 on SWE-bench Verified** (System Card §8.2, 2026-06-30). Independent:
+vals.ai reads Sonnet 5 at 79.6 against Opus 4.8's 88.6 and Opus 5's 97.0
+(read 2026-09-15).
 
 </details>
 

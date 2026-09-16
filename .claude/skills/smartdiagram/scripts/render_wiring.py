@@ -40,6 +40,8 @@ def validate(spec: dict) -> None:
         for k in ("title", "legend", "slot"):
             if k not in c:
                 fail(f"columns[{i}] missing '{k}'")
+        if type(c["slot"]) is not int:
+            fail(f"columns[{i}].slot must be an integer")
         if c["slot"] not in (1, 2, 3, 4, 5):
             fail(f"columns[{i}].slot must be 1-5")
 
@@ -51,6 +53,8 @@ def validate(spec: dict) -> None:
         if n["id"] in node_ids:
             fail(f"duplicate node id '{n['id']}'")
         node_ids.add(n["id"])
+        if type(n["col"]) is not int:
+            fail(f"node '{n['id']}' col must be an integer")
         if not 0 <= n["col"] < ncols:
             fail(f"node '{n['id']}' col {n['col']} out of range")
     if len(node_ids) > MAX_NODES:
@@ -63,7 +67,10 @@ def validate(spec: dict) -> None:
                 fail(f"edges[{i}] missing '{k}'")
             if e[k] not in node_ids:
                 fail(f"edges[{i}].{k} references unknown node '{e[k]}'")
-        edge_keys.add(e["from"] + ">" + e["to"])
+        key = e["from"] + ">" + e["to"]
+        if key in edge_keys:
+            fail(f"duplicate edge '{key}'")
+        edge_keys.add(key)
 
     flow_ids = set()
     for i, f in enumerate(spec["flows"]):

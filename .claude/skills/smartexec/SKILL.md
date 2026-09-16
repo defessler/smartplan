@@ -33,10 +33,11 @@ You implement **one brief**. Nothing else exists.
 6. Respect every line of NON-GOALS.
 7. Run the ACCEPTANCE command. Read its real output.
 8. Report with exactly one template below. If the brief carries a `MODE:`
-   line, its register governs prose OUTSIDE template fields (telegraphic —
-   drop articles/filler — at balanced and below; fragments at max-savings;
-   full prose at max-quality). Code, paths, commands, and pasted output
-   stay byte-verbatim at every register.
+   line, its register governs prose OUTSIDE template fields (full prose at
+   max-quality; plain, non-telegraphic prose at high-quality; telegraphic —
+   drop articles/filler — at balanced and budget; fragments at
+   max-savings). Code, paths, commands, and pasted output stay
+   byte-verbatim at every register.
 
 ## Report: DONE
 

@@ -19,7 +19,7 @@ Copy this checklist and check off items as you go:
 - [ ] 1. Scouted — columns, nodes, flows, health, each from a real symbol
 - [ ] 2. Spec authored and checked into the repo
 - [ ] 3. Rendered — the script validated every reference
-- [ ] 4. Published as an Artifact
+- [ ] 4. Published (Artifact, or the rendered HTML)
 - [ ] 5. On an update: drift-checked every node symbol FIRST
 ```
 
@@ -47,8 +47,9 @@ Copy this checklist and check off items as you go:
    The script validates all references (edges, flows, groups) and fails loudly on dangling
    ones.
 
-4. **Publish** with the Artifact tool (suggested favicon 🧭). Re-render + republish the same
-   file path to update an existing diagram's URL.
+4. **Publish** with the Artifact tool where the harness has one (suggested favicon 🧭), else
+   the rendered HTML file itself. Re-render + republish the same file path to update an
+   existing diagram's URL.
 
 5. **On updates — drift check first**: before re-publishing, grep the repo for each node's
    named symbol; a node whose symbol no longer exists is a spec bug to fix, not a rendering
@@ -73,11 +74,13 @@ the family works without it, and it sits outside the tiering loop — it is a re
 procedure, not a model-role. It pairs naturally with `smartwiki`, which renders a change for
 a non-engineer audience; a diagram is the same job for system shape.
 
-Tiering (see `smartroute`): the scout-and-curate step is judgment-heavy — deciding which 20
-nodes carry a system is exactly the call a weak model gets wrong — so authoring a spec fits
-**Strong**, or **Mid** when the repo already has a good design doc to work from. The render
-step is a script and costs nothing. A drift check (step 5) is mechanical grep work and routes
-**Cheap** behind the usual verify.
+Tiering (see `smartroute`): when the scout fits one context, author inline. The tiers below
+apply once you fan out. Nothing dispatches above your seat unasked (`smartplan` § Seat
+ceiling). The scout-and-curate step is judgment-heavy — deciding which 20 nodes carry a
+system is the call a weak model gets wrong — so authoring a spec fits **Strong**, or **Mid**
+when the repo already has a good design doc to work from. The render step is a script and
+costs nothing. A drift check (step 5) is mechanical grep work and routes **Cheap** behind the
+usual verify.
 
 ## Changelog
 

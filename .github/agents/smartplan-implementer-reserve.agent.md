@@ -1,9 +1,9 @@
 ---
 name: smartplan-implementer-reserve
 description: Reserve-floor implementer for the smartplan tiering policy — invoke only for an irreducibly cross-cutting leaf or a fail-twice escalation target carrying an ESCALATION REPORT. Not a first attempt at a normal leaf (that is smartplan-implementer), and not open-ended design (smartplan-planner). Pinned to the strong implementer model. Opus is Pro+/Max-gated.
-model: claude-opus-5  # swapped off 4.8 2026-08-16: the registry promoted Opus 5 to default 2026-08-05 at identical 5/25 and the same Pro+/Max gate, and this seat never followed. 4.8 stays Active as the same-price fallback. Documented slug; slug CONFIRMED in the development repo's claim ledger; Opus is Pro+/Max-gated; ignored/downgraded when the session runs a 0x-cost-tier (free) model — github/copilot-cli#2758
+model: claude-opus-5  # swapped off 4.8 2026-08-16: the registry promoted Opus 5 to default 2026-08-05 at identical 5/25 and the same Pro+/Max gate, and this seat never followed. 4.8 stays Active as the same-price fallback. Documented slug; slug CONFIRMED in the development repo's claim ledger; Opus is Pro+/Max-gated; ignored/downgraded when the session runs a 0x-cost-tier (free) model — github/copilot-cli#2758. Probed 2026-09-15, this box's Copilot account is now Copilot Free (free_limited_copilot since 2026-09-11, Auto model selection only). This pin is unreachable here until the plan changes. A seat under an Auto session inherits whatever model the session resolved
 disable-model-invocation: true  # tiering is an orchestrator decision, not Copilot's auto-selection — with three implementer-shaped profiles now shipped, only explicit @name/task(agent_type=) dispatch may pick among them
-tools: "*"  # full default tool access, stated explicitly rather than by omission — omitting `tools` grants ALL tools incl. MCP anyway. Wildcard form measured live on Copilot CLI 1.0.75, 2026-08-05
+tools: "*"  # full default tool access, stated explicitly rather than by omission — omitting `tools` grants ALL tools incl. MCP anyway (the development repo's research notes § Copilot CLI). Wildcard form measured live on Copilot CLI 1.0.75, 2026-08-05
 ---
 
 You are the **implementer** seat, Reserve floor, in the smartplan tiering policy — the terminal escalation tier, never a default starting point for a fresh leaf.

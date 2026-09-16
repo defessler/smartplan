@@ -16,8 +16,9 @@ voice profile, then wires one hook per mode:
     check                   Scan text on stdin, print each violation, exit 1 on any.
 
 Bans come from --ban, a comma list of `dashes` and `semicolons`. The scan skips
-fenced code, inline code, blockquotes, URLs, and smartplan's routing-call line,
-because the rules exempt code and a skill's literal output format.
+fenced code, inline code, blockquotes, URLs, and smartplan's routing-call line.
+That one line shape is the only literal output format the scanner knows by name.
+Any other one is exempt through the fenced-code rule. So print it inside a fence.
 
 A hook must never break a session. Bad JSON, a missing transcript, an unreadable
 rules file, or a malformed command line all exit 0 quietly. Set
@@ -34,13 +35,22 @@ import sys
 
 VALID_BANS = ("dashes", "semicolons")
 DASH_CHARS = ("—", "–")
-FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})")
+FENCE = re.compile(r"^[ \t]*(`{3,}|~{3,})")
 INLINE_CODE = re.compile(r"(`+)(?:(?!\1).)+?\1")
 URL = re.compile(r"https?://\S+")
 EXEMPT_LINE = re.compile(r"^\s*(?:>|Routing call:)")
 SEMICOLON = re.compile(r";(?=\s|$)")
 DOUBLE_HYPHEN = re.compile(r"(?<=\S) -- (?=\S)")
 MAX_SHOWN = 5
+
+# One entry per hit kind, in the order describe() should name them. A hit says
+# which character it found. So the block reason never claims an em dash for a
+# reply that only spaced a double hyphen.
+KIND_NAMES = (
+    ("dash", "em or en dashes"),
+    ("double hyphen", "spaced double hyphens"),
+    ("semicolon", "prose semicolons"),
+)
 
 
 def prose_lines(text):
@@ -65,19 +75,19 @@ def scan(text, bans):
     hits = []
     for number, line in prose_lines(text or ""):
         excerpt = line.strip()
-        if "dashes" in bans and (any(c in line for c in DASH_CHARS) or DOUBLE_HYPHEN.search(line)):
-            hits.append((number, "dash", excerpt))
+        if "dashes" in bans:
+            if any(c in line for c in DASH_CHARS):
+                hits.append((number, "dash", excerpt))
+            elif DOUBLE_HYPHEN.search(line):
+                hits.append((number, "double hyphen", excerpt))
         if "semicolons" in bans and SEMICOLON.search(line):
             hits.append((number, "semicolon", excerpt))
     return hits
 
 
-def describe(hits, bans):
-    banned = []
-    if "dashes" in bans:
-        banned.append("em or en dashes")
-    if "semicolons" in bans:
-        banned.append("prose semicolons")
+def describe(hits):
+    present = {kind for _number, kind, _excerpt in hits}
+    banned = [name for kind, name in KIND_NAMES if kind in present]
     shown = "\n".join(
         "  line %d (%s): %s" % (number, kind, excerpt[:120]) for number, kind, excerpt in hits[:MAX_SHOWN]
     )
@@ -164,7 +174,7 @@ def run(args):
         hits = [] if active else scan(event.get("last_assistant_message") or "", bans)
         log({"mode": args.mode, "active": active, "hits": len(hits)})
         if hits:
-            emit(sys.stderr, describe(hits, bans))
+            emit(sys.stderr, describe(hits))
             return 2
         return 0
 
@@ -179,7 +189,7 @@ def run(args):
         hits = scan(text, bans)
         log({"mode": args.mode, "active": active, "hits": len(hits)})
         if hits:
-            emit(sys.stdout, json.dumps({"decision": "block", "reason": describe(hits, bans)}))
+            emit(sys.stdout, json.dumps({"decision": "block", "reason": describe(hits)}))
         return 0
 
     rules = read_rules(args.rules)

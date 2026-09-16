@@ -29,11 +29,12 @@ the floors below don't move, whatever the default is.
 **The default follows the harness.** Copilot meters credits per token.
 It ships the savings end of the dial, **max-savings**, which measured
 equal quality at **54%** of balanced's cost on a 5-leaf mechanical wave
-(T8) and at **32%** on judgment-class work (T13). The Copilot export
-ships it hard-coded. It samples the verify on homogeneous waves of five
-or more and says so at the gate (§ Honest note). On T27's 3-leaf wave,
-budget ran slightly cheaper (13.6 vs ~14.4 cr). Step up to `budget` for
-a narrow wave, or wherever every leaf should keep its model verify.
+(T8, before balanced gained sampling of its own) and at **32%** on
+judgment-class work (T13). The Copilot export ships it hard-coded. It
+samples the verify on homogeneous waves of five or more and says so at
+the gate (§ Honest note). On T27's 3-leaf wave, budget ran slightly
+cheaper (13.6 vs ~14.4 cr). Step up to `budget` for a narrow wave, or
+to `balanced` wherever every leaf should keep its model verify.
 
 On Claude Code the default is **max-quality**, by the author's choice.
 A subscription carries no per-token bill inside plan limits, but its
@@ -51,7 +52,7 @@ invocation when a session races a cap, and say so at the gate.
 | --- | --- | --- | --- | --- | --- |
 | Planner seat | Opus; Fable freely for the hardest decomposition (planning only, as ever) | Opus, no drop-down | Opus default, drop on fit | Sonnet default; Opus only for cross-cutting or ambiguous plans | Sonnet always; flag when a plan needed more |
 | Implementer floor | Sonnet for mechanical, Opus for correctness-sensitive | Today's floors; doubt rounds up to Mid | Class floors (`routing.md`) | Cheap wherever the check is scriptable, incl. borderline-mechanical | Cheap for anything checkable; Mid only via fail-twice |
-| Verify | Verifier one tier above executor (capped at Strong — Strong leaves get a fresh cross-family Strong verifier, never Fable), no session-diff exception; 3-verifier decorrelated panel on correctness-sensitive leaves | No session-diff exception; Strong verify on Mid leaves | `check.md` tiering + the documented session-diff exception; credit-billed harness → check.md's credit-billed default (script-first, sampled batch) | Exception preferred where legal; script pre-checks first | Script checks wherever scriptable; single Mid-verifier cap (an escalated-to-Mid leaf keeps its Strong/cross-family verifier — `check.md` hard rule); sampling on homogeneous waves ≥5 — verify ⌈N/3⌉, all on any failure (**accepts silent-failure risk on unsampled leaves; said out loud at the gate**) |
+| Verify | Verifier one tier above executor (capped at Strong — Strong leaves get a fresh cross-family Strong verifier, never Fable), no session-diff exception; 3-verifier decorrelated panel on correctness-sensitive leaves | No session-diff exception; Strong verify on Mid leaves | `check.md` tiering + the documented session-diff exception; credit-billed harness → check.md's credit-billed default (script-first, sampled batch) | Exception preferred where legal; script pre-checks first, script-only where scriptable | Script checks wherever scriptable; single Mid-verifier cap (an escalated-to-Mid leaf keeps its Strong/cross-family verifier — `check.md` hard rule); sampling on homogeneous waves ≥5 — verify ⌈N/3⌉, all on any failure (**accepts silent-failure risk on unsampled leaves; said out loud at the gate**) |
 | Escalation | One strike escalates | fail-twice (canonical) | fail-twice | fail-twice | fail-twice |
 | Effort | high/max everywhere | high on plan + verify | Harness defaults; low on Cheap leaves | low on Cheap + mechanical Mid | low everywhere but the plan turn |
 | Output register | Full prose allowed (templates still apply) | Terse templates (`check.md` § Verdict budget) | Terse templates + telegraphic agent-consumed prose (caveman *lite*) | Caveman *full* on all agent-consumed prose | Caveman *ultra* — fragments |
@@ -103,15 +104,16 @@ micro-leaves where it can't pay.
   mode** — C++ UB, concurrency, templates, security. No mode scripts,
   batches or samples these away, and budget/max-savings' script-only and
   ⌈N/3⌉ rows don't reach them (`check.md` § Credit-billed default,
-  `SKILL.md` § Verify floor).
+  `SKILL.md` § Verify floor). They never take a Cheap implementer
+  either (`routing.md` floor table + hard floor #5).
 - **Honesty rules** — the development repo's claim ledger discipline, no fabricated evidence,
   acceptance re-runs over pasted claims.
 - **Attempt bookkeeping** — strikes persist in `run-state.md` at every
   mode.
 - **The seat ceiling** — no mode dispatches above the session seat
   unasked (`SKILL.md` § Seat ceiling). max-quality's Opus floors and
-  Fable planner are asks on a Sonnet seat, and max-savings' Reserve
-  dispatch is the same ask, not a mode extra. A Cheap seat doesn't ask
+  Fable planner are asks on a Sonnet seat, and a fail-twice climb above
+  the seat is the same ask at every mode. A Cheap seat doesn't ask
   at all. Nothing leaves it priced above its own model (`routing.md`
   Cheap hard floor #6).
 - **Byte-verbatim code/paths/errors** in every register.
@@ -196,13 +198,15 @@ cr, both sampling ⌈N/3⌉.
 ## Budget preflight (budget / max-savings — print before the work)
 
 On an **explicit** `budget`/`max-savings` ask or a stated tight budget,
-print this first, then run the max-savings column above (a standing
-default alone doesn't re-print it). It confirms the **launch
-levers the skill can't set itself** (the human's, at session start):
+print this first, then run the column for the mode in force, max-savings
+when the ask names none (a standing default alone doesn't re-print it).
+It confirms the **launch levers the skill can't set itself** (the
+human's, at session start):
 
-1. **Model:** Auto (10% off, cache-safe) or explicit cheap; never
-   Opus/Fable for a whole session; mechanical → GPT-5 mini ($0.25/$2,
-   cheapest metered — the old 0×/"included" status ended 2026-06-01).
+1. **Model:** Auto for an inline session (10% off on paid plans,
+   cache-safe) or an explicit cheap model. Any tiered wave takes
+   explicit per-agent pins. Never Opus/Fable for a whole session.
+   Mechanical → GPT-5.6 Luna ($0.20/$1.20, the Copilot Cheap seat).
 2. **Cap leaves, not the orchestrator:** `--max-ai-credits` bounds a
    runaway repair, but a cap can suppress skill loading (T25) — cap leaves.
 3. **Warm cache:** `--resume` for repairs; minimal context (re-read every

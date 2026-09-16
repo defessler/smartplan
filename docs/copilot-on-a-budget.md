@@ -25,8 +25,10 @@ only four:
   be an "included" model under the old premium-request billing. Under
   credits it's metered per token like everything else.) GPT-5.6 Luna
   undercuts it at $0.20/$1.20, the cheapest model on this page on both
-  axes. Opus 4.8 sits at $5/$25. Fable/fast tops out at $10/$50. Fable
-  5.1 lists at that same $10/$50. Fable 5 is legacy as of 2026-09-07.
+  axes. Opus 4.8 sits at $5/$25. Fable 5, Fable 5.1, Opus 4.8 fast mode,
+  and GPT-6 Astra's lower tier all sit at $10/$50. GPT-6 Astra tops out
+  at $20/$75 past 272K tokens, the priciest row on the table. Fable 5 is
+  legacy as of 2026-09-07.
 - How much context - this is the trap. The whole context gets
   re-read every turn (cache-read, ~$0.2/M on Sonnet). A big context
   gets paid *per turn*, not once.
@@ -59,26 +61,28 @@ accidents below. It gets tight if you don't.
    work, and every other coding leaf outside a never-Cheap class
    (concurrency, UB, templates, security, determinism/serialization) to
    GPT-5.6 Luna first. It prices at $0.20/$1.20 and scores above Sonnet
-   5 on both independent boards. GPT-5 mini is a still-cheaper trial
-   candidate. It runs roughly 8× cheaper than Sonnet on input. Its one
+   5 on both independent boards. GPT-5 mini is a trial candidate too.
+   It runs roughly 8× cheaper than Sonnet on input. Its one
    measured run came in at about 39% of the Haiku cost. That's a single
    data point (T16, n=1). Kimi K2.7 Code ($0.95/$4, the first
    open-weight option) is a natural A/B candidate for the same
-   mechanical share of the work. One note: its
+   mechanical share of the work, though it retires from Copilot on
+   2026-10-02 in favour of Kimi K3. One note: its
    always-on thinking bills as output. Its cache reads price at 0.2×
    input, double the usual ratio.
-   (Raptor mini is not an option here despite the matching price: it was
-   never selectable in Copilot CLI, and GitHub is retiring it in favour of
-   MAI-Code-1-Flash.)
+   (Raptor mini is not an option here: it was never selectable in
+   Copilot CLI. GitHub retired it on 2026-09-01 in favour of
+   MAI-Code-1.1-Flash.)
    Opus is
    worth reserving for a genuinely hard *one-shot* plan, not a whole
    session, since it runs 2.5× Sonnet per token. Fable/fast is worth it
    only for the single hardest decision.
-3. **Turn on Auto for a [flat 10% discount](https://docs.github.com/en/copilot/concepts/models/auto-model-selection).**
+3. **Turn on Auto for a [10% discount on paid plans](https://docs.github.com/en/copilot/concepts/models/auto-model-selection).**
    Auto routes each request to a model matched to the task's
-   complexity. It's good for
-   ordinary inline work. Pin an explicit model only when deliberately
-   tiering a fan-out.
+   complexity. Since 2026-09-14 it also has three cost/quality tiers on
+   the CLI (Efficiency, Balance, Intelligence). Efficiency suits
+   ordinary inline mechanical work. Pin an explicit model only when
+   deliberately tiering a fan-out.
 4. **Keep context small and sessions warm.** Scope the session to the
    files being changed. Don't open the whole repo or big headers. They
    get re-paid every turn. For follow-ups and fixes,
@@ -119,8 +123,11 @@ accidents below. It gets tight if you don't.
   your allowance), and an activity graph. The token breakdown (input,
   output, cached) renders inconsistently in a live session, even when
   there's spend to show. Restarting and resuming the session with
-  `copilot --resume` gets it to appear. There are no per-model totals on
-  AI-credits sessions.
+  `copilot --resume` gets it to appear. There were no per-model totals
+  on AI-credits sessions when we last checked live, in 2026-07/08.
+  GitHub's CLI reference now describes per-model AIC rows for
+  token-based-billing accounts. That gap may have closed. It needs
+  a re-test.
 - `/statusline` with `ai-credits` (month) plus `ai-used` (session) -
   always-on spend visibility.
 - `/context` - a per-source breakdown of what is consuming the context.
@@ -130,7 +137,7 @@ accidents below. It gets tight if you don't.
 The Sonnet $2/$10 rates launched as introductory pricing, and on 2026-08-10
 Anthropic [made them the standard price](https://platform.claude.com/docs/en/about-claude/pricing):
 the increase to $3/$15 that had been scheduled for 2026-09-01 will not
-happen. So the levers below keep exactly the value they have today rather
+happen. So the levers above keep exactly the value they have today rather
 than getting more valuable in September, and nothing on this page needs
 re-costing.
 
@@ -154,8 +161,8 @@ these external, publicly documented sources:
 - Included models retired - [coverage from heise](https://www.heise.de/en/news/GitHub-removes-free-models-from-Copilot-plans-11275252.html) of the June change dropping the free fallback models, the reason GPT-5 mini is no longer described as "included" above.
 - Auto model selection - the GitHub [Auto docs](https://docs.github.com/en/copilot/concepts/models/auto-model-selection) with the 10% paid-plan discount and the per-request routing by task complexity.
 - Extended thinking billing - the Anthropic [extended thinking docs](https://platform.claude.com/docs/en/build-with-claude/extended-thinking) confirming that thinking tokens bill as part of the output token count.
-- CLI command reference - the GitHub [command reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference) for `/usage`, `/context`, and `--resume`. Note that the `/usage` description there promises per-model token totals, which AI-credits sessions don't display. The built-in `copilot help billing` output describes what actually appears: credits, token breakdown, and limit progress.
+- CLI command reference - the GitHub [command reference](https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference) for `/usage`, `/context`, and `--resume`. The `/usage` entry there now describes per-model token totals and, for token-based-billing accounts, per-model credit consumption. AI-credits sessions didn't show these when we last checked live, in 2026-07/08. That gap may have closed since. The built-in `copilot help billing` output describes what actually appears: credits, token breakdown, and limit progress.
 - Session limits - the GitHub [session-limit how-to](https://docs.github.com/en/copilot/how-tos/copilot-cli/use-copilot-cli/set-session-limit) for `--max-ai-credits` and `/limits`. Note that these are soft limits, currently in public preview.
 - Reasoning effort levels - the [Copilot CLI changelog](https://github.com/github/copilot-cli/blob/main/changelog.md) (v1.0.52 and v1.0.69) for the `none` and `minimal` effort options, confirmed against the local `copilot --help`. The web reference lags behind here. Some levels are also gated by model capability.
-- Per-subagent effort pins - `subagents.agents.<name>` with `effortLevel` in `.github/copilot/settings.json` isn't in the web docs either. It comes from CLI v1.0.70 and was verified locally on 2026-07-13. The claim that reasoning tokens bill at the output rate is the Anthropic extended-thinking behaviour cited above, applied to Sonnet 5's $10/M output rate from the pricing reference, so the $10/M figure in step 5 is those two sources multiplied out rather than a separately published number.
+- Per-subagent effort pins - `subagents.agents.<name>` with `effortLevel` in `.github/copilot/settings.json` is now documented in GitHub's CLI config reference, which also lists `model`, `modelPolicy`, and `contextTier` on the same key. It comes from CLI v1.0.70 and was verified locally on 2026-07-13. The claim that reasoning tokens bill at the output rate is the Anthropic extended-thinking behaviour cited above, applied to Sonnet 5's $10/M output rate from the pricing reference, so the $10/M figure in step 5 is those two sources multiplied out rather than a separately published number.
 - Statusline items - the `ai-credits` and `ai-used` options aren't in the web docs at time of writing. They come from the `copilot help billing` output built into the CLI (CLI 1.0.70), which is the only GitHub-authored documentation naming them.

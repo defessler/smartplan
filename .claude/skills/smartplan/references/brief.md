@@ -64,7 +64,7 @@ strong model here, once, so the cheap tier can't wander.
    and the touched files small enough that brief + files + smartexec fit its
    window with room to work. Too big to fit = too big a leaf. Split it. The
    ~1,500 figure is eyeballed and runs *optimistic* on current Anthropic models
-   — Opus 4.7+/Sonnet 5/Fable 5 use a newer tokenizer that yields ~30% more
+   — Opus 4.7+/Sonnet 5/Fable 5/Fable 5.1 use a newer tokenizer that yields ~30% more
    tokens for the same text — so treat it as a ceiling, not a target, and where
    the fit is tight run a `count_tokens` preflight instead of trusting the eyeball.
 6. **Name the walls.** NON-GOALS is where scope creep dies. List the adjacent

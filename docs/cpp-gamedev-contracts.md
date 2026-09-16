@@ -12,6 +12,16 @@ taxonomy read identically everywhere.
 > selector values, rule tags, and Surface B taxonomy are unchanged; the
 > frozen text below is kept as written for the record.
 
+> **Amendment 2026-07-13 (v4.22.0):** `custom-engine-conventions.md` did
+> ship. It moved to `.claude/skills/smartreview/references/` in the v3.0.0
+> rename, then merged into
+> **`.claude/skills/smartreview/references/cpp-review-standards.md`**. The
+> satellite file is gone. Its `[C]` rows live there now as § J (J1 to J6).
+> Read the Naming entry below as that section. The same doc also holds the
+> other two `smartstyle` surfaces named below. `smartstyle/SKILL.md` Project
+> Profile is its § Project Profile. `smartstyle`'s `[G]` rows are its
+> per-file checklist.
+
 > **Amendment 2026-08-21 (v4.103.0):** Surface B's taxonomy is still frozen
 > and still has exactly one author, `cpp-gamedev-check.md`. What changed is
 > that it now has **two consumers**. `smartreview` reports in three ranked

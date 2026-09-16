@@ -75,8 +75,8 @@ inline still wins.
 - **Seat ceiling.** Your seat is the model this session runs as — the
   system prompt or `/model` names it; can't name it → treat it as Mid.
   **Nothing dispatches at a tier above your seat until the user says
-  yes**: an escalated verify, the spiral diagnosis, a fail-twice target,
-  an Opus or Fable planner. Write the artifact first, then ask in ONE
+  yes**: an escalated verify, a fail-twice target, an Opus or Fable
+  planner. Write the artifact first, then ask in ONE
   line — what it's for, which model, that the brief is already written —
   and dispatch on the yes. One yes covers that tier for the rest of the
   session. At or below the seat needs no ask. The ask names a spend, so
@@ -95,8 +95,8 @@ inline still wins.
   it is not carrying it.** **Do not keep debugging here, and do not turn
   back to the user with questions instead** — the two failed attempts already
   hold everything the diagnosis needs, so asking for more input is the same
-  stall as a third guess. The seat-ceiling ask, or a Cheap seat's stop, is
-  the one exception, and it goes out with the report already written.
+  stall as a third guess. A Cheap seat's stop is the one exception, and it
+  goes out with the report already written.
   This is the context that already failed twice. A user saying "try
   again" does not reset the count.
 - **False-success guard.** The spiral guard needs a failing signature, so
@@ -109,8 +109,8 @@ inline still wins.
   **Compaction re-injects skill bodies, NOT the references you read.**
 - **Cost mode.** Honor `{{MODE}}`
   (default max-quality; max-savings on Copilot — it meters credits per token).
-  On an explicit budget ask or stated budget pressure, print the budget
-  preflight FIRST, then bias inline choices toward cost.
+  On an explicit budget ask or stated budget pressure, bias inline choices
+  toward cost. On Copilot, print the budget preflight FIRST.
 
 ## Fan-out route
 

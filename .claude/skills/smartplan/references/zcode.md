@@ -1,8 +1,9 @@
 # smartplan §C deep reference — ZCode (Z.ai) levers & limits
 
 > Facts verified 2026-08-12 against `zcode.z.ai/en/docs`, `docs.z.ai`, and
-> Z.ai's Terms of Use; **re-swept 2026-08-31** (web docs, changelog, local
-> build 3.10.1 / zcode.cjs 0.16.5). Every "not documented" below is a genuine
+> Z.ai's Terms of Use; **re-swept 2026-08-31** and **re-read 2026-09-15**
+> (web docs, changelog, local build 3.10.1 / zcode.cjs 0.16.5). Every "not
+> documented" below is a genuine
 > absence at the source, not a shrug: ZCode's docs are young and several
 > pages describe a settings **form** rather than the on-disk file it writes.
 >
@@ -35,19 +36,18 @@ Load this only when the session is ZCode. For the flow itself, see `flow.md`.
 A proprietary desktop **Agentic Development Environment** from Z.ai — not a
 CLI, not an IDE fork. Electron, with macOS (Apple Silicon + Intel), Windows
 (x64 + ARM64) and Linux (x64 + ARM64; AppImage, DEB and RPM, no Beta marker)
-installers. Vendor's current release is **v3.10.2, 2026-08-31** — five
-minors since the 3.7.6 this file last carried. The changelog's static fetch
-ends at 3.7.5 behind a "Scroll to load more releases" control, so its
-floor is unreadable that way (the old "reaches back to 3.3.5" claim stays
-unconfirmed either way).
+installers. Vendor's current release is **v3.11.2, 2026-09-04** (re-read
+2026-09-15). The changelog's static fetch ends at 3.7.6 behind a "Scroll to
+load more releases" control, so its floor is unreadable that way (the old
+"reaches back to 3.3.5" claim stays unconfirmed either way).
 
-**Mind the version gap when reading this page — though it has nearly
-closed.** The build installed on this machine auto-updated twice inside the
-sweep itself: 2026-08-28 read **3.9.1.5853**, the 2026-08-31 re-read found
-**3.10.1.6272** (both from `ZCode.exe` VersionInfo plus the uninstall
-entry, and a refute-stage catch — applying the 08-28 number today would
-have shipped a wrong version). The docs sit one patch ahead at 3.10.2.
-The old "the v3.7.5 features may not be present here" caveat is moot.
+**Mind the version gap when reading this page.** The build installed here
+auto-updated twice inside the 08-31 sweep (2026-08-28 read **3.9.1.5853**,
+2026-08-31 found **3.10.1.6272**, from `ZCode.exe` VersionInfo plus the
+uninstall entry). It still read 3.10.1.6272 on 2026-09-15. The
+gap has reopened: the vendor shipped **3.11.2** on 2026-09-04, a full minor
+ahead, whose new behaviors (per-workspace plugins, the model-switching fix)
+may not be present here.
 
 **It is not open source.** The Terms of Use assert IP ownership by JINGSHENG
 HENGXING TECHNOLOGY PTE. LTD. and prohibit reverse engineering. Two
@@ -68,7 +68,10 @@ built-in flow copies `~/.claude/CLAUDE.md` into `~/.zcode/AGENTS.md`.
 It **does** walk directory levels. The shipped `zcode-configuration-guide`
 skill states that
 ZCode "searches for the workspace `AGENTS.md` from the current working
-directory **upward until the detected project root**." **Merge order:** the
+directory **upward until the detected project root**." It resolves one file:
+the web docs add that ZCode "does not merge multiple `AGENTS.md` files
+across directory levels" and doesn't expand `@import` / `@include` (read
+2026-09-15). **Merge order:** the
 user file injects first, then the workspace file, so workspace instructions
 can narrow or override user defaults. `/init` targets the workspace file,
 never the user default.
@@ -92,25 +95,13 @@ ZCode has a **per-agent model pin**, closest in shape to Copilot's
   `@name`. Two built-ins ship: `general-purpose` (all tools) and `Explore`
   (read-only).
 
-**Four limits that change how you seat work here:**
+**Two limits that still change how you seat work here:**
 
-1. **The frontmatter keys are now documented — this limit is reversed**
-   (2026-08-31). `/en/docs/subagents` publishes a full ten-key table:
-   `name` (required), `description` (required), `model` ("Specific model
-   ID; `inherit` or omitted follows the primary Agent's model"),
-   `thoughtLevel`, `color`, `tools`, `disallowedTools`, `maxTurns`,
-   `injectAgentsMd`, `mcpServers`. Note the key is **`thoughtLevel`, not
-   `reasoningEffort`**. Hand-authoring `~/.zcode/agents/<name>.md` is
-   documented (new sessions pick changes up); subagents **cannot spawn
-   subagents**. Per-seat model pin, per-seat reasoning level, per-seat tool
-   allow/deny, a per-seat turn cap and MCP scoping are all real, documented
-   levers now — ZCode went from the coarsest seat lever of the three
-   harnesses to the finest in one docs release.
-2. **There is no per-call or per-dispatch model override.** Nothing in the
+1. **There is no per-call or per-dispatch model override.** Nothing in the
    subagents docs offers one, and the hooks page exposes `model` only as
    read-only `SessionStart` input. The nearest real per-invocation override
    is on **commands**, not agents.
-3. **Subagents are Beta and effectively user-level.** The rollout sentence
+2. **Subagents are Beta and effectively user-level.** The rollout sentence
    is unchanged ("User-level custom subagents are rolling out. The
    capability and its scope may still change"), and the docs now say
    "Creating or editing workspace / project-level subagents from Settings is
@@ -119,11 +110,18 @@ ZCode has a **per-agent model pin**, closest in shape to Copilot's
    the same day (2026-08-31), so cite both rather than picking a winner.
    Whether a hand-written workspace seat file is discovered at all is
    untested; treat seats as machine-global until probed.
-4. **The docs no longer lag the changelog** — both v3.7.5 features (the
-   reasoning-effort setting, per-subagent models for idle tasks) now appear
-   on the subagents page. The advice that earned this limit survives in
-   general form: check the changelog before concluding a lever doesn't
-   exist.
+
+**What changed 2026-08-31:** the frontmatter keys are documented and the
+docs caught up to the changelog. Two earlier limits here are spent.
+`/en/docs/subagents` publishes a full ten-key table: `name` (required),
+`description` (required), `model` ("Specific model ID; `inherit` or omitted
+follows the primary Agent's model"), `thoughtLevel`, `color`, `tools`,
+`disallowedTools`, `maxTurns`, `injectAgentsMd`, `mcpServers`. Note the key
+is **`thoughtLevel`, not `reasoningEffort`**. Hand-authoring
+`~/.zcode/agents/<name>.md` is documented (new sessions pick changes up);
+subagents **cannot spawn subagents**. Both v3.7.5 features (reasoning
+effort, per-subagent models for idle tasks) appear there too. Still check
+the changelog before concluding a lever doesn't exist.
 
 **Consequence for the flow:** ZCode can hold the seats, but it cannot vary a
 seat's model mid-wave. Pin the seats once, dispatch against them, and treat
@@ -136,7 +134,8 @@ Subagents launched together **run in parallel**, and the main task **blocks**
 until all finish. A **background mode** also exists where the main task does
 not wait and can end its turn; background `Explore` subagents are restricted
 to read-only tools. Scheduled and idle tasks can be configured with a
-specific model per subagent.
+specific model per subagent. Idle-time tasks reject background subagents
+with an explicit error. An idle wave has to run foreground (read 2026-09-15).
 
 That blocking default is the important half: it makes ZCode's foreground
 fan-out a barrier, not a pipeline. Size waves accordingly.
@@ -150,7 +149,7 @@ ZCode ships first-class Agent Skills using `SKILL.md`.
   group.
 - ZCode can **import** skills from Claude Code and other agents.
 
-**Three caveats, verified 2026-08-12:**
+**Four caveats, verified 2026-08-12 and re-read 2026-08-31:**
 
 - **The code now matches the docs — and extra keys turned dangerous.** In
   zcode.cjs 0.16.5 the skill adapter's allowlist is the Set `name`,
@@ -166,6 +165,9 @@ ZCode ships first-class Agent Skills using `SKILL.md`.
   error) survives as a literal in 0.16.5. `smartexec` carries
   `user-invocable` and `disable-model-invocation`, both outside the
   allowlist — check `zcode skills list` before assuming a skill auto-loads.
+  **Only the first 250 description characters reach the model each turn**,
+  from a shared metadata budget that degrades to names-only when too many
+  skills are enabled (web Skill page, 2026-09-15). Front-load the trigger.
 - **The full discovery order, from the shipped configuration guide.** The
   *web* Skill page gives only the user path. Workspace scope is documented
   inside the product rather than on the web. Earlier locations win:
@@ -181,10 +183,9 @@ ZCode ships first-class Agent Skills using `SKILL.md`.
   Within a level `.zcode` is scanned before `.agents`, and a deeper
   working-directory location beats a repo-root one. **Skill identity is the
   file path**, so same-named skills at different paths are all discovered
-  but only the first in order loads — the rest are shadowed. That is the
-  opposite of Claude Code's enterprise > personal > project ordering in one
-  respect worth noting: here **user scope outranks workspace**, so a
-  personal copy silently shadows a repo's own.
+  but only the first in order loads — the rest are shadowed. That matches
+  Claude Code's enterprise > personal > project ordering: here too **user
+  scope outranks workspace**. A personal copy silently shadows a repo's own.
 
   Plugin roots are recognized by `.zcode-plugin/plugin.json` **and**
   `.claude-plugin/plugin.json` **and** `.codex-plugin/plugin.json` **and**
@@ -214,6 +215,9 @@ The plugin format looks compatible and mostly is:
 - Marketplaces use a root `marketplace.json` carrying `name`,
   `plugins[].source` and `pluginRoot` — all three field names verified.
 - Documented as plain GA. No beta, preview or SKU gate anywhere on the page.
+- ZCode 3.11.2 added per-workspace plugin install (changelog, read
+  2026-09-15). The plugin page doesn't document it yet. The 3.10.1 build
+  here predates it.
 
 **But "this plugin installs into ZCode unchanged" is false**, on three
 counts, each checked at the source:
@@ -234,8 +238,9 @@ counts, each checked at the source:
    documents `skills`/`agents`/`commands`/`hooks`/`mcpServers` as
    **`plugin.json`** fields, while its `plugins[]` entry table lists only
    name, source, description, version, category, tags, dependencies and
-   strict. Top-level `owner` and `metadata` are likewise absent from ZCode's
-   documented top-level set.
+   strict. Top-level `metadata` is likewise absent from ZCode's documented
+   top-level set. `owner` is missing from that docs table too. The published
+   catalog carries it anyway (see § Measured against a live install).
 
 **The skills payload is the portable part.** The `skills/<name>/SKILL.md`
 layout and `name`/`description` frontmatter match this tree, and ZCode
@@ -246,7 +251,7 @@ the repo's ZCode export script generates.
 
 ## Hooks
 
-Seven events, a **superset** of Claude Code's: `SessionStart`,
+Seven events, a **subset** of Claude Code's: `SessionStart`,
 `UserPromptSubmit`, `PreToolUse`, `PermissionRequest`, `PostToolUse`,
 `PostToolUseFailure`, `Stop`. No `PreCompact`, `Notification`,
 `SubagentStop` or session-end equivalent.
@@ -280,7 +285,7 @@ Goal Mode is not just a planner. At the end of **every round** ZCode runs a
 **separate check** to decide whether the objective was met, and that check
 demands **artifact evidence** rather than a confident-sounding reply. If the
 objective is unmet it produces the next step and auto-starts another round.
-Built-in commands are `/goal` and `/compact`.
+Goal Mode's commands are `/goal` and `/compact` (full list under § Headless).
 
 This is the closest thing in any tracked harness to smartcheck shipped in
 the box. It does not replace an *independent* verifier — same-context
@@ -294,9 +299,10 @@ Four modes cycled with Shift+Tab (now confirmed on the docs page): **Ask
 before changes** (default), **Edit automatically**, **Plan mode**, **Full
 access** — reworded labels, same four modes and interaction pattern as
 Claude Code. Separately, **Thought levels** (Low, High, **Max — the
-default**) control reasoning depth for GLM-5.3 through a thinking icon in
-the chat input. "Off" is gone, and **Max being the default is a cost fact**:
-a ZCode session reasons at the deepest level unless told otherwise.
+default**) control reasoning depth for GLM-5.3 through Ctrl+T. "Off" is
+gone, and **Max being the default is a cost fact**:
+a GLM-5.3 session reasons at max unless told otherwise, while Claude models
+default to medium (configuration page, 2026-09-15).
 Models and execution modes can both be switched mid-task.
 
 ## Models — ZCode is not GLM-only
@@ -318,7 +324,7 @@ everywhere else.
 
 | Model | Input | Cached input | Output |
 | --- | --- | --- | --- |
-| GLM-5.3-Flash | ~~0.15~~ **0.075** promo | ~~0.03~~ **0.015** | ~~0.50~~ **0.25** |
+| GLM-5.3-Flash | 0.15 | 0.03 | 0.50 |
 | GLM-5.3 | 1.40 | 0.26 | 4.40 |
 | GLM-5.2 | 1.40 | 0.26 | 4.40 |
 | GLM-5.1 | 1.40 | 0.26 | 4.40 |
@@ -327,8 +333,8 @@ everywhere else.
 | GLM-4.7-Flash | Free | Free | Free |
 | GLM-4.5-Flash | Free | Free | Free |
 
-The Flash promo is 50% off, ending 24:00 **2026-09-09** UTC+8; the
-strikethrough list prices apply after. Cached-input **storage** stays
+The Flash launch promo (50% off) ended 24:00 **2026-09-09** UTC+8. The list
+prices above are the 2026-09-15 re-read. Cached-input **storage** stays
 "Limited-time Free" for all paid models. **GLM-5-Turbo is gone from this
 page entirely** (re-read 2026-08-31: zero Turbo matches across all eight of
 its tables) — it survives only in Coding Plan marketing, with no published
@@ -347,7 +353,8 @@ GLM-5.3 is now available!" — and ZCode now brands itself "the official
 harness for GLM-5.3". Same base model as GLM-5.2 with post-training gains,
 identical price, 1M context, 128K max output, text-only input, reasoning
 always on (low/high/max — **cannot be disabled**). On current Coding Plans,
-requests for GLM-5.2 and GLM-5.1 **auto-route to GLM-5.3**. **GLM-5.5
+requests for GLM-5.2 and GLM-5.1 **auto-route to GLM-5.3**, and GLM-4.7 to
+GLM-5.3-Flash (read 2026-09-15). **GLM-5.5
 remains unshipped as of 2026-08-31** — the Latest Models table tops out at
 5.3-Flash, 5.3 and 5.2. The old board-vs-pricing-page framing resolved in
 the page's favor: 5.3 appeared on it within two days of launch.
@@ -364,6 +371,8 @@ Billing toggles Monthly / Quarterly (−20%) / Yearly (−30%); Lite is $18/mo
 at monthly billing. Credit usage = (input × input multiplier + cached input
 × cached multiplier + output × output multiplier) / 10,000. 5-hour credits
 refresh 5 hours after consumption; weekly credits reset every 7 days.
+GLM-5.3-Flash burns a third of GLM-5.3's credits (multipliers 2.3/0.56/8
+vs 6.9/1.7/24, read 2026-09-15).
 
 **Peak-hour discount is a routing signal — a 2× clock spread; an earlier
 read of this file overstated it.** Peak hours are Mon–Fri 14:00–18:00 UTC+8; off-peak
@@ -385,9 +394,10 @@ there is Claude Code + GLM-5.1 at 58.7% ± 1.2%, rank 17. GLM-5.3's card
 claims +50% over 5.2 on Z.ai Code Bench, SOTA-open on Terminal-Bench 3.0
 (4.6→28.3), and CyberGym 84.5% ahead of Mythos 5 (83.8) and GPT-5.6 Sol
 (83.6) — same caution class. **The AA open-weights board, re-read
-2026-08-31: Kimi K3 (max) and GLM-5.3 (max) tied at 60, Qwen3.8 2.4T-A95B
-58, GLM-5.3-Flash 57 — and GLM-5.2 is delisted.** The "GLM-5.2 second at
-53" line this file used to carry described a row the board no longer lists.
+2026-09-15 on Intelligence Index v4.3** (rescaled, so not comparable with
+the 08-31 60s): GLM-5.3 (max) 45 alone at #1, Kimi K3 (max) 44,
+GLM-5.3-Flash 42, GLM-5.2 34. The 08-31 "delisted" read matched only the
+top-12 chart.
 
 Model ID `glm-5.3` (flagship) or `glm-5.2`, both 1M context, 128K max
 output.
@@ -400,7 +410,7 @@ No web docs page describes it. The binary documents itself, so run
 self-identifies as **`zcode 0.16.5`** (doctor: process `zcode-cli`, node
 v24.15.0, win32/x64) — versioned independently of the desktop app, which is
 3.10.1 here. The independent-versioning point is now better evidenced: the
-desktop moved five minors in three weeks while the CLI moved four patches.
+desktop moved three minors in three weeks while the CLI moved four patches.
 
 **Commands:** `app-server` (ZCode Protocol stdio server), `commands`,
 `doctor`, `login`, `logout`, `plugins`, `skills`, `tui`, `version`.
@@ -443,7 +453,7 @@ The desktop app's z.ai OAuth in `~/.zcode/v2/setting.json` does **not**
 satisfy it. So on a machine where the GUI works fine, headless can still be
 unrunnable — and wiring it means writing a provider (and credentials) into
 `~/.zcode/cli/config.json`. That is the single gate between this repo and a
-ZCode T-record.
+live-arm ZCode T-record.
 
 ## MCP
 
@@ -497,9 +507,9 @@ has top keys `description`, `description_i18n`, `name`, `owner`, `plugins`
 **path**, never `"filesystem"`. So the docs were right about source-as-path
 all along, `owner` IS in the published top-level set (correcting this
 file's earlier "absent"), and `metadata` remains absent from both shapes.
-The repo's ZCode export script emits the observed *cache* shape — whether
-that installs as a catalog needs a probe before the next export is
-trusted.
+The repo's ZCode export script emits a hybrid (the cache's integer
+`version`, a path `source`, no `owner`) — whether that installs as a catalog
+needs a probe before the next export is trusted.
 
 **What is installed here and what is not.** The six skills are live. There
 is **no `~/.zcode/agents/` and no `~/.zcode/AGENTS.md`** — so on this
@@ -539,14 +549,14 @@ Those would be dead on arrival if the mechanism did not work.
 
 **One cap this repo has to respect:** the `Skill` tool truncates its whole
 returned block at **100,000 bytes**, head-first, appending
-`[Skill content truncated]`. `smartplan/SKILL.md` is ~5KB, so there is no
+`[Skill content truncated]`. `smartplan/SKILL.md` is ~10KB, so there is no
 risk today — but it is a second, larger ceiling sitting above gate (i)'s
 per-file budgets.
 
 **The harness config here is z.ai, not Anthropic.** `~/.zcode/v2/setting.json`
 shows `providerFamilyDomain: "zai"`, OAuth mode, and the selected key
 `coding-plan:builtin:zai-coding-plan`, with `enabledBuiltinAgentCliProviders:
-["glm"]`. So the § Models recommendation below — prefer Anthropic direct if
+["glm"]`. So the § Models recommendation above — prefer Anthropic direct if
 the ladder should mean what it means elsewhere — is **not** what this
 machine is currently doing.
 
@@ -574,6 +584,6 @@ Written down so it reads as an open question rather than a settled one:
   location undocumented-but-working. The junction path sidesteps the
   question entirely, which is why the skills load despite the packaging
   mismatch described above.
-- **Any cost or quality number. Nothing here is benchmarked.** No T-record
-  exists for ZCode as a harness. Installability is now observed; routing
-  economics are not.
+- **Any cost or quality number. Nothing here is benchmarked.** No cost or
+  quality T-record exists for ZCode (T37 is observational only).
+  Installability is now observed; routing economics are not.

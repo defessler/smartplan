@@ -10,7 +10,9 @@
 #
 # Works on: a full repo checkout, AND a copilot-export output tree (the
 # harness-specific checks skip themselves when their surface is absent).
-# Portability: Git-Bash on Windows AND Linux. grep/sed/wc only.
+# Portability: Git-Bash on Windows AND Linux. grep/sed/wc, plus python 3
+# for the frontmatter checks (stages 2 and 4). Those skip with a named
+# reason when no python 3 is on PATH.
 
 set -u
 # Root = nearest ancestor of this script carrying a skills tree — works
@@ -34,6 +36,18 @@ ok()   { echo "  PASS: $1"; PASS=$((PASS+1)); }
 bad()  { echo "  FAIL: $1"; FAIL=$((FAIL+1)); }
 skip() { echo "  skip: $1"; SKIP=$((SKIP+1)); }
 
+# Interpreter for the frontmatter checks. Probe by RUNNING each candidate, not
+# with `command -v`: on Windows `python3` is usually the WindowsApps App
+# Execution Alias, which sits on PATH, prints a Store message and exits 9009.
+# `python` first, so a box that already works keeps the interpreter it has
+# (a python3 that lacks PyYAML would silently drop to the regex fallback).
+PY=""
+for c in python python3; do
+  if "$c" -c 'import sys; sys.exit(sys.version_info[0] < 3)' >/dev/null 2>&1; then
+    PY="$c"; break
+  fi
+done
+
 echo "== smartplan selftest (static install surface) =="
 echo
 
@@ -55,7 +69,13 @@ done
 #     failure class: over-long descriptions refuse to load).
 echo "-- (2) frontmatter --"
 fm_verdict() {  # fm_verdict <file> -> OK:<desclen> | ERR:<why>
-  python - "$1" << 'EOF' 2>/dev/null
+  # scripts/check.sh gate (h) sed-extracts and evals THIS FUNCTION ALONE. It
+  # resolves the interpreter itself instead of inheriting the PY set above.
+  if [ -z "${PY:-}" ]; then
+    for c in python python3; do "$c" -c 'import sys; sys.exit(sys.version_info[0] < 3)' >/dev/null 2>&1 && { PY="$c"; break; }; done
+  fi
+  if [ -z "${PY:-}" ]; then echo "ERR:no python 3 on PATH (tried python, python3)"; return; fi
+  "$PY" - "$1" << 'EOF' 2>/dev/null
 import io, re, sys
 p = sys.argv[1]
 s = io.open(p, encoding='utf-8').read()
@@ -84,7 +104,13 @@ if not dm: print('ERR:no description'); raise SystemExit
 print('OK:%d' % len((dm.group(1) or dm.group(2)).strip()))
 EOF
 }
-for s in $SKILLS; do
+if [ -z "$PY" ]; then
+  skip "frontmatter checks need python 3 (python or python3 on PATH)"
+  SKILLS_FM=""   # one named skip beats six FAIL lines with a blank reason
+else
+  SKILLS_FM="$SKILLS"
+fi
+for s in $SKILLS_FM; do
   f="$SKILLS_ROOT/$s/SKILL.md"
   [ -f "$f" ] || continue
   v="$(fm_verdict "$f")"
@@ -96,6 +122,8 @@ for s in $SKILLS; do
       else
         ok "$s: frontmatter strict-YAML-safe, description $desc_len chars"
       fi ;;
+    "")
+      bad "$s: fm_verdict produced no output" ;;
     *)
       bad "$s: ${v#ERR:}" ;;
   esac
@@ -103,8 +131,8 @@ done
 
 # (3) Flow-critical references: every file SKILL.md's flow loads must exist
 echo "-- (3) flow-critical references --"
-for r in routing.md model-classes.md brief.md check.md cpp-gamedev-check.md \
-         artifacts.md; do
+for r in flow.md routing.md model-classes.md brief.md check.md \
+         cpp-gamedev-check.md artifacts.md; do
   if [ -f "$SKILLS_ROOT/smartplan/references/$r" ]; then
     ok "reference present: $r"
   else
@@ -121,13 +149,18 @@ if [ -d ".github/agents" ]; then
   else
     bad "expected 6 .github/agents/*.agent.md profiles, found $n"
   fi
-  for a in .github/agents/*.agent.md; do
-    v="$(fm_verdict "$a")"
-    case "$v" in
-      OK:*) ok "$(basename "$a"): frontmatter strict-YAML-safe" ;;
-      *)    bad "$(basename "$a"): ${v#ERR:}" ;;
-    esac
-  done
+  if [ -z "$PY" ]; then
+    skip "agent-profile frontmatter needs python 3 (python or python3 on PATH)"
+  else
+    for a in .github/agents/*.agent.md; do
+      v="$(fm_verdict "$a")"
+      case "$v" in
+        OK:*) ok "$(basename "$a"): frontmatter strict-YAML-safe" ;;
+        "")   bad "$(basename "$a"): fm_verdict produced no output" ;;
+        *)    bad "$(basename "$a"): ${v#ERR:}" ;;
+      esac
+    done
+  fi
 else
   skip ".github/agents absent (not a Copilot-facing checkout)"
 fi

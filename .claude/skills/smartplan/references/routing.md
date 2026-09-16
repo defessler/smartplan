@@ -36,7 +36,7 @@ which model sits in each tier** — edit classifications there, not here.
 | **Max** | Fable 5.1 *(where exposed)* | Hardest architecture/decomposition *decisions* only. Never research, audit, or implementation. |
 | **Strong** | Opus 5 (+ cross-vendor Reasoning-class peers) | Planning escalation, cross-cutting judgment, brief-writing at fan-out. |
 | **Mid** | The newest Sonnet | Near-frontier implementer and default verifier. The workhorse floor. |
-| **Cheap** | Haiku 4.5 (+ Mechanical-class peers) | Tightly-scoped leaves behind a verifier. Fails *silently* — never unverified. |
+| **Cheap** | Haiku 4.5 (Claude Code) · GPT-5.6 Luna (Copilot), + Mechanical-class peers | Tightly-scoped leaves behind a verifier. Fails *silently* — never unverified. |
 | **Script** | No model — an existing script | A deterministic action an already-written script performs. Zero cost, zero drift. |
 
 **Dated 2026-08-12:** Sonnet 5's $2/$10 became Anthropic's standard price on
@@ -93,7 +93,7 @@ holds:
 3. **The change crosses a public interface or a second caller.** Countable
    from the diff, and blast radius is what a cheap seat under-reads.
 4. **It sits on a never-Cheap row** — concurrency, UB, templates,
-   security, determinism/serialization.
+   security, determinism-critical code.
 
 **Escalating emits an artifact, never an intention.** Write the missing
 check, or write the verify brief out in full — the leaf, the acceptance,
@@ -221,14 +221,15 @@ per-leaf price.
    Cheap-floor — they fail silently in ways a clean compile won't catch.
 6. **Never dispatch above its own price.** A Cheap seat, the session
    model or a leaf, hands work only to the same model, a model priced no
-   higher on input or output (`model-classes.md`), or a script. It never
-   asks for more. Work that needs a stronger model needs a stronger
-   session, which the user picks. Planning stays off this seat (#1). Its
-   fan-out is mechanical leaves whose check is fully scripted
-   (`check.md` § Tiering). Where the work needs more (a Mid verify, the
-   spiral diagnosis, a fail-twice target, a never-Cheap class), it
-   writes the brief or the ESCALATION REPORT in full, stops, and names
-   the session model to switch to.
+   higher on input or output (`model-classes.md`), or a script. A cheaper
+   model never stands in for the verify its own work needs. That check
+   stays the script (`check.md` § Tiering). It never asks for more. Work
+   that needs a stronger model needs a stronger session, which the user
+   picks. Planning stays off this seat (#1). Its fan-out is mechanical
+   leaves whose check is fully scripted (`check.md` § Tiering). Where the
+   work needs more (a Mid verify, the spiral diagnosis, a fail-twice
+   target, a never-Cheap class), it writes the brief or the ESCALATION
+   REPORT in full, stops, and names the session model to switch to.
 
 ## Harness dispatch notes
 

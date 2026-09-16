@@ -135,7 +135,7 @@ report's free-text fields (`<what's wrong>`, `<why unsure>`, not the counts,
 rule IDs, or category headings) follow `modes.md`'s caveman register.
 **Default here is max-savings** (caveman *ultra*): nothing is lost
 compressing a report no human will read. It replaces smartplan's
-family-wide *shipped default* and sits on that same bottom rung of
+per-harness *shipped default* and sits on that same bottom rung of
 `modes.md` § Setting it, so all three levels above still beat it, first one
 set winning: an explicit per-invocation ask, a brief's `MODE:` line, then
 the project's `{{MODE}}` token. File paths, rule IDs, and quoted code stay
@@ -169,7 +169,8 @@ floor.
   per row — a Cheap tier runs it fine. **The breaking hunt is not.**
   Ownership, threading, and lifetime judgment take at least a Mid tier, and
   the floor tracks the executor: a Sonnet- or Opus-authored diff gets the
-  hunt at Opus-or-comparable strength. Run inline unless the fileset won't
+  hunt at Opus-or-comparable strength. On a seat below that, it's an ask
+  first (smartplan's Seat ceiling). Run inline unless the fileset won't
   fit one context.
 - **Verify before the merge (see smartcheck).** This seat sits at the merge
   gate, so the verify floor holds at any size: a risky merge takes an

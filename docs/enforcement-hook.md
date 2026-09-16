@@ -1,8 +1,8 @@
 # smartplan §A deep reference: mechanical tiering enforcement (optional)
 
-> Facts verified 2026-07-06 against code.claude.com/docs (hooks, sub-agents,
-> permissions) and the anthropics/claude-code CHANGELOG (v2.1.178+); see
-> the development repo's claim ledger.
+> Facts first verified 2026-07-06. The hook, sub-agent and permission claims
+> were re-read on 2026-09-15 against code.claude.com/docs and the
+> anthropics/claude-code CHANGELOG. See the development repo's claim ledger.
 
 Load this only when you want tiering **enforced mechanically**, not just
 socially agreed — a bad dispatch gets blocked outright, not caught later by
@@ -11,12 +11,11 @@ the primary lever. This is a guardrail on top of it.
 
 **A wired, warn-only instance runs in the development repo** as
 `.claude/settings.json` + `.claude/hooks/require-tiered-dispatch.sh`. Neither
-file ships in this bundle — settings.json carries machine-local configuration
-that has no business in a distribution. Build your own from the matcher block
-and script below, both reproduced in full on this page, and you get the
+file ships in this bundle. Build your own from the matcher block and script
+below, both reproduced in full on this page, and you get the
 warning layer: it prints a `stderr` warning on an un-tiered, or Opus/Fable-on-
 an-implementer-leaf, `Agent`/`Task` dispatch, and **never blocks anything**
-(see the safety note in "Shipped instance" below). Everything else on this
+(see the safety note in "Reference instance" below). Everything else on this
 page — including both hard-`deny` variants — is documented as **opt-in**,
 off by default, so adopting this reference can never silently block
 dispatch in a repo (like this one) that fans work out to subagents when a
@@ -25,31 +24,32 @@ fan-out signal holds.
 ## Declarative layer: settings.json permission rules (opt-in hard-deny)
 
 No script needed. Since v2.1.178, permission rules support `Tool(param:value)`
-syntax (`*` wildcard) matched against the tool's resolved input. Deny specific
-model values on `Agent` dispatch to hard-block a tier from ever landing
-without a human lifting the rule:
+syntax (`*` wildcard) matched against the literal input Claude sends, before
+any normalization. Deny specific model values on `Agent` dispatch to
+hard-block a tier from ever landing without a human lifting the rule:
 
 ```json
 {
   "permissions": {
-    "deny": ["Agent(model:opus)", "Agent(model:fable)"],
-    "allow": ["Agent(model:sonnet)", "Agent(model:haiku)"]
+    "deny": ["Agent(model:*opus*)", "Agent(model:*fable*)"]
   }
 }
 ```
 
-This blocks Opus/Fable leaf spawns while leaving Sonnet/Haiku untouched. It
+This blocks Opus/Fable leaf spawns requested by alias or by full model ID.
+Allow rules can't match parameters. Sonnet/Haiku need no entry. It
 does **not** catch a dispatch that omits `model:` entirely (inherits the
 session model) — that needs the hook below.
 
-**Not active by default.** The shipped `.claude/settings.json` registers
-only the warn-only hook (next section) — no `permissions` key at all. To
-turn this on, merge the `permissions` block above into `.claude/settings.json`
-alongside its existing `hooks` key: one paste, no script edit.
+**Not active by default.** The development repo's `.claude/settings.json`
+registers only the warn-only hook (next section) — no `permissions` key at
+all. To turn this on, merge the `permissions` block above into
+`.claude/settings.json` alongside its existing `hooks` key: one paste, no
+script edit.
 
 ## Scripted layer: PreToolUse hook
 
-### Shipped instance (default: warn-only, non-blocking)
+### Reference instance (warn-only, non-blocking)
 
 `.claude/settings.json` wires the hook:
 
@@ -71,8 +71,8 @@ alongside its existing `hooks` key: one paste, no script edit.
 }
 ```
 
-(`Task|Agent` hedges the dispatch tool's name across Claude Code docs/
-versions, which use both spellings — the script re-checks `tool_name` itself
+(`Task|Agent` covers the dispatch tool's pre-2.1.63 name `Task`, still
+accepted as an alias — the script re-checks `tool_name` itself
 rather than trusting the matcher alone, since this environment has at least
 one unrelated tool whose name merely *contains* "Task" as a substring
 (`TaskStop`). The explicit `bash` prefix sidesteps shebang/exec-bit
@@ -123,20 +123,35 @@ Claude Code to act on beyond the warning text — wiring it up cannot break
 existing dispatch, including the fan-out this repo runs on the tasks where
 a fan-out signal holds.
 
-### Opt-in hard-deny variant (not what ships)
+### Opt-in hard-deny variant (off by default)
 
 To make the *hook itself* block instead of warn — the one thing the
 declarative layer above can't do, since it can't see a `model:` field that
-was never provided — swap the shipped script's decision tail for this:
+was never provided — swap the reference script's decision tail, its closing
+`if`/`elif` block, for this. It replaces that block only, never the whole
+script. The `Workflow` and `fork` early exits above it still run first. By
+then `$model`, `$planningish`, `$decisionish` and `$verifier_seat` are all set.
+The deny fires only when jq parsed the payload. The grep/sed fallback is
+only good enough for a warning. Without jq, a dispatch with no `model:`
+falls through to `finish`. The snippet must not re-read stdin, because the script's head has already
+drained it.
 
 ```sh
-model="$(cat | jq -r '.tool_input.model // empty')"
-if [ -z "$model" ]; then
-  echo '{"hookSpecificOutput":{"permissionDecision":"deny","permissionDecisionReason":"dispatch missing explicit model: field"}}'
-  exit 2
+if [ -z "$model" ] && command -v jq >/dev/null 2>&1; then
+  printf '%s\n' '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"dispatch missing explicit model: field"}}'
+  exit 0
+elif [ "$model" = "fable" ] && [ "$decisionish" = "0" ]; then
+  echo "[require-tiered-dispatch] WARNING: model:fable on a task that doesn't read like a decomposition decision. (warn-only, not blocked)" >&2
+elif [ "$model" = "opus" ] && [ "$planningish" = "0" ] && [ "$verifier_seat" = "0" ]; then
+  echo "[require-tiered-dispatch] WARNING: model:opus on a task that doesn't read like planning or research. (warn-only, not blocked)" >&2
 fi
-exit 0
+finish
 ```
+
+`hookSpecificOutput` requires a `hookEventName` field. Printing JSON on exit
+0 is one documented channel. Exit 2 with the reason on stderr and no JSON is
+the other. Pick one per hook rather than mixing them. Keeping the `elif`
+keeps the second warning that an unconditional `exit 0` would drop.
 
 This is a full behavior change (a missing `model:` goes from "printed
 warning" to "blocked dispatch"), not a settings.json toggle — test it
@@ -151,7 +166,8 @@ the safety note above about not bricking the orchestration stops holding.
 - An Opus/Fable escalation must go through a **human toggling the rule** —
   that friction is the point, not a bug to route around.
 - Enforces §A (Claude Code) only. Other harnesses enforce tiering via their
-  own per-harness config (§B–§E), not this mechanism.
+  own per-harness config (§B in `flow.md`, §C `zcode.md`, §D
+  `m365-copilot.md`), not this mechanism.
 
 ## Auto-trigger recipe (default the routing policy without naming the skill)
 
@@ -178,7 +194,7 @@ weakest to strongest; stack them:
     "SessionStart": [{
       "hooks": [{
         "type": "command",
-        "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"Default policy: route coding tasks by regime yourself - plainly one-context, non-risky tasks run inline without the skill body; invoke smartplan only on a fan-out signal (beyond-context working set, a failed first fix, verify-gated class, wall-clock batch). It routes by regime - one-context tasks run inline; fan-out is for beyond-context scale, rework-prone execution, verify-gated work, and wall-clock batches.\"}}'"
+        "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"Default policy: route coding tasks by regime yourself - plainly one-context, non-risky tasks run inline without the skill body; invoke smartplan only on a fan-out signal (beyond-context working set, two failed inline fixes on the same signature, verify-gated class, wall-clock batch). It routes by regime - one-context tasks run inline; fan-out is for beyond-context scale, rework-prone execution, verify-gated work, and wall-clock batches.\"}}'"
       }]
     }]
   }
@@ -194,11 +210,10 @@ The family's review machinery (`smartreview` and its `{{STANDARDS}}` doc)
 runs over a *finished* changelist, and briefs bind executors on the fan-out
 route. Neither reaches the **inline** route, which the default policy makes the
 common case for a single-file edit — and at the moment `Write`/`Edit` fires
-there, the skill bodies aren't loaded and the shipped PreToolUse hook only
-matches `Task|Agent|Workflow`, so it never sees a code write at all. (That
-matcher gained `Workflow` on 2026-08-05; this sentence said `Task|Agent` until
-2026-08-21, contradicting the JSON above it.) Since v4.103.0 the gap is
-narrower for *correctness* and unchanged for *conventions*: smartreview now
+there, the skill bodies aren't loaded and the reference PreToolUse hook only
+matches `Task|Agent|Workflow`, so it never sees a code write at all. Since
+v4.103.0 the gap is narrower for *correctness* and unchanged for
+*conventions*: smartreview now
 hunts breaking defects at the merge gate, so an inline-route bug has one more
 place to get caught before it ships. A convention violation still has none. Honest scope: that
 leaves exactly two surfaces in context, the standing file and any SessionStart

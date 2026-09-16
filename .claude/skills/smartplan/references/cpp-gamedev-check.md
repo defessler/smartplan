@@ -30,12 +30,16 @@ zero judgment, which several rows here are not — and these categories are
 exactly the shared-blind-spot domains where the verifier-catchability
 guardrail already refuses to floor low.
 
-**On Copilot, get that strength cost-consciously.** The "Opus-or-comparable"
-strength this layer needs comes from the cross-family
+**On Copilot, get that strength cost-consciously.** What stands in for
+Opus-comparable strength there is the cross-family
 verifier — **Gemini 3.6 Flash** (0.75/3.75; T18 measured 3.1 Pro, T34
 cleared this successor at 8/8 before Copilot retired it 2026-09-01) or
 GPT-5.6 Terra — per
-`check.md` § Family decorrelation. That call now rests on **cost and
+`check.md` § Family decorrelation. The registry classes Gemini 3.6 Flash
+**Implementer**, level with Sonnet 5 rather than with Opus (reclassified
+2026-09-07). Naming it here is a deliberate exception for these six
+categories, earned on the decorrelation and price grounds below rather than
+on benchmark parity with Opus. That call now rests on **cost and
 decorrelation, not on the gate**: T30 (2026-07-25) saw Opus 4.8 and 5 serve
 on an account that refused 4.8 on 07-11, so treat the Pro+/Max gate as the
 base expectation to verify rather than a fact. Gemini still wins here on
@@ -45,6 +49,14 @@ degrades to Sonnet-judging-Sonnet. For
 these six shared-blind-spot categories, family decorrelation is worth more
 than the last few benchmark points, so the cheaper decorrelated judge is the
 right default on a UE5 gameplay leaf — not the priciest same-goal one.
+
+**Roster note, read 2026-09-15.** Copilot retires Gemini 3.6 Flash on
+2026-10-02 (changelog 2026-09-03). GitHub names **Gemini 3.8 Flash** the
+successor, same 0.75/3.75 promotional price through 2026-12-31. Nothing has
+run 3.8 Flash against T34's seeded fixture. Treat it as a candidate rather
+than a default. Keep GPT-5.6 Terra as the cross-family fallback here until a
+trial clears it. The date is Copilot's alone. On Google's own API
+the model stays stable with no announced shutdown.
 
 ## Contents
 
@@ -108,10 +120,10 @@ never stated.
 | [G] | Two members/systems both act as owner of the same resource with no arbitration comment (dual/unclear ownership). |
 | [G] | An iterator/pointer/reference into a container held across an insert/erase/reallocation of that container. |
 | [G] | A self-referential pointer/iterator (points into `this`) on a type moved or copied without a user-defined move/copy that fixes it up. |
-| [U] | A `UObject*`/engine-object raw pointer stored as a class member with no ownership comment and no `TObjectPtr`/`TWeakObjectPtr` — GC can free it out from under the raw pointer. |
+| [U] | A `UObject*`/`TObjectPtr` member with no `UPROPERTY()`, not a `TWeakObjectPtr`, and not reported through `FGCObject::AddReferencedObjects` — GC can't see it: it dangles after any GC pass. |
 | [C] | A resource referenced as a raw pointer into an engine-owned pool/array where the project's convention is a handle (index + generation) — a raw pointer survives a pool free/reallocation, the handle wouldn't. |
 
-**Example finding:** `Ownership & lifetime · Enemy.cpp:142 · AIController stored as a raw AController* member, no ownership note · TWeakObjectPtr<AController> + IsValid() before use`
+**Example finding:** `Ownership & lifetime · Enemy.cpp:142 · AIController stored as a raw AController* member with no UPROPERTY · TWeakObjectPtr<AController> + IsValid() before use`
 
 ## 2. Undefined behavior
 
@@ -256,15 +268,15 @@ category names, same [G]/[U]/[C] profile gates) — one taxonomy, one home.
 
 - **Ownership & lifetime** — [G] raw owning pointer with no RAII owner ·
   [G] use-after-move · [G] iterator/reference held across a reallocating
-  container op · [U] `UObject*` member with no `UPROPERTY()`/`TObjectPtr`
-  (GC can collect it).
+  container op · [U] `UObject*` member with no `UPROPERTY()` and no
+  `TWeakObjectPtr` (GC can't see it).
 - **Undefined behavior** — [G] signed overflow in index/size arithmetic ·
   [G] `reinterpret_cast` type-punning (strict aliasing) · [G] dangling
   `string_view`/`span` outliving its buffer · [G] uninitialized POD passed
   to a zero-init-assuming system.
 - **Performance hot-path** — [G] heap allocation inside a per-frame/inner
   loop · [G] missing move / pass-by-value copy of a large object · [G]
-  virtual dispatch in a tight loop where static would do · [C] AoS layout
+  virtual dispatch in a tight loop where static would do · [G] AoS layout
   on a hot path that's SoA-shaped.
 - **Threading model** — [G] shared/game state written from a worker thread
   without an owning-thread handoff · [G] blocking call on a
@@ -273,7 +285,7 @@ category names, same [G]/[U]/[C] profile gates) — one taxonomy, one home.
   (no IWYU) · [G] full type included where a forward declaration would do ·
   [U] `*.generated.h` not last in the include block.
 - **Determinism & serialization** — [G] sim step reading wall-clock or an
-  unseeded RNG · [G] save/replay format with no version field · [C]
+  unseeded RNG · [G] save/replay format with no version field · [G]
   hot-reload-unsafe static/singleton.
 
 ## Changelog / edge-case log

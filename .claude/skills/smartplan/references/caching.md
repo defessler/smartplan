@@ -4,7 +4,9 @@
 > sub-agents, memory, costs) and platform.claude.com/docs (pricing,
 > context-windows, compaction); see the development repo's claim ledger. Fork-command rename and
 > the fast-mode / overage-TTL additions re-verified 2026-07-21 at source
-> (sub-agents + prompt-caching docs).
+> (sub-agents + prompt-caching docs). §1's TTL-bucket, per-seat
+> `cacheTtl` and hit-ratio lines came with the 2026-08-28 sweep. The
+> invalidation rows and the API-axis facts were re-read 2026-09-15.
 
 Load this on Claude Code when sizing a fan-out for cost, choosing an
 in-session fork (`/subtask`) vs. a fresh subagent, debugging an unexpectedly cold cache, or trimming
@@ -48,6 +50,10 @@ the conversation so far). Matching is **exact, not per-segment**: a change
 anywhere in the prefix invalidates everything *after* it, not just the part
 that changed.
 
+Exception: cache hits and refreshes on Fable 5.1 and Mythos 5.1 bill at
+0.025× base input, about a 97.5% discount. On those two models a broken
+prefix costs 50× the read, not 12.5×.
+
 | TTL | Write | Read | Breaks even on |
 | --- | --- | --- | --- |
 | 5-minute | 1.25× base input | 0.1× base input | 1st reuse |
@@ -59,11 +65,12 @@ TTL clock; only a real idle gap longer than the TTL forces a cold rebuild.
 **TTL is set per bucket, and the buckets are separate.** The main conversation
 takes `promptCacheTtl` / `CLAUDE_CODE_PROMPT_CACHE_TTL`; everything else,
 subagents included, takes `subagentPromptCacheTtl` /
-`CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` (both need Claude Code ≥ 2.1.242).
-Resolution runs **six levels**, first match winning: `FORCE_PROMPT_CACHING_5M=1`
-· the bucket's env var · the bucket's setting · a subagent's
-`experimental.cacheTtl` frontmatter (≥ 2.1.248) · `ENABLE_PROMPT_CACHING_1H=1`,
-which requests an hour for *both* buckets · the bucket default.
+`CLAUDE_CODE_SUBAGENT_PROMPT_CACHE_TTL` (both need Claude Code ≥ 2.1.242,
+read 2026-08-28). Resolution runs **six levels**, first match winning:
+`FORCE_PROMPT_CACHING_5M=1` · the bucket's env var · the bucket's setting ·
+a subagent's `experimental.cacheTtl` frontmatter (≥ 2.1.248, read
+2026-08-28) · `ENABLE_PROMPT_CACHING_1H=1`, which requests an hour for
+*both* buckets · the bucket default.
 
 **A subagent is not locked out of the 1-hour tier — it just defaults to five
 minutes** on every billing path, and a longer tier is settable per seat. One
@@ -76,21 +83,26 @@ prefix and pays its own write.
 
 | Trigger | Why |
 | --- | --- |
-| Switching `/model` or `/effort` mid-session | Both are part of the cache key. (An effort switch now warns with a confirmation dialog before busting the cache.) |
+| Switching `/model` mid-session, or `/effort` on most models | Each model has its own cache. On most models so does each effort level. Fable 5.1 on an API key or a subscription keeps the cache across an effort change (v2.1.260+), but not on Bedrock, Google Cloud, a Claude apps gateway, or with `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`. Claude Code asks you to confirm either switch only while the cache is warm. |
+| A skill or command whose `model:` frontmatter differs from the session, an automatic safety fallback, or an `opusplan` plan-mode toggle | Each is a model switch. So the next request re-reads the whole history uncached. |
 | **First** fast-mode enable in a conversation | Fast mode adds a request header that is part of the cache key, so that one turn re-reads the whole history uncached — **at fast-mode rates**, which makes enabling it late in a long session the expensive case. Turning it off and on again later is free. `/clear` and `/compact` reset the once-per-conversation clock. |
 | Falling into usage-credit overage (subscription) | Silently drops the main conversation from the 1-hour to the 5-minute TTL — a long orchestrator session near plan limits loses its TTL margin exactly when spend matters. |
 | Churning the tool/MCP set | Tool defs live in the prefix; adding or removing one invalidates tools+system+messages together. |
-| A bare-name tool deny, e.g. `deny:["Bash"]` | Strips the tool definition, which busts the cache. A *scoped* rule like `Bash(rm *)` doesn't. |
-| A Claude Code version upgrade landing mid-`--resume` | New version → changed system prompt → the entire history reprocesses at full price. `DISABLE_AUTOUPDATER=1` for predictable timing. |
+| A bare-name tool deny, e.g. `deny:["Bash"]`, when tool search is off or unavailable | Strips the tool definition, which busts the cache. Removing the rule later does it again. With tool search on (the default on supported models) the prefix survives. A *scoped* rule like `Bash(rm *)` never touches it. |
+| A Claude Code version upgrade | The new version's system prompt makes the next *new* conversation build its cache from the top. A `--resume` keeps the prompt it started with by default. So its rebuild moves to the first compaction instead. Auto-update applies on next launch, never mid-session. `DISABLE_AUTOUPDATER=1` for predictable timing. |
 
 Prefer **`/rewind`** over **`/clear`** to back out of a bad turn: `/rewind`
 truncates to a still-cached point, `/clear` discards the cache entirely.
 Monitor hit rate with **`/usage`**: it breaks cost down by skills, subagents,
 plugins, Loops and per-MCP-server, and on v2.1.251+ prints a **Prompt cache
-(main) hit-ratio** line that makes a hand-rolled statusline redundant for
-subscribers. Watch its **behavior flags** rather than raw counters — "cache
-misses" is a named signal that fires on a 10% threshold, so it tells you the
-prefix is breaking without your having to diff two numbers yourself. A
+(main) hit-ratio** line (read 2026-08-28) that makes a hand-rolled statusline
+redundant for subscribers. It covers the main conversation only. So a wave's
+cold writes never show there. A miss is more than 5% and at least 2,000
+tokens re-processed. v2.1.260+ names the likely cause (e.g. `tool
+definitions changed`). Watch its **behavior flags** rather than raw
+counters — "cache misses" is a named signal that fires on a 10% threshold.
+So it tells you the prefix is breaking without your having to diff two
+numbers yourself. A
 statusline reading `cache_read_input_tokens` / `cache_creation_input_tokens`
 still works where `/usage` isn't available.
 
@@ -103,12 +115,16 @@ still works where `/usage` isn't available.
   simultaneous wave free: an entry only becomes readable once the first
   response starts streaming, so N dispatches fired at the same instant all
   pay the cold write (§ External levers, and flow.md step 3 carries the
-  stagger rule). Stagger the wave and the siblings read at 0.1×; fire it
+  stagger rule). Where staggering pays, the siblings read at 0.1×; fire it
   flat and every one of them writes. Worktrees never share at all (each is
-  its own working directory).
+  its own working directory). Sequential sessions share only when the
+  startup git-status snapshot matches. So a commit between two headless arms
+  cools the second one's cache.
 - **Deferred MCP tools (the default) are cache-safe** — servers
   connecting/disconnecting only append; tools loaded into the prefix
-  (Haiku, `alwaysLoad`, gateways) invalidate on any change.
+  invalidate on any change (tool search unavailable, e.g. a custom
+  `ANTHROPIC_BASE_URL` gateway or pre-4.5 Google Cloud models, plus
+  `alwaysLoad` and threshold-based loading).
 - **Skill-listing context is capped per skill** — description +
   `when_to_use` truncate at 1,536 chars in the listing; a skill with
   `disable-model-invocation: true` is never auto-loaded by the model (and
@@ -117,20 +133,23 @@ still works where `/usage` isn't available.
 - **Compaction re-injects invoked skill bodies "capped at 5,000 tokens
   per skill and 25,000 tokens total; oldest dropped first"** (confirmed
   verbatim 2026-07-11, context-window docs) — the hard reason the kernel
-  carries a byte budget at all. That budget is now **5,120B**
-  (the repo's byte-budget gate; ratcheted 16KB→4KB on 2026-07-13, raised
-  4→5KB on 2026-07-30), which is a low four-figure token count on any
-  plausible tokenizer and so clears the 5,000-token per-skill cap with room
-  to spare — the whole body survives a compaction. The pre-M2 36KB kernel
-  did not: it blew past the cap and was silently truncated every time.
+  carries a byte budget at all. That budget is now **10,752B**
+  (the repo's byte-budget gate; ratcheted 16KB→4KB on 2026-07-13, raised in
+  steps since, most recently on 2026-09-15), which is a low four-figure
+  token count on any plausible tokenizer and so clears the 5,000-token
+  per-skill cap with room to spare — the whole body survives a compaction.
+  The pre-M2 36KB kernel did not: it blew past the cap and was silently
+  truncated every time.
 
 ### 2. The two smartplan seams (why this reference exists)
 
 **Seam A — the §A belt-and-suspenders is safe.** §A's wave guarantee —
 `export CLAUDE_CODE_SUBAGENT_MODEL=sonnet` before an implementer wave,
 `=inherit` after — only changes which model a *dispatched subagent* resolves
-to. Setting it is a shell export plus a tool call appended to the *end* of
-the orchestrator's transcript, not an edit to the orchestrator's own model,
+to when nothing else already names one (a per-call model or a seat's own
+frontmatter wins). Setting it is a shell export plus a tool call appended to
+the *end* of the orchestrator's transcript, not an edit to the
+orchestrator's own model,
 tools, or system prompt — by the documented cache-key rules (§1: model,
 tools, and system define the key; appending new turns doesn't retroactively
 change any of them), that means it never touches the main thread's cache.
@@ -143,9 +162,9 @@ everything already in its transcript.
 **Seam B — fan-out width fights cache economics.** smartplan's decomposition
 guidance (flow.md step 1) optimizes for **maximum parallelism** — many
 small independent leaves. Caching optimizes for **staying in one warm
-context**. Every fresh subagent builds its **own cold cache** and gets only
-the **5-minute TTL** — the free 1-hour TTL is main-conversation-only, even on
-a subscription. A 5-leaf wave is five cold cache-writes of
+context**. Every fresh subagent builds its **own cold cache** and gets the
+**5-minute TTL by default**, even on a subscription, until you raise its
+bucket or its seat (§1). A 5-leaf wave is five cold cache-writes of
 system+CLAUDE.md+tools that the main thread would otherwise pay for once;
 this is the documented reason fan-out multiplies spend.
 
@@ -180,11 +199,14 @@ matter specifically to a fan-out run:
   this one. At each wave boundary, run `/compact <focus on the plan + open
   leaves>` rather than trust the default heuristic, or steer every
   compaction in the project with a `# Compact instructions` block in
-  CLAUDE.md. Run `/context` between waves first for the window-size read,
-  but don't plan around a per-source breakdown: the development repo's claim ledger marks that
-  claim PARTIAL and records `/context` as window-size only.
-  For a run that's
-  genuinely large rather than just accumulated, the **1M context window** is
+  CLAUDE.md. A mid-run CLAUDE.md edit is cache-safe but takes effect only at
+  the next `/compact`, `/clear` or restart. Compact while the wave's returns
+  are still warm, not after an idle gap. A warm `/compact` reads the prefix
+  from cache and costs a fraction of the context size. A cold one
+  reprocesses the whole history as uncached input. Run `/context` between
+  waves first for the window-size read, but don't plan around a per-source
+  breakdown, which no ledger row backs. For a run that's genuinely large
+  rather than just accumulated, the **1M context window** is
   the alternative to fighting compaction: no pricing premium above 200K (a
   900K-token request bills at the same per-token rate as a 9K-token one).
   Sonnet 5 runs 1M by default, auto-compacting near 967K; Opus gets it free
@@ -219,18 +241,21 @@ isolation. All three levers are independent and additive — skipping one
 doesn't get made up for by the other two.
 
 Numbers above carry the date of the pass that verified them — the
-2026-07-09 base sweep, the 07-11 additions marked inline, and the 07-21
-re-verify named in the header. Model prices move — Sonnet 5's own scheduled
-2026-09-01 step-up was cancelled on 2026-08-10 and $2/$10 is now the
-standard rate, which is exactly why you re-check rather than extrapolate.
-The multipliers in this file don't change, the dollars they multiply do.
+2026-07-09 base sweep, the 07-11 additions marked inline, the 07-21
+re-verify named in the header, the 08-28 sweep additions marked inline, and
+the 2026-09-15 re-read of the invalidation rows and the API-axis facts.
+Model prices move — Sonnet 5's own scheduled 2026-09-01 step-up was
+cancelled on 2026-08-10 and $2/$10 is now the standard rate, which is
+exactly why you re-check rather than extrapolate.
+The multipliers in this file mostly don't change, the dollars they multiply
+do. Fable 5.1 and Mythos 5.1 already broke that rule with a 0.025× read.
 Root **the development repo's claim ledger** holds the source check for the
 **priced and capped** claims here — the cache multipliers, the base rates,
 the compaction and skill-listing caps — so re-verify those against it
 rather than trusting these numbers indefinitely. It does **not** cover the
-whole page: `/rewind` vs `/clear`, `/subtask`, and the entire auto-memory
-bullet carry no row at time of writing, and `/context`'s row is PARTIAL.
-Treat those as docs-sourced-when-written, not ledger-backed.
+whole page: `/rewind` vs `/clear`, `/context`, and the entire auto-memory
+bullet carry no row at time of writing. Treat those as
+docs-sourced-when-written, not ledger-backed.
 
 ## Language compression — which side of the token to compress
 
@@ -258,15 +283,24 @@ pruning protects instructions by its own design — same verdict.)
 
 - **Stagger wave dispatch:** a cache entry is readable only after the first
   response BEGINS streaming — N simultaneous same-prefix dispatches ALL pay
-  the cold 1.25× write. Fire one leaf, await first output, then the rest
-  (flow.md step 3 carries the rule).
+  the cold 1.25× write. Fire one leaf, await first output, then the rest,
+  but only when the saved cold writes outweigh the extra orchestrator turn
+  (flow.md step 3 carries the break-even test and a measured case where
+  staggering loses).
 - **Byte-stability:** never put dynamic bytes (timestamps, counters) early
   in a reused prefix — one changed byte turns downstream 0.1× reads into
-  12.5×-relative writes.
+  12.5×-relative writes (50× on Fable 5.1 and Mythos 5.1).
 - **API-axis only** (scripted verify, benchmark harnesses — unreachable
-  from inside Claude Code/Copilot): 1-hour TTL (2× write, break-even on the
-  2nd read per §1's table); `max_tokens:0` pre-warm; Message Batches 50% off for async
-  post-hoc work, never merge-gating verify.
+  from inside Claude Code/Copilot): `max_tokens:0` pre-warm; Message Batches
+  50% off for async post-hoc work, never merge-gating verify. A breakpoint
+  only finds writes within the last 20 blocks (a run of parallel tool calls
+  counts as one). So a harness with a long growing transcript needs a second
+  breakpoint. Cache hits don't count against rate limits. Two harnesses in
+  different workspaces never share a cache on the Claude API.
+- **The 1-hour TTL is not one of them.** It's settable in Claude Code too,
+  through §1's per-bucket settings. On the API it's `ttl: "1h"` (2×
+  write, break-even on the 2nd read per §1's table). Only Copilot has no
+  control for it.
 - **Closed negatives:** token-efficient-tools is built into Claude 4+ (a
   no-op header); **prompted** LLM-summarizing of context LOSES
   to omission/masking (arXiv:2508.21433) — never spend a model call to
@@ -414,9 +448,9 @@ guess into a check.
 **Claude Code staggers a workflow fan-out for you now.** In a fan-out of
 same-prefix agents it briefly holds all but the first, so the rest read the
 prefix the first one cached instead of each paying a cold write. The manual
-stagger in `flow.md` step 3 is still the right instinct on other harnesses and
-for hand-rolled dispatch, but on Claude Code workflows it is no longer work
-you have to do.
+stagger in `flow.md` step 3 is still the right instinct on other harnesses
+and for hand-rolled dispatch, where its break-even test says it pays, but on
+Claude Code workflows it is no longer work you have to do.
 
 **Agent teams cost about 7× a standard session** when teammates run in plan
 mode, because each teammate keeps its own context window and runs as a
@@ -435,10 +469,13 @@ hourly in long sessions, caused by tool definitions re-rendering after an
 OAuth token refresh. Check your version before designing around an
 unexplained hourly cost spike.
 
-**Adding a plugin mid-session is free.** A plugin's skills, commands, agents,
-hooks, monitors and themes append *after* the existing conversation, so the
-next request pays for that content once and still reads everything before it
-from the cache. This is the rare mid-run change that does not invalidate.
+**Adding a plugin mid-session is mostly free.** A plugin's skills, commands,
+agents, hooks, monitors and themes append *after* the existing conversation,
+so the next request pays for that content once and still reads everything
+before it from the cache. This is the rare mid-run change that does not
+invalidate. The exception is a plugin that ships MCP servers. It follows the
+MCP rule. So tools loaded into the prefix force a full re-read.
+`/reload-plugins` warns and holds that reload unless you pass `--force`.
 
 **Automatic caching is now the recommended default on the API axis** — a
 single top-level `cache_control` field, with the system managing breakpoints
@@ -457,8 +494,9 @@ character count is stable across that change and a token count is not.
 
 ## Two caps on the skill listing, not one
 
-The 1,536-character per-skill description cap is the one this repo tracks
-(gate (k)). There is a second above it: **the listing budget scales at 1% of
+The 1,536-character per-skill description cap is Claude Code's. This repo's
+own gate (k) is tighter, capping all six descriptions at 2,304 bytes
+combined. There is a second above it: **the listing budget scales at 1% of
 the model's context window**, and when it overflows Claude Code drops
 descriptions **starting with the skills you invoke least**, so the ones you
 use most keep their full text. A family that installs six descriptions is
@@ -477,8 +515,12 @@ own level and everything after it:
 
 - **Tool definitions** are the only thing that blows the whole cache.
 - **`tool_choice` and images** invalidate the messages cache alone.
+- **Web search, citations and `speed`** invalidate system and messages but
+  keep tools.
 - **Effort and thinking** always invalidate the messages cache, and are
-  model-specific for tools and system.
+  model-specific for tools and system. Two exceptions. An explicit effort
+  equal to the model default is a no-op. A per-message effort change in a
+  `role: "system"` message keeps the prefix.
 
 The practical advice in §1 survives unchanged. The mental model behind it
 was cruder than the mechanism.
@@ -489,7 +531,7 @@ cache on an older, cheaper one:
 
 | Floor | Models |
 | --- | --- |
-| 512 | Opus 5, Fable 5, Mythos 5 |
+| 512 | Fable 5.1, Mythos 5.1, Opus 5, Fable 5, Mythos 5 |
 | 1,024 | Opus 4.8, Sonnet 5, Sonnet 4.6, Sonnet 4.5, Opus 4.1, Opus 4, Sonnet 4 |
 | 2,048 | Opus 4.7, Mythos Preview |
 | 4,096 | Opus 4.6, Opus 4.5, **Haiku 4.5** |
@@ -535,8 +577,9 @@ which is the same four-harness pressure that produced `zcode.md` and
 Both of these are primary-source support for a route-inline-first default
 that until now rested on this repo's own measurement:
 
-- **Coding is a stated poor fit for multi-agent fan-out.** The same post
-  that supplies the 15× token multiplier says so directly, on two grounds:
+- **Coding is a stated poor fit for multi-agent fan-out.** Anthropic's
+  multi-agent research post, which measured multi-agent runs at about 15× a
+  chat's tokens, says so directly, on two grounds:
   fewer genuinely parallelizable subtasks than research, and weak real-time
   coordination between agents.
 - **Simplest solution first.** The foundational agents post states the

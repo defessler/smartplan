@@ -36,8 +36,13 @@ probe checked, and Claude Code re-reminds the model of an active style during a
 conversation.
 
 Re-running is safe. Every hook this script owns is found by its
-smartvoice/voice_hook.py path and replaced, never duplicated. Each existing file
-it rewrites is backed up once, beside the original, with a timestamp suffix.
+smartvoice/voice_hook.py path and replaced, never duplicated. A settings.json,
+output style, or copilot-instructions.md this script rewrites in place is
+backed up once, beside the original, with a timestamp suffix. That backup also
+runs before copilot-instructions.md is deleted on an uninstall that empties
+it. Its own resident rules.md and voice_hook.py copies, hooks/smartvoice.json,
+and a stale or uninstalled output style are replaced or deleted outright, with
+no backup.
 """
 import argparse
 import getpass
@@ -205,6 +210,15 @@ def style_filename(style):
     return re.sub(r"[^a-z0-9]+", "-", style.lower()).strip("-") + ".md"
 
 
+def generated_styles(styles_dir, keep=None):
+    if not styles_dir.is_dir():
+        return []
+    return [
+        path for path in sorted(styles_dir.glob("*.md"))
+        if path != keep and GENERATED in path.read_text(encoding="utf-8")
+    ]
+
+
 def claude_install(home, block, python, plan):
     resident = home / "smartvoice"
     rules_path = resident / "rules.md"
@@ -216,6 +230,9 @@ def claude_install(home, block, python, plan):
     plan.say("claude", "resident rules and hook in %s" % resident)
 
     style_path = home / "output-styles" / style_filename(block["style"])
+    for stale in generated_styles(home / "output-styles", keep=style_path):
+        plan.remove(stale)
+        plan.say("claude", "removed stale output style %s" % stale.name)
     style_text = (
         "---\n"
         "name: %s\n"
@@ -279,27 +296,30 @@ def strip_owned_hooks(hooks, events):
 def claude_uninstall(home, plan):
     styles_dir = home / "output-styles"
     removed_styles = []
-    if styles_dir.is_dir():
-        for path in sorted(styles_dir.glob("*.md")):
-            text = path.read_text(encoding="utf-8")
-            if GENERATED in text:
-                name = re.search(r"^name:\s*(.+)$", text, re.M)
-                removed_styles.append(name.group(1).strip() if name else "")
-                plan.remove(path)
-                plan.say("claude", "removed output style %s" % path.name)
+    for path in generated_styles(styles_dir):
+        text = path.read_text(encoding="utf-8")
+        name = re.search(r"^name:\s*(.+)$", text, re.M)
+        removed_styles.append(name.group(1).strip() if name else "")
+        plan.remove(path)
+        plan.say("claude", "removed output style %s" % path.name)
     settings_path = home / "settings.json"
     if settings_path.is_file():
         settings = load_json(settings_path)
+        changed = False
         hooks = settings.get("hooks")
         if isinstance(hooks, dict):
+            before = json.dumps(hooks, sort_keys=True)
             strip_owned_hooks(hooks, list(hooks.keys()))
-            if hooks:
-                settings["hooks"] = hooks
-            else:
-                settings.pop("hooks", None)
+            if json.dumps(hooks, sort_keys=True) != before:
+                changed = True
+                if hooks:
+                    settings["hooks"] = hooks
+                else:
+                    settings.pop("hooks", None)
         if settings.get("outputStyle") in removed_styles:
             settings.pop("outputStyle", None)
-        if plan.write(settings_path, dump_json(settings)):
+            changed = True
+        if changed and plan.write(settings_path, dump_json(settings)):
             plan.say("claude", "settings.json: removed smartvoice hooks and outputStyle")
     if plan.remove(home / "smartvoice"):
         plan.say("claude", "removed %s" % (home / "smartvoice"))

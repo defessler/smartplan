@@ -8,8 +8,7 @@ built from published research on what makes text read as AI-written, so a
 document passes as competent human technical writing without imitating
 anyone. The skill body's anti-AI-slop layer strips the tells; this profile
 adds the positive register — what the prose should *do*, not just avoid.
-Sources are listed at the bottom; the load-bearing ones are rowed in root
-the development repo's claim ledger.
+Sources are listed at the bottom.
 
 ## Contents
 

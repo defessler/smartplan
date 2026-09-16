@@ -43,9 +43,10 @@ every finding becomes over-engineering (`code.claude.com/docs/en/best-practices`
 1. Read the brief (AUTHORIZATION / TASK / FILES / CHANGE / VERIFY FIRST /
    CONVENTIONS / ACCEPTANCE / NON-GOALS) and the executor's report. No
    quoted go-signal under AUTHORIZATION → FAIL (executed unauthorized),
-   regardless of the diff. DONE report missing its Verify-first line → note
-   it; missing **and** the VERIFY FIRST fact was wrong in a way the diff
-   shows → FAIL.
+   regardless of the diff. Plan-task-text leaves: the gate's quoted
+   go-signal is AUTHORIZATION, the plan's file list FILES. DONE report
+   missing its Verify-first line → note it; missing **and** the VERIFY
+   FIRST fact was wrong in a way the diff shows → FAIL.
 2. **Re-run the ACCEPTANCE command yourself** — never trust pasted output;
    a different result than reported → FAIL. Then judge the check itself.
    **Rank the oracle: 1** executable (compiler, assertion, replayed real
@@ -119,16 +120,17 @@ output and FILES yields an allow-list, protocol steps 2–3 run as a
 the contract permits (T8's oracle style): **a model verifier never
 re-derives what a script already proved.** The model pass then covers only
 steps 1, 4, 5 (authorization, CHANGE-substance, conventions) — it stays
-mandatory at balanced-and-above because it catches *adjacent* defects
-scripts don't test (live: a self-contradictory brief ACCEPTANCE, T9), but
-on template-bound micro-leaves it has measured ≈zero marginal yield
-(T7/T8), which is why budget/max-savings may go script-only per
-`modes.md`. A script FAIL is a strike like any smartcheck FAIL.
+mandatory at balanced-and-above (credit-billed samples it, below) because
+it catches *adjacent* defects scripts don't test (live: a
+self-contradictory brief ACCEPTANCE, T9), but on template-bound
+micro-leaves it has measured ≈zero marginal yield (T7/T8), which is why
+budget/max-savings may go script-only per `modes.md`. A script FAIL is a
+strike like any smartcheck FAIL.
 
-**Credit-billed default (Copilot — measured T22/T23/T24):** the model
-verify is the dominant fixed tax there (one batched smartcheck ran 16 cr,
-83% of the entire inline arm, T22), so the DEFAULT ladder is script stage
-first (mandatory), then the model pass **batched** (§ Batch) **and
+**Credit-billed default (Copilot at balanced — measured T22/T23/T24):**
+the model verify is the dominant fixed tax there (one batched smartcheck
+ran 16 cr, 83% of the entire inline arm, T22), so the ladder is script
+stage first (mandatory), then the model pass **batched** (§ Batch) **and
 sampled** on homogeneous waves ≥5 — verify ⌈N/3⌉, all on any failure —
 declared at the plan gate. Shared-blind-spot classes (C++ UB, concurrency,
 templates, security) are exempt and keep the full model verifier at tier.
@@ -274,14 +276,15 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
   Flash** (or Sonnet 5); **GPT-5.4** only when the executor is not an
   OpenAI model, since GPT-5.6 Luna holds the Cheap seat from 2026-09-07
   and would be same-family; never mini/nano tiers. Sonnet/Opus leaves →
-  **Gemini 3.6 Flash** (0.75/3.75, the cost-sensitive default and the
-  ungated Strong verifier on Copilot Pro) or **GPT-5.6 Terra** only when
-  its thoroughness edge earns ~2× the cost. **Measured (T18): Gemini ties
-  Terra on seeded C++ recall, 14/15 each, at 47% the cost** — don't reach
-  for the pricier judge by habit. When strength and decorrelation
-  conflict: shared-blind-spot domains (C++ UB, concurrency, security —
-  **UE5 gameplay is all of these**) favor the decorrelated judge;
-  subtle-judgment domains favor the stronger same-family judge
+  **Gemini 3.6 Flash** (0.75/3.75, cost-sensitive. Implementer-class since
+  2026-09-07, Strong-comparable on measured recall parity, ungated on
+  Copilot Pro) or **GPT-5.6 Terra** only when its thoroughness edge earns
+  ~2× the cost. **Measured (T18, Gemini 3.1 Pro): tied Terra on seeded C++
+  recall, 14/15 each, at 47% the cost at July prices. T34 cleared 3.6 Flash
+  at 8/8** — don't reach for the pricier judge by habit. When strength and
+  decorrelation conflict: shared-blind-spot domains (C++ UB, concurrency,
+  security — **UE5 gameplay is all of these**) favor the decorrelated
+  judge; subtle-judgment domains favor the stronger same-family judge
   fresh-context. Same-family is an accepted risk noted in
   the verdict, not a FAIL. **Decorrelation has a ceiling (2026-07-25):**
   cross-family fixes *idiosyncratic* blind spots, not *systemic* ones —
@@ -293,9 +296,10 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
   on whether the outcome favored its own values (Anthropic Alignment
   Science, 2026-07-13).
 - **Optional panel mode:** 3 independent verifiers, majority verdict, zero
-  shared context — for higher-risk Cheap leaves, or when an Opus verdict on
-  a Sonnet leaf isn't affordable (the Weaver result). Skip under budget
-  pressure (`routing.md` § Session-limit).
+  shared context — for higher-risk Cheap leaves (skip under budget
+  pressure, `routing.md` § Session-limit), or for a Sonnet leaf whose
+  Strong verdict was asked for and declined (the Weaver result). It never
+  replaces the Strong floor or its Seat ceiling ask.
 
 ## Changelog
 

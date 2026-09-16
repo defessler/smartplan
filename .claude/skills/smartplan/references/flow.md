@@ -74,11 +74,11 @@ invoke anything.**
    mid-flight; re-gate the changed slice, not the whole plan. **Dynamic
    workflows are out of scope for gated work:** a workflow takes no mid-run
    user input beyond permission prompts, and its launch prompt is skipped
-   under bypass permissions, `claude -p` and the Agent SDK. (Its agents
-   inherit the session's permission mode unless a definition's
-   `permissionMode` overrides.) Launch one anyway and the gate moves to the
-   launch boundary — approve before it starts, because nothing stops it
-   after.
+   under bypass, `claude -p`, the Agent SDK and ultracode, and shown once
+   ever in auto mode. (Its agents inherit the session's permission mode. A
+   definition's `permissionMode` counts only from default, dontAsk or
+   plan.) Launch one anyway and the gate moves to the launch boundary —
+   approve before it starts, because nothing stops it after.
 3. **Dispatch leaves in parallel** with your harness's lever (§A/§B). A
    dispatch is a *subagent with its own model* — never in-context work by
    the session model. Fire every ready, disjoint-FILES leaf **concurrently**;
@@ -148,14 +148,17 @@ at the gate — full procedure in `routing.md` § Seat eligibility. An explicit
 | Choice | Model | Use when |
 | --- | --- | --- |
 | **Default** | **Opus 5** | Multi-file, cross-cutting, ambiguous, or any plan whose blast radius you can't bound at a glance. |
-| Drop down (on fit) | Sonnet 5 · Haiku 4.5 | The plan is unmistakably small, bounded, single-domain, unambiguous. |
+| Drop down (on fit) | Sonnet 5 | The plan is unmistakably small, bounded, single-domain, unambiguous. |
 | Max (opt-in) | **Fable 5.1** | The hardest architecture/decomposition decisions. **Planning only.** |
+
+This is the balanced baseline. `modes.md` § The matrix moves it per mode
+(budget: Sonnet default, max-savings: Sonnet always).
 
 **Bias toward staying on Opus when unsure** — a planning flaw reproduces
 across every executor (N× blast radius), so the drop-down is a *certainty*
-move — the inverse of the implementer seat below. On a seat below Opus
-the default planner is itself an ask: fold it into step 1's question, or
-ask it alone (SKILL.md § Seat ceiling).
+move — the inverse of the implementer seat below. When the mode's planner
+is Opus, a seat below it makes that default an ask: fold it into step 1's
+question, or ask it alone (SKILL.md § Seat ceiling).
 **Audit/review/synthesis that feeds a plan is planner-seat work** — same N×
 radius — capped at Opus, never Fable. Its findings are a **work queue, not
 a verdict**: reproduce before acting, log every cap (`check.md` § Review).
@@ -166,7 +169,7 @@ a verdict**: reproduce before acting, log every cap (`check.md` § Review).
 | --- | --- | --- |
 | **Cheap** | Haiku 4.5 | Mechanical, single-concern, verifier-checkable leaves (renames, formatting, codemods, boilerplate-from-exemplar) — only via smartexec **behind smartcheck**. Fails silently; never unverified. (Scouting: Cheap-floor, no-diff — step 4's spot-check path, not smartexec.) |
 | **Mid** | The newest Sonnet | Everything else — briefed/correctness-sensitive leaves, and anywhere the check can't be scripted. |
-| Reserve | Opus 4.8 | An *irreducibly* cross-cutting leaf (a mini-plan), or a fail-twice target. Not "hard algorithm." |
+| Reserve | Opus 5 | An *irreducibly* cross-cutting leaf (a mini-plan), or a fail-twice target. Not "hard algorithm." |
 
 **Two guardrails:** (1) **Bounce breakeven** — weaker-first *raises* token
 count (escalations are extra rounds) and pays back only on price/limit,
@@ -205,16 +208,16 @@ Never silently re-run; never skip tiers. Attempt counts persist in
 `run-state.md` and survive a resume. **Terminal case:** an Opus strike-out
 has no higher implementer tier (Max/Fable is planning-only, never an
 escalation target) — the orchestrator takes the leaf over itself,
-in-context, report attached. The same arithmetic governs the inline route
-(SKILL.md § Spiral guard).
+in-context, report attached, if its seat is Strong or above. Below that it
+stops, report written, naming the session model the leaf needs. The same
+arithmetic governs the inline route (SKILL.md § Spiral guard).
 
 ## Quality↔cost mode (one dial; default max-quality, max-savings on Copilot)
 
 `{{MODE}}` = `max-quality · high-quality · balanced · budget ·
 max-savings` — one dial biasing every discretionary knob (planner seat,
 floors, verify machinery, escalation trigger, effort, output register,
-fan-out width). Matrix plus the mode-invariant floors (human gate,
-never-merge-unverified, honesty, byte-verbatim evidence):
+fan-out width). Matrix plus the mode-invariant floors:
 **`references/modes.md`**. Set it per invocation (`--mode budget`), per leaf
 (brief MODE line), or once via the token; non-defaults go in `run-state.md`.
 
@@ -235,11 +238,12 @@ most of this flow **cannot ship there**, so read its verdict table first.
   overriding everything. So a Strong verifier's per-call `model:` lands even
   with the env var pinned. **Wave guarantee:**
   `export CLAUDE_CODE_SUBAGENT_MODEL=sonnet` before an implementer wave, then
-  **unset it** after — it still catches every leaf that names no model, and
-  since v2.1.196 `=inherit` is merely identical to unset, not a pin to the
-  session model. On a pre-2.1.251 binary the old order holds and the env var
-  *does* outrank the per-call value, so clear it before verify dispatches
-  there or the gate silently becomes Sonnet-judging-Sonnet.
+  **unset it** after — it still catches every leaf with no per-call or
+  frontmatter model, and since v2.1.196 `=inherit` is merely identical to
+  unset, not a pin to the session model. On a pre-2.1.251 binary the old
+  order holds and the env var *does* outrank the per-call value, so clear
+  it before verify dispatches there or the gate silently becomes
+  Sonnet-judging-Sonnet.
   Parallel edit leaves get `isolation: worktree` (costly — only for real
   parallel edits). Plan-feeding audits dispatch as `fork`: warm cache, but
   it **always runs the session model and ignores `model:` silently** — a
@@ -322,9 +326,11 @@ entirely (measured, T25 pilot); cap leaves, not the orchestrator.
   `claude-code.md` + `caching.md`.
 - **Weaker-first is a price/limit play** that pays only under the bounce
   breakeven with real leaf volume. Judge on **cost-per-merged-change**.
-- State the real Sonnet-floor gap: 85.2 vs 88.6 on SWE-bench Verified
-  (Sonnet 5 System Card, 2026-06-30) — near-frontier, never the uncited
-  "80–90%" folklore. <!-- claim:sonnet-vs-opus-swe-bench -->
+- State the Sonnet-floor gap by source class, never mixed: vendor 85.2
+  on SWE-bench Verified (Sonnet 5 System Card §8.2, 2026-06-30), and
+  vals.ai's independent 79.6 vs Opus 4.8's 88.6 and Opus 5's 97.0
+  (2026-09-15). Never the uncited "80–90%" folklore.
+  <!-- claim:sonnet-vs-opus-swe-bench -->
 - `run-state.md` is a **checkpoint, not durable execution** — only `passed`
   rows are safe skips on resume; `dispatched`/`failed`/`escalated` rows
   re-dispatch.

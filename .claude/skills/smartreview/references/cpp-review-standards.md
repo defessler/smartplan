@@ -2,20 +2,20 @@
 
 The standards doc `{{STANDARDS}}` points at until a project re-points it —
 see `../SKILL.md` for the driver: the three-category ranking, the protocol,
-PASS/FAIL/N-A discipline, hard rules, and the report template. This is now the **single combined
-document**: the A–M checklist, the tag legend, the **Engine** selector, the
-C++ fill-once tokens, the custom-engine **[C]** detail (section J), and the
-per-rule Epic-standard provenance all live here — no satellite reference
-files.
+PASS/FAIL/N-A discipline, hard rules, and the report template. This is the
+**review-time document**: the A–M checklist, the tag legend, the **Engine**
+selector, the C++ fill-once tokens, and the custom-engine **[C]** detail
+(section J) all live here. The per-rule Epic-standard provenance lives in
+one satellite, `cpp-review-standards-provenance.md` (same directory).
 
 This is **C++ gamedev, engine-profiled**. Most of the checklist is general
 C++ that applies to any game project, vanilla or a bespoke engine, and the
 engine-specific rows only switch on once a project says which engine it is.
 Unspecified stays unspecified: **Engine** ships at `vanilla`, the narrowest
 profile, and an unfilled knob resolves to N/A rather than to a guessed
-value. Epic's own answer is recorded per rule in § Provenance &
-Epic-standard validation, so adopting the Epic standard is something a
-project opts into, never something it inherits by saying nothing. Rows
+value. `cpp-review-standards-provenance.md` records Epic's own answer
+per rule. Adopting the Epic standard is something a project opts
+into, never something it inherits by saying nothing. Rows
 tagged **[G]** are general C++ gamedev and apply in every profile. Rows
 tagged **[U]** are Unreal- or Epic-standard, active only when
 `Engine = unreal` (changing them breaks builds or violates the engine
@@ -67,8 +67,8 @@ Three universal knobs — **Indentation**, **Max line length**,
 (`../SKILL.md § Project Profile — set once`) and ship **unfilled**. Rules
 A4, A5, and D1 read them from there and stay N/A until somebody fills
 them. The driver carries Epic's values for all three as a named example to
-copy in, and § Provenance & Epic-standard validation records Epic's
-position on each.
+copy in, and § The three knobs where Epic and house style collide records
+Epic's position on each.
 
 ### Rule tags
 
@@ -115,11 +115,12 @@ that file when it's present.
 | **Build & header hygiene** | ODR and link failures are BREAKING, plain IWYU nits are not | either |
 | **Performance hot-path** | costs frame time without failing | PRACTICE |
 
-Two of the six therefore produce **no** BREAKING row in this doc. Perf
-costs frame time rather than failing, so J1 is PRACTICE, and header hygiene
-only breaks when it reaches ODR or the linker, which is why A6 is BREAKING
-and A3 is PRACTICE. Section J's **Nearest correctness category** column is
-the worked example of the mapping. Name the category on every BREAKING finding so a
+Only one of the six therefore produces **no** BREAKING row in this doc.
+Perf costs frame time rather than failing, so J1 is PRACTICE, and header
+hygiene only breaks when it reaches ODR or the linker, which is why A6 is
+BREAKING and A3 is PRACTICE. Section J's **Nearest correctness category**
+column is the worked example of the mapping, before the four placement
+rules below adjust it. Name the category on every BREAKING finding so a
 smartcheck report and this one collate on `category · file:line` instead
 of double-reporting the same defect.
 
@@ -147,8 +148,9 @@ honest, and honesty is the band's only value.
 3. **A row takes the highest severity it owns**, not the severity of its
    most common finding.
 4. **The failure follows from the violation alone**, not from the violation
-   plus project setup the row can't see. That's what holds I2 and A2 at
-   PRACTICE.
+   plus project setup the row can't see. That's what holds I2, A2, and J6
+   at PRACTICE: J6's silent reset or dangling static needs a hot-reload
+   cycle to surface it.
 
 ## Per-file checklist
 
@@ -167,7 +169,7 @@ honest, and honesty is the band's only value.
 | A9 | [G] | **No emoji or decorative Unicode in committed text** | Code, comments, string literals, and log messages contain no emoji and no decorative glyphs — a documented generation tell, and MSVC's ANSI-codepage default mangles non-ASCII literals without `/utf-8`. [P] Projects may tighten to strict ASCII-only: no em/en dashes, curly quotes, or ellipsis characters in any committed file. Non-ASCII that is *data* (a deliberately localized literal) is exempt — flag it for confirmation rather than FAIL. |
 | A10 | [P] | **Formatter config is the authority** | Resolved once for the fileset rather than per file, and **N/A** where the project declares no formatter — A4 and A5 then carry the load alone. Where it declares one, exactly one config governs the code under review, it sits at the widest tree the project owns, and nothing shadows or voids it. **Resolution** — walk a changed file's parents the way the tool does; resolving to none leaves the file drifting to whatever each editor guesses. **Shadowing** — a nested config silently overrides its parent for a whole subtree with no error and no log line, and one merely duplicating its parent is a leftover. **Exclusions** — read the patterns, not the filename: one glob broad enough to match the language's own extensions makes every format command exit clean having touched nothing, and a tool reporting success while doing nothing is this row's signature failure. **Boundary** — a config reaching a vendored, upstream-engine, third-party, or generated tree is the opposite failure; exclude an unowned subtree positively. Where a config governs, it rather than the driver profile is the source of truth for the axes it encodes: transcribe them into **Indentation** and **Max line length**, name the config they came from in the report, file a disagreeing knob against the profile rather than against the code, then stop hand-checking those axes and file one finding per file. Case is no formatter's axis, so D1–D3 stay hand-checked, and where a config would move what another row pins, pin or exclude that spot instead — [U] A3's last include, A7 and A8's trailing-comment spacing. |
 
-### B. Type declarations (UCLASS, USTRUCT, UENUM, UINTERFACE) — `unreal` only
+### B. Type declarations (UCLASS, USTRUCT, UENUM, UINTERFACE)
 
 | # | Tag | Rule | What to check |
 |---|-----|------|---------------|
@@ -302,7 +304,9 @@ activate in `unreal` as usual.
 
 Container access and type discipline. L1 is the section's one correctness
 hazard rather than a preference: the assert most people assume sits under
-`operator[]` does not exist in the builds players run.
+`operator[]` does not exist in the builds players run. L1 and L2 are
+**[G]** and run in every profile. L3 is **[U]**. So it's N/A outside
+`unreal`. L4's [U] clauses activate in `unreal` as usual.
 
 | # | Tag | Rule | What to check |
 |---|-----|------|---------------|

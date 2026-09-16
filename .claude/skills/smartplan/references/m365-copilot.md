@@ -2,8 +2,9 @@
 
 > Facts verified 2026-08-12 against `learn.microsoft.com`, the raw
 > declarative-agent JSON schemas at `developer.microsoft.com`, and Microsoft's
-> published pricing. Nothing here is measured — no Microsoft surface is
-> installed on this machine, so every claim is read rather than observed.
+> published pricing, re-read 2026-09-15. Nothing here is measured — no
+> Microsoft surface is installed on this machine, so every claim is read
+> rather than observed.
 
 Load this only when the target is a Microsoft 365 Copilot surface. **Read the
 verdict first — most of this family does not ship here, and knowing which
@@ -12,29 +13,29 @@ half does saves a wasted build.**
 ## Contents
 
 - The verdict, up front
-- Declarative agents — why the family can't ship there
-- Copilot Studio — the one surface that can carry a skill
+- Declarative agents — why the family barely fits
+- Copilot Studio — the documented Skills feature
 - Hard limits (declarative agents)
 - MCP
-- There is a CLI — three, in fact
+- There is a CLI — two, in fact
 - Money
 - What smartplan actually becomes here
 
 ## The verdict, up front
 
-M365 Copilot is not one surface. It is three delivery targets with different
+M365 Copilot is not one surface. It is four delivery targets with different
 rules, and smartplan's fit differs sharply across them:
 
 | Target | Can it carry smartplan? | Why |
 | --- | --- | --- |
-| **Declarative agent** (M365 Copilot) | **No** | 8,000-char instructions, one inline string, no runtime file reference, no progressive disclosure, no frontier-model pick |
+| **Declarative agent** (M365 Copilot) | **Maybe, preview** | 8,000-char base instructions, one inline string, no frontier-model pick. Custom skills add SKILL.md and progressive disclosure, Frontier Preview only |
 | **Copilot Studio — GitHub Copilot harness** | **Yes, partially** | Ships a real `SKILL.md` Skills feature and a per-agent model picker |
 | **Copilot Studio — standard harness** | Policy only, no skills | Has model choice and a `reason` escalation keyword, but its "Skills" is a different, legacy feature |
 | **Copilot Cowork** | **Maybe — unprobed** | Microsoft documents direct conversion of Claude plugin packages, bundled skills included |
 
 So the honest shape is: **a mapping doc plus a narrow export for the GitHub
-Copilot harness.** The *declarative-agent* path is closed, and that is a
-structural fact rather than a limitation to engineer around.
+Copilot harness.** The *declarative-agent* path was closed by structure. It
+reopens only through the custom-skills preview below.
 
 **But "M365 is closed to this family" is now too strong.** Microsoft's Cowork
 customization page documents a fourth path: "If your file is a Claude or other
@@ -47,10 +48,12 @@ archive with `SKILL.md` at its root (10 MB compressed, 50 MB uncompressed,
 
 Read that as a **lead, not a shipping path**. Nobody here has probed whether a
 bundled `references/` tree survives the conversion, and that is precisely the
-property this family depends on. The 100-file cap also sits close to the
-release bundle's 51. Probe before any export doc promises it.
+property this family depends on. The 100-file cap also sits at about twice
+the release bundle's file count. The same page caps one skill at 20 companion
+files, above smartplan's 15. Probe before any export doc promises
+it.
 
-## Declarative agents — why the family can't ship there
+## Declarative agents — why the family barely fits
 
 **The manifest root is a closed set of exactly 15 keys.** Verified by
 downloading and parsing the raw v1.8 schema (53,896 bytes): `id`, `version`,
@@ -90,8 +93,11 @@ guarantee they will be honored as agent instructions."* That is stronger
 than a style preference.
 
 Put together: this family's shape is a `SKILL.md` body plus a `references/`
-tree loaded on demand. A declarative agent has one 8,000-character string and
-no way to defer anything. `flow.md` alone is 17KB.
+tree loaded on demand. A declarative agent's own instructions are one
+8,000-character string with no way to defer anything. `flow.md` alone is
+about 20KB. Custom skills (preview, Frontier Preview tenants, ms.date
+2026-09-03) close that half: a `SKILL.md` directory with progressive
+disclosure, 8 per agent, 20,000 characters each, folders three deep.
 
 ### The model-selection nuance
 
@@ -130,9 +136,9 @@ members in sentence case with literal spaces:
 
 It is an **effort** tier, not a model ID; **per-agent**, not per-call; and
 advisory — the property is prefixed `default_` precisely because *"users can
-always override this value through the model selector UI."* A known issue
-voids it outright: **"Default response mode isn't applied when the agent is
-invoked via @mention from the main Copilot experience."**
+always override this value through the model selector UI."* Microsoft
+published a 1.8 known issue voiding it under @mention, then removed the note
+without saying it was fixed. Open the agent directly.
 
 Map smartplan's effort axis onto it and stop there. It cannot express a
 model ladder.
@@ -160,20 +166,19 @@ on, so the *selection* model ports. The dispatch economics don't: with no
 documented parallelism and no per-worker model, a fan-out here buys
 separation of concerns, not tiering.
 
-## Copilot Studio — the one surface that can carry a skill
+## Copilot Studio — the documented Skills feature
 
 ### Three harnesses, not two
 
 The current "Choose a harness" page documents **three**: the **GitHub Copilot
-harness**, the **standard harness**, and the **Copilot chat harness**. An
-older page (`agents-experience/overview`, ms.date 2026-06-23) still says
-"the two harnesses" — the newer harnesses-overview (ms.date 2026-07-28,
-updated 2026-08-03) carries three and wins. Microsoft's own docs disagree
-with each other at time of writing.
+harness**, the **standard harness**, and the **Copilot chat harness**.
+`agents-experience/overview` (updated 2026-09-09) no longer carries its "the
+two harnesses" wording. The docs agree now.
 
 "Agents cannot be transferred between them" is confirmed **verbatim but
-narrowly** — the sentence covers the GitHub Copilot / standard pair only.
-Nothing published addresses the Copilot chat harness either way.
+narrowly** — that sentence, on `agents-experience/overview`, covers the
+GitHub Copilot / standard pair only. Nothing published addresses the Copilot
+chat harness either way.
 
 ### The Skills feature — real, and its specifics are thinner than they look
 
@@ -213,10 +218,11 @@ the **UI Name field** on the create and edit forms, not stated `SKILL.md`
 frontmatter validation. Copilot Studio also omits the 64-character maximum
 and the no-consecutive-hyphens rule the spec carries elsewhere.
 
-**"Shape-compatible with Anthropic Agent Skills" is unsupported at this
-source.** Those pages never cite agentskills.io, never mention Anthropic and
-never reference `.claude/skills`. The shape rhymes. Treat compatibility as a
-hypothesis to test on upload, not a fact.
+**"Shape-compatible with Anthropic Agent Skills" is half supported.**
+skills-overview (ms.date 2026-09-09) links agentskills.io and names the open
+spec and progressive disclosure. It still never mentions Anthropic,
+`.claude/skills` or a `references/` subtree. Treat the tree as a hypothesis
+to test on upload, not a fact.
 
 ### Model selection, per harness
 
@@ -294,7 +300,7 @@ Copilot resolves MCP tools dynamically at runtime by default, or a developer
 pins a fixed set. Requires Agents Toolkit 6.12.0+. Copilot Studio also lists
 MCP servers as a Tools source.
 
-## There is a CLI — three, in fact
+## There is a CLI — two, in fact
 
 Not a GUI-only surface:
 
@@ -303,7 +309,8 @@ Not a GUI-only surface:
   new/add/provision/deploy/package/validate/publish/preview/install/uninstall.
   `atk new -c declarative-agent` scaffolds one directly.
 - **Work IQ Dev Tools** — binary `wiqd`, official Microsoft
-  (github.com/microsoft/wiqd), preview v0.12.2, with
+  (github.com/microsoft/wiqd, docs and downloads only), preview 0.14.0 on
+  npm, with
   `wiqd agent create|validate|provision|package|eval` and an alpha
   `wiqd plugin` tree.
 
@@ -334,9 +341,13 @@ accessing or using extensibility features (Copilot connectors, agents,
 plugins)."** Declarative agents incur no hosting cost — Microsoft hosts them.
 Custom engine agents you host yourself.
 
-Pay-as-you-go is **$0.01 per Copilot Credit**, uniform across all 37 listed
-regions. (An Azure pricing page read without a browser renders it literally as
-"$-", which is a scraping artifact, not an unpublished price.)
+Pay-as-you-go is **$0.01 per Copilot Credit** in the default US region of 61
+listed, the rest unchecked. (An Azure pricing page read without a browser
+renders it literally as "$-", which is a scraping artifact, not an
+unpublished price.) The GitHub Copilot harness, the one Copilot Studio
+harness that carries SKILL.md skills, is credit-billed from build time. The
+M365 Copilot license doesn't cover it. Credits also sell as a Pre-purchase
+plan of commit units at up to 20% off (read 2026-09-15).
 
 ## What smartplan actually becomes here
 
@@ -346,7 +357,7 @@ Say this at the gate rather than implying more:
   spiral guard, the verify floor and the honesty rules are all prose and
   survive intact in a `SKILL.md` on the GitHub Copilot harness.
 - **Tiering degrades to two coarse dials:** a per-agent model pick from a
-  roster that has no Opus 5, no Fable 5 and no Haiku, and a three-way
+  Copilot Studio roster with no Opus 5, Fable 5 or Haiku, and a three-way
   effort mode. There is no per-call override anywhere on this surface.
 - **Independent verify has no dispatch lever.** Nothing here lets you send a
   diff to a *different* model and get a verdict back under your control.
@@ -358,6 +369,7 @@ Say this at the gate rather than implying more:
   `@microsoft/*` toolkit package, and there is no `.fx`, `.teamsapp`,
   `TeamsToolkit`, `.m365` or `.atk` directory anywhere under the user
   profile, nor any tenant-login trace. So this page is documentation-only
-  **by necessity rather than by choice** — there is nothing here to run it
-  against. Never describe a claim on this page as observed. Compare
+  **by necessity rather than by choice**. The one runnable Microsoft surface
+  here is this repo's own tenant agents. None of them exercises this family.
+  Never describe a claim on this page as observed. Compare
   `zcode.md`, whose install section *is* observation, and say which you mean.

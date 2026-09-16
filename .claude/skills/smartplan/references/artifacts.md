@@ -15,7 +15,7 @@ override, or script path.
 | leaf | status | brief-hash | tier | attempts | oracle | note |
 | --- | --- | --- | --- | --- | --- | --- |
 | leaf-2 (utils: retryWithBackoff) | passed | `a1c9f2e` | Sonnet | 1 | 1 `pytest -k retry` | smartcheck PASS, wave 1 |
-| leaf-3 (importer) | dispatched | `7e04b31` | Cheap | 2 | 2 model-read | FAIL strike 1; re-dispatched, awaiting smartcheck |
+| leaf-3 (importer) | dispatched | `7e04b31` | Cheap | 2 | 1 `pytest -k importer` | FAIL strike 1; re-dispatched, awaiting smartcheck |
 
 - **status** is exactly one of `dispatched`|`passed`|`failed`|`escalated`.
 - **brief-hash** — short hash of the compiled brief (or the plan's task
@@ -35,12 +35,13 @@ override, or script path.
 rows are unknown state, not trusted state) — **except `attempts`: restore
 it, never reset it.** Two strikes escalate even across the interruption.
 
-**Delete them at integrate.** These land at the *consuming* repo's root and
-nothing cleans them up. Measured 2026-08-05: three such files from a
-2026-07-10 run still sat in an unrelated project's root, untracked and
-un-ignored, one `git add -A` from a commit. Add them to that repo's
-`.git/info/exclude` at run start (no tracked file to touch), then remove
-them at integrate.
+**Delete them after human acceptance.** These land at the *consuming*
+repo's root and nothing cleans them up. Measured 2026-08-05: three such
+files from a 2026-07-10 run still sat in an unrelated project's root,
+untracked and un-ignored, one `git add -A` from a commit. Add them to
+that repo's `.git/info/exclude` at run start (no tracked file to touch),
+then remove them once accepted, after any escalation or over-tier note
+is carried into the retro.
 
 ## contracts.md — frozen shared surfaces (written before fan-out)
 

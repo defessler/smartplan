@@ -73,7 +73,8 @@ ranged / `#`-prefixed is Git.
 ### File types (why some files are unreadable)
 `p4 describe` tags each file with its type: `text`, `binary`, `binary+l` (binary
 with **exclusive lock** — the norm for game assets so two people can't edit a
-`.uasset` at once), `+S` (a temporary/shelved-storage modifier). Anything
+`.uasset` at once), `+S` (keeps only the head revision, purging older revisions
+on submit). Anything
 `binary*` can't be diffed or read as text — describe it from its name and the CL
 description (see *Binary / asset files (both VCS)* below).
 

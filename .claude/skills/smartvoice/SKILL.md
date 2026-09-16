@@ -22,7 +22,7 @@ Resolves automatically, first match wins:
 
 A loaded profile's register applies atop the generic layer; its deliberate choices aren't tells.
 
-To house a new voice, copy [`defaultvoice.md`](references/voice-profiles/defaultvoice.md)'s shape (pillars, formatting habits, phrasing bank, worked example, self-check), fill it from the author's real writing, and name it `<username>.md` to auto-resolve. (Skill machinery: a profile's own formatting rules, like its table-scoping habit, govern documents you write, not this file.)
+To house a new voice, copy [`defaultvoice.md`](references/voice-profiles/defaultvoice.md)'s shape (pillars, formatting habits, phrasing bank, worked example, self-check, resident block), fill it from the author's real writing, and name it `<username>.md` to auto-resolve. (Skill machinery: a profile's own formatting rules, like its table-scoping habit, govern documents you write, not this file.)
 
 ## Avoiding the generic AI voice
 
@@ -64,7 +64,7 @@ A profile may ship optional scaffolds for **brand-new documents only** — the k
 
 ## Quick self-check
 
-Before shipping a page: scan for the tells above, then run the active profile's own checklist (each ships one at file's end). Under `none` this list is the whole check.
+Before shipping a page: scan for the tells above, then run the active profile's own checklist (each ships a Profile self-check section). Under `none` this list is the whole check.
 
 - No AI tells from the list above.
 - No structural tic: counted the top abstractions (none reached for repeatedly), and the rationale paragraphs don't all close the same way.
@@ -75,17 +75,17 @@ Before shipping a page: scan for the tells above, then run the active profile's 
 - Nothing from the chat on the page — no "I hope this helps", no offers to continue.
 - Claims diffed against the original. Nothing added that the source didn't carry, and nothing dropped unless a tell called for the cut.
 
-Two of these are character checks, not reading: where a profile bans dashes or prose semicolons (a resolved profile bans both), `grep -n '[—–;]' <file>` is the tier-1 executable oracle — one pass, then clear each hit by hand (a `;` inside inline code or a fence is exempt).
+Two of these are character checks, not reading: where a profile bans dashes or prose semicolons (a resolved profile bans both), `grep -nE '[—–;]| -- ' <file>` is the tier-1 executable oracle — one pass, then clear each hit by hand (a `;` inside inline code or a fence, or a `<Title> -- <Author>` credit, is exempt).
 
 ## References
 
 Everything swappable lives in `references/` (part of this skill): load the profile doc whenever you apply a voice and `ai-tells.md` on any slop pass; the other two only when needed.
 
-- [`voice-profiles/`](references/voice-profiles/) — one doc per voice, `<username>.md` auto-resolving (shipped: [`defaultvoice.md`](references/voice-profiles/defaultvoice.md) the generic fallback). It shows the shape (pillars, formatting habits, phrasing, worked example, self-check) — copy it to house another voice.
+- [`voice-profiles/`](references/voice-profiles/) — one doc per voice, `<username>.md` auto-resolving (shipped: [`defaultvoice.md`](references/voice-profiles/defaultvoice.md) the generic fallback). It shows the shape (pillars, formatting habits, phrasing, worked example, self-check, resident block) — copy it to house another voice.
 - [`ai-tells.md`](references/ai-tells.md) — the researched tell layer: per-term carve-outs and replacements, the structural tics (reveal colon, fixed consequence closer, contrastive tail, template rhythm), the density rule, and the *not tells* list. Universal, not profile-scoped — load it on any slop pass, including under `{{VOICE_PROFILE}} = none`.
 - [`document-templates.md`](references/document-templates.md) — OPTIONAL scaffolds for brand-new documents (deep-reference, tutorial, setup/config, spec, landing). Part of the keyed profile (not `defaultvoice.md`); prefer an existing document's own template; adapt freely.
 - [`terminology.md`](references/terminology.md) — capitalization, approved abbreviations, prose mechanics, canonical-spellings table. Part of the keyed profile (not `defaultvoice.md`); the lookup when editing an existing page.
-- [`scripts/install_voice.py`](scripts/install_voice.py) installs a profile's resident rules as always-on instructions plus a Stop hook, for Claude Code and Copilot CLI, subagents included.
+- [`scripts/install_voice.py`](scripts/install_voice.py) installs a profile's resident rules as always-on instructions, plus a Stop hook when the profile bans characters, for Claude Code and Copilot CLI, subagents included.
 
 ## Family fit and tiering
 

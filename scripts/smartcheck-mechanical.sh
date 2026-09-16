@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -u
 
-FAIL_COUNT=0
 FAILURES=()
 
 CMD=""
@@ -72,7 +71,7 @@ else
       FAILURES+=("tracked change: $path ($XY)")
     else
       ALLOWED=0
-      for allow_entry in "${ALLOW[@]}"; do
+      for allow_entry in ${ALLOW[@]+"${ALLOW[@]}"}; do
         if [ "$path" = "$allow_entry" ] || [[ "$path" == "$allow_entry"/* ]]; then
           ALLOWED=1
           break

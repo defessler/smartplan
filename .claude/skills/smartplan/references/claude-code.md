@@ -11,28 +11,33 @@ of the per-invocation read.*
 - Whether the tier lands — contested; say so and route around it
 - Caching-aware fan-out
 - Adjacent primitives (know when NOT to use them)
-- Mechanical enforcement (optional, shipped)
+- Mechanical enforcement (optional)
 - Structural tool-lockdown (shipped seats)
 - Cost levers (researched 2026-07-13 — sources: the development repo's research notes)
 
 ## The lever, precisely
 
-- **Resolution order** (documented): `CLAUDE_CODE_SUBAGENT_MODEL` env var >
-  per-call `model:` param > subagent frontmatter > session model.
+- **Resolution order** (documented, v2.1.251+): per-call `model:` param >
+  subagent frontmatter > `CLAUDE_CODE_SUBAGENT_MODEL` env var > session
+  model. Before v2.1.251 the env var came first and beat both.
   <!-- claim:cc-subagent-model-resolution-order --> Since v2.1.196 `inherit`
   is **identical to leaving the variable unset** (re-verified 2026-08-12):
-  it clears the pin and lets resolution fall through to the per-call param,
-  rather than pinning leaves to the session model.
+  it clears the pin and lets resolution fall through to frontmatter and
+  then the session model.
 - **Per-leaf lever = per-call `model:`** on each dispatch. **Wave
   guarantee:** `export CLAUDE_CODE_SUBAGENT_MODEL=sonnet` before an
-  implementer wave so no leaf can silently inherit the session (priciest)
-  model, then **unset it** after (`=inherit` is the same thing, per above).
+  implementer wave so a leaf with no per-call or frontmatter model can't
+  silently inherit the session (priciest) model, then **unset it** after
+  (`=inherit` is the same thing, per above).
+  `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` (v2.1.257) pins every leaf, verifier
+  and named seat included. Never set it for a verified wave.
   The swap is subagent-scoped and cache-safe.
   Switching the **main** session's model or effort mid-run busts *its*
   prompt cache instead — see `caching.md`.
 - **Effort has no per-dispatch knob here.** An ad-hoc `Agent()` call takes
   `model` but *not* `effort`, so on Claude Code the second axis is set
-  per-seat in agent frontmatter (`effort:`) or per-call only inside a
+  per-seat in agent frontmatter (`effort:`, honored on Opus 4.8 and
+  Fable 5 only from v2.1.267) or per-call only inside a
   workflow script. Copilot's `--effort` is session-global. Plan the effort
   drop into the seat, not the dispatch.
   <!-- claim:cc-agent-call-has-no-effort-param -->
@@ -43,8 +48,9 @@ of the per-invocation read.*
   hard floor #6).
 - **`/fast` is not a cheap tier.** Fast mode runs Opus with faster output —
   same model, not a smaller one (Opus 5/4.8). It buys latency, never
-  budget, and the header is part of the cache key, so toggling it mid-run
-  re-reads the history uncached. Don't let it stand in for a tier drop.
+  budget, and its header is part of the cache key, so the first enable per
+  conversation re-reads the history uncached at fast-mode rates (later
+  toggles keep it). Don't let it stand in for a tier drop.
   <!-- claim:cc-fast-mode-is-not-a-model-downgrade -->
 - **A seat's window is sized by its own model, not yours** — five Haiku
   seats give five 200k windows, not five 1M. The beyond-one-context
@@ -77,15 +83,17 @@ of the per-invocation read.*
   shape as the reason ("a reviewer subagent that dispatches a verifier per
   finding"). At the limit a seat doesn't error, it does the work itself
   and returns one summary. Workflows carry their own caps (16 concurrent,
-  1,000 agents/run, <15 guideline). Size waves to these as `routing.md`
-  sizes to credit caps.
+  1,000 agents/run, size guideline <10, <5 on Pro). On v2.1.271+ an
+  interactive subscription workflow pauses at a usage limit and resumes
+  after the reset. Size waves to these as
+  `routing.md` sizes to credit caps.
 
 ## Opus 5 seats: two gaps that read as model failure
 
 - **Auto mode is miscalibrated.** `tengu_auto_mode_config.severityByModel`
   ships no `claude-opus-5` entry (#80977; verified in this box's
   `.claude.json` 2026-08-06), so it falls to a stricter default blocking
-  routine actions 4.8 allowed. Use plan mode or allow-rules
+  routine actions 4.8 allowed. Use plan mode or allow-rules.
   <!-- claim:cc-automode-missing-opus5-thresholds -->
 - **The system prompt can carry "don't call the Agent tool unless the user
   requested it."** Seen first-hand on Opus 5, 2026-08-06; Opus-5-only is
@@ -102,7 +110,7 @@ frontmatter, and env-var levers each ignored on some paths.
 
 **`/usage` is the in-harness oracle.** Its Session block prints a
 `Usage by model:` breakdown — per-model token counts plus a dollar figure
-computed locally at list rates. On a Max or Pro seat the dollars aren't a
+computed locally at list rates (or an org's managed `modelPricing`). On a Max or Pro seat the dollars aren't a
 bill, but the **model attribution is real**, so the #43869 check is free
 and offline: dispatch a cheap-tier wave, then look for whether a line for
 that model appears at all. An all-Opus breakdown after a Haiku wave is the
@@ -112,14 +120,14 @@ failure, caught without leaving the session.
 records the *requested* model, not the one that ran or billed — the #43869
 repro read `claude-sonnet-4-6` for all three seats while the dashboard
 showed the Sonnet quota untouched. A check built on transcript metadata
-measures nothing. One separate path *does* log a greppable line,
-`Subagent model "X" is not in the availableModels allowlist; inheriting
-the parent model instead`, so grep the log before calling it a #43869 hit.
+measures nothing. One separate path *does* warn: an `availableModels`
+substitution prints an interactive-only warning naming the requested and
+the substituted model, so check for it before calling it a #43869 hit.
 
 **Check `/tasks` first.** The task list and agent detail dialogs now print
 the **model and effort level each subagent actually ran at**, read per seat
 rather than reconstructed from an aggregate token breakdown. That is a
-sharper #43869 oracle than the `/usage` route below; keep `/usage` and the
+sharper #43869 oracle than the `/usage` route above; keep `/usage` and the
 JSONL caveat as cross-checks.
 
 **A second silent de-tiering path:** fallback model chains now cover
@@ -131,7 +139,8 @@ lever. Track it alongside allowlist substitution and #43869.
 **Partial fixes:** v2.1.211 stopped an override reverting to the parent on
 resume or follow-up, so multi-turn dispatches are tier-safe only on
 ≥2.1.211, and v2.1.222 covers the allowlist case. #43869 stays open, so
-treat "the cheap tier landed" as unconfirmed until `/usage` shows the line.
+treat "the cheap tier landed" as unconfirmed until `/tasks` shows the
+model (or `/usage` the line).
 
 **Measurement hazard: the safety fallback.** A content-flagged request
 re-runs on a different model and the **session continues** on that
@@ -142,9 +151,9 @@ run.
 
 **The #43869-immune fallback — `opusplan`.** `/model opusplan` is native
 behavior (Opus in plan mode, Sonnet for execution, in the *main* session;
-since v2.1.219 `opus`/`default` resolve to **Opus 5**) — no subagent
-routing at all, so the contested levers never enter the picture. It
-captures most of the core rule (strong plans, cheaper implements) with
+since v2.1.219 `opus` resolves to **Opus 5**, `default` per-account) — no
+subagent routing at all, so the contested levers never enter the picture.
+It captures most of the core rule (strong plans, cheaper implements) with
 zero routing risk, at the cost of the fan-out and the Cheap floor.
 
 ## Caching-aware fan-out
@@ -169,10 +178,11 @@ Three dispatch-construction rules (each live-measured 2026-07-11):
 - **Shared prefix first, brief last.** Build every same-wave prompt as
   [identical protocol + conventions][per-leaf brief at the end] —
   byte-identical prefixes across a concurrent wave cache-hit within the
-  TTL, so leaves 2–N read the shared payload at 0.1×.
+  TTL, so leaves 2–N read the shared payload at 0.1× once the first leaf
+  starts streaming (stagger per flow.md step 3, where it pays).
 - **Tell Mid-or-stronger subagents to read the protocol; paste it only for
   Cheap.** Orchestrator output prices ≈5× input — pasting `check.md`
-  (~1.7k tokens) into each verifier prompt costs more than one "read
+  (~4k tokens) into each verifier prompt costs more than one "read
   `references/check.md` and follow it" line that loads the file at input
   price inside the subagent (and identically across verifiers, so it
   caches). Haiku executors keep the attached payload: a Cheap executor may
@@ -194,6 +204,7 @@ Three dispatch-construction rules (each live-measured 2026-07-11):
   like `smartplan-implementer` launches as a *teammate* and reports via idle
   notification rather than the result the Integrate step waits for. Headless
   arms (`claude -p`) stay on the subagent path and are unaffected.
+  Passing `isolation` on the call keeps a named seat a subagent.
   Teammates inherit the lead's *effort*. `TeammateIdle`/`TaskCompleted`
   hooks (exit 2 blocks) enforce smartcheck-before-done.
 - **Dynamic workflows** (scripted `pipeline()`/`parallel()`, schemas,
@@ -210,16 +221,18 @@ Three dispatch-construction rules (each live-measured 2026-07-11):
   replacement: a workflow takes no mid-run user input beyond permission
   prompts, so gate BEFORE the script runs, route tiers in the script, and
   ride the verify floor as scripted stages. Its agents inherit the session's
-  permission mode unless a definition's `permissionMode` overrides, and the
-  launch itself carries a mode-dependent approval prompt. Security sweeps → Anthropic's **Claude
+  permission mode. A definition's `permissionMode` counts only from
+  default, dontAsk or plan mode. The launch itself carries a
+  mode-dependent approval prompt. Security sweeps → Anthropic's **Claude
   Security** plugin, which already ships this shape.
 
-## Mechanical enforcement (optional, shipped)
+## Mechanical enforcement (optional)
 
-`docs/enforcement-hook.md` (repo, not shipped): a PreToolUse hook +
+`docs/enforcement-hook.md`: a PreToolUse hook +
 `Agent(model:…)` deny rules turn "trust the bill" into a guardrail. A wired
-warn-only instance ships at `.claude/settings.json` + `.claude/hooks/`;
-flip to hard-deny via the one-line opt-in shown in that reference.
+warn-only instance lives in the source repo at `.claude/settings.json` +
+`.claude/hooks/` and is reproduced in full on that page. Flip to hard-deny
+via the one-line opt-in shown in that reference.
 
 ## Structural tool-lockdown (shipped seats)
 
@@ -235,7 +248,7 @@ that enforces the seat at the tool layer instead: `smartplan-scout`
 `.claude/agents/` to reuse them. This closes the *tool-permission* half of
 the gap only — a seat's `model:` frontmatter is still subject to the
 contested resolution order (#43869, above), so confirm the tier with
-`/usage`'s per-model lines.
+`/tasks`, cross-checked against `/usage`'s per-model lines.
 
 ## Cost levers (researched 2026-07-13 — sources: the development repo's research notes)
 
@@ -265,8 +278,8 @@ contested resolution order (#43869, above), so confirm the tier with
   the session-model precedence chain**, below `/model`, `--model` and
   `ANTHROPIC_MODEL`, and it can silently repoint new sessions — check it
   before trusting a tiering measurement on a shared box. The `best` alias
-  is a **moving target by design** (it resolves to Fable 5 today), so
-  never pin a benchmark arm to it. `ANTHROPIC_DEFAULT_HAIKU_MODEL`
+  is a **moving target by design** (Fable 5.1 since v2.1.257, not Fable 5),
+  so never pin a benchmark arm to it. `ANTHROPIC_DEFAULT_HAIKU_MODEL`
   (background-task model),
   `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` (the documented traffic lever;
   it reaches model-adjacent calls only indirectly, and no switch exists today
