@@ -144,10 +144,10 @@ done
 echo "-- (4) Copilot surface --"
 if [ -d ".github/agents" ]; then
   n=$(ls .github/agents/*.agent.md 2>/dev/null | wc -l)
-  if [ "$n" -eq 6 ]; then
-    ok "6 Copilot agent profiles present"
+  if [ "$n" -eq 7 ]; then
+    ok "7 Copilot agent profiles present"
   else
-    bad "expected 6 .github/agents/*.agent.md profiles, found $n"
+    bad "expected 7 .github/agents/*.agent.md profiles, found $n"
   fi
   if [ -z "$PY" ]; then
     skip "agent-profile frontmatter needs python 3 (python or python3 on PATH)"

@@ -255,7 +255,7 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
     lands** — T30 (2026-07-25) saw Opus 4.8 *and* 5 serve un-gated on a
     previously-refusing account, so check rather than assume the Pro+/Max
     gate. Where it is gated the Strong verifier is the
-    cross-family peer (Gemini 3.6 Flash / GPT-5.6 Terra, per Family
+    cross-family peer (Gemini 3.8 Flash / GPT-5.6 Terra, per Family
     decorrelation below), *never* a silent fall-back to
     Sonnet-judging-Sonnet. Name the actual verifier at the gate.
   - **Inline work counts.** The floor reads *executor*, not *subagent* —
@@ -272,16 +272,18 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
 - **Family decorrelation:** same-family executor+verifier share blind
   spots — prefer a cross-family verifier when the harness offers one, at
   minimum a different instance. Current picks (registry is the source of
-  truth, re-pinned 2026-08-16): on Copilot, Cheap leaves → **Gemini 3.6
+  truth, re-pinned 2026-09-16): on Copilot, Cheap leaves → **Gemini 3.8
   Flash** (or Sonnet 5); **GPT-5.4** only when the executor is not an
   OpenAI model, since GPT-5.6 Luna holds the Cheap seat from 2026-09-07
-  and would be same-family; never mini/nano tiers. Sonnet/Opus leaves →
-  **Gemini 3.6 Flash** (0.75/3.75, cost-sensitive. Implementer-class since
-  2026-09-07, Strong-comparable on measured recall parity, ungated on
-  Copilot Pro) or **GPT-5.6 Terra** only when its thoroughness edge earns
+  and would be same-family; never mini/nano tiers. At max-savings a fresh
+  Luna verifies Cheap leaves instead (`modes.md`), an unmeasured
+  same-model trade. Sonnet/Opus leaves →
+  **Gemini 3.8 Flash** (0.75/3.75, cost-sensitive, Implementer-class,
+  ungated on Copilot Pro. Its predecessor 3.6 Flash earned the seat on
+  measured recall. 3.8 is unmeasured, so Terra holds C++ UB leaves) or **GPT-5.6 Terra** only when its thoroughness edge earns
   ~2× the cost. **Measured (T18, Gemini 3.1 Pro): tied Terra on seeded C++
   recall, 14/15 each, at 47% the cost at July prices. T34 cleared 3.6 Flash
-  at 8/8** — don't reach for the pricier judge by habit. When strength and
+  at 8/8, before 3.8 took the pin untested** — don't reach for the pricier judge by habit. When strength and
   decorrelation conflict: shared-blind-spot domains (C++ UB, concurrency,
   security — **UE5 gameplay is all of these**) favor the decorrelated
   judge; subtle-judgment domains favor the stronger same-family judge

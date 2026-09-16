@@ -39,6 +39,10 @@ which model sits in each tier** — edit classifications there, not here.
 | **Cheap** | Haiku 4.5 (Claude Code) · GPT-5.6 Luna (Copilot), + Mechanical-class peers | Tightly-scoped leaves behind a verifier. Fails *silently* — never unverified. |
 | **Script** | No model — an existing script | A deterministic action an already-written script performs. Zero cost, zero drift. |
 
+GPT-5.6 Luna is classed Implementer but holds Copilot's Cheap seat on price
+(hard floor #6). Its class decides which leaves it may take. The seat it
+holds decides its ceiling.
+
 **Dated 2026-08-12:** Sonnet 5's $2/$10 became Anthropic's standard price on
 2026-08-10 — the 2026-09-01 step to $3/$15 was cancelled. The Opus→Sonnet
 multiple stays 2.5× and the fan-out break-even does not move.

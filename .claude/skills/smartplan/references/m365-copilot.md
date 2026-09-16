@@ -98,6 +98,7 @@ tree loaded on demand. A declarative agent's own instructions are one
 about 20KB. Custom skills (preview, Frontier Preview tenants, ms.date
 2026-09-03) close that half: a `SKILL.md` directory with progressive
 disclosure, 8 per agent, 20,000 characters each, folders three deep.
+<!-- claim:m365-da-custom-skills-preview -->
 
 ### The model-selection nuance
 

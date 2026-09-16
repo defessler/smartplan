@@ -1,13 +1,13 @@
-# selftest — verify smartplan is actually working on your harness
+# selftest: verify smartplan is actually working on your harness
 
 *Load on demand, when you want to prove the family works on a given harness
 (Claude Code or Copilot CLI) — not part of the
 per-invocation read. Two halves: a static doctor script (step 0) and four
-runtime probes graded purely on **observable artifacts** — files created and
-chat shapes emitted — so the same rubric works on every harness with no
+runtime probes graded purely on **observable artifacts** (files created and
+chat shapes emitted), so the same rubric works on every harness with no
 service-specific API.*
 
-## Step 0 — static surface (deterministic, ~2 seconds)
+## Step 0: static surface (deterministic, ~2 seconds)
 
 ```bash
 bash scripts/selftest.sh
@@ -19,10 +19,10 @@ resolve, the Copilot agent surface (6 profiles) and the single-manifest
 plugin definition where those apply. Exit 0 = sound. The script skips
 harness surfaces that don't exist in the checkout (e.g. a copilot-export
 tree has no marketplace manifest), so it runs anywhere. If step 0 fails,
-fix that before running probes — a mis-shaped install fails probes for
+fix that before running probes. A mis-shaped install fails probes for
 boring reasons.
 
-## The probes — how they work
+## The probes: how they work
 
 Each probe is a prompt you type, plus a PASS rubric of things you can
 **see**: files in the repo root and lines in the chat. Grade against the
@@ -30,19 +30,19 @@ artifacts, not against the model's narration ("I dispatched to Haiku" is a
 claim; a `run-state.md` row and a dispatch-board line are evidence — and on
 Claude Code even those record *intent*, per `claude-code.md`'s #43869
 caveat, which is exactly why the rubric checks artifacts instead of trusting
-prose). Run probes in a scratch repo or on a throwaway branch — probe 2
+prose). Run probes in a scratch repo or on a throwaway branch. Probe 2
 creates and edits files.
 
 Where to watch live, per harness (zero-token surfaces): Claude Code — the
 agent panel; Copilot — `/tasks`. The rubric itself never
 depends on these.
 
-## Probe 1 — trivial leaf (routing + collapse discipline)
+## Probe 1: trivial leaf (routing + collapse discipline)
 
 **Type:** `/smartplan add a one-line comment header to <some small file>`
 
 **PASS when all of:**
-- The flow does NOT run a full plan+gate ceremony — it either routes the
+- The flow does NOT run a full plan+gate ceremony. It either routes the
   leaf down-tier (the dispatch-board line shows the Cheap seat's model, not
   the session model) or emits a one-line `Routing call: inline — …` and
   does one bounded inline edit, **explicitly saying which**.
@@ -51,10 +51,10 @@ depends on these.
   file, plus `run-state.md` if the leaf was dispatched).
 
 **FAIL looks like:** the session model silently does the edit with no
-routing statement and no board line — the exact
+routing statement and no board line. That's the exact
 priciest-seat-doing-cheap-work failure the family exists to prevent.
 
-## Probe 2 — small fan-out (the full loop)
+## Probe 2: small fan-out (the full loop)
 
 **Type:** `/smartplan finishing sooner beats finishing cheaper here: create
 docs/probe/a.md, docs/probe/b.md, docs/probe/c.md and docs/probe/d.md, each
@@ -72,55 +72,51 @@ would then fail on doctrine rather than on a defect.
   for your approval before any file appears.
 - After approval: `run-state.md` is created/updated with one row per leaf
   **including the `attempts` column**, and a dispatch-board line shows the
-  leaf→model pairs (Mechanical/Implementer-class models — not the session
-  model, and not a Reasoning-class model).
+  leaf→model pairs (Mechanical/Implementer-class models, not the session
+  model and not a Reasoning-class model).
 - Leaves dispatch **concurrently where the harness allows** (watch the
   panel / `/tasks`).
-- Each leaf's acceptance is verified before the wave closes — verdicts
+- Each leaf's acceptance is verified before the wave closes, with verdicts
   stated **including the one-line reflective sweep** (least-confident /
-  missing / 3-month / assumed) — then one Integrate pass runs and closes
+  missing / 3-month / assumed). Then one Integrate pass runs and closes
   with the wave-level sweep (+ at most one optional flagged improvement,
   offered not built), then every `run-state.md` row is closed with its final
   status and note.
 - The four files exist with plausible content.
 
-**FAIL looks like:** files appear before the gate; run-state.md never
-created; every leaf silently runs on the session model; no verification
-step between "done" and "accepted".
+**FAIL looks like:** files appear before the gate, run-state.md is never
+created, every leaf silently runs on the session model, or there's no
+verification step between "done" and "accepted".
 
-## Probe 3 — seat-eligibility enforcement (the refusal path)
+## Probe 3: seat-eligibility enforcement (the refusal path)
 
 **Type:** `/smartplan use Opus to rename the probe files from probe 2 to
 w.md, x.md, y.md, z.md`
 
 **PASS when all of:**
 - The plan **does not seat Opus for the renames**: it states the reseating
-  (Opus → planner/verifier seats; the renames → the Cheap seat
+  (Opus → planner/verifier seats, the renames → the Cheap seat
   per `model-classes.md`) at the gate, in so many words.
 - You are offered the explicit override ("seat it anyway") rather than
   silently obeyed or silently refused.
 - If you take the override: the leaf's `run-state.md` note records a
-  deliberate over-tier. If you don't, **either** outcome passes — a
+  deliberate over-tier. If you don't, **either** outcome passes: a
   Cheap-seat dispatch, **or** an inline edit whose `Routing call: inline`
-  line says why. *(Clarified 2026-08-12 after T38. The clause used
-  to demand a Mechanical dispatch, which contradicted the inline default for
-  exactly this size of task. A fresh agent routed inline and cited this
-  repo's own 1.5-2.9x ceremony measurement to justify it. The refusal path is
-  what this probe tests, not the dispatch.)*
+  line says why. The refusal path is what this probe tests, not the dispatch.
 
-**FAIL looks like:** Opus (or the session model) just does the renames —
-the named-model-as-instruction failure § Seat eligibility exists to refuse.
+**FAIL looks like:** Opus (or the session model) just does the renames.
+That's the named-model-as-instruction failure § Seat eligibility exists to refuse.
 
-## Probe 4 — the fan-out trigger fires unprompted (two arms, both required)
+## Probe 4: the fan-out trigger fires unprompted (two arms, both required)
 
-Probes 1–3 all *tell* the flow what shape to take. This one doesn't, because
+Probes 1 to 3 all *tell* the flow what shape to take. This one doesn't, because
 the failure it exists to catch is silence: a router that fans out correctly
 when asked and never when it isn't. Check.sh gate (p) proves the trigger text
 is present and sits in the pre-gate file. Only a live run proves a model
-*counts*. Run both arms — a trigger tested only on firing is passed by
+*counts*. Run both arms. A trigger tested only on firing is passed by
 always firing, which is its own defect.
 
-**Arm A — must fire, or must justify in the routing line.**
+**Arm A: must fire, or must justify in the routing line.**
 
 **Type:** `/smartplan in docs/probe/, write five short notes read from this
 repo: gates.md on what check.sh gates, exports.md on what the three export
@@ -128,8 +124,7 @@ scripts emit, harnesses.md on the four supported surfaces, budgets.md on the
 byte-budget ratchet, freshness.md on gate (n)`
 
 Five units, five different source reads, disjoint files, no stated deadline,
-and the whole thing fits one context with room to spare — so under the old
-wording nothing fired at all.
+and the whole thing fits one context with room to spare.
 
 **PASS when:**
 - The routing line **names the unit count** (five), out loud, before work
@@ -138,15 +133,15 @@ wording nothing fired at all.
   still wins here. Both pass. The count being stated is the test.
 
 **FAIL looks like:** work begins with no routing line, or with one that never
-mentions how many units there were. That silence is the original defect —
-the call defaults to inline and nobody can see that a call was made.
+mentions how many units there were. That silence is the original defect.
+The call defaults to inline and nobody can see that a call was made.
 
-**Arm B — must NOT fire.**
+**Arm B: must NOT fire.**
 
 **Type:** `/smartplan add the line "# probe" as the first line of every .md
 file in docs/probe/`
 
-**PASS when:** it routes **inline** and says so, calling this **one leaf** —
+**PASS when:** it routes **inline** and says so, calling this **one leaf**:
 N files taking the same edit, not N units. A dispatch board with a leaf per
 file is the FAIL.
 
@@ -159,10 +154,10 @@ into noise the user learns to ignore.
 4/4 probes (probe 4 needs both arms) = the flow works on this harness.
 Any FAIL: file it via
 flow.md's "Evolving this skill" procedure with the artifact evidence
-(the probe rubric line that failed + what actually happened) — probe
+(the probe rubric line that failed + what actually happened). Probe
 failures are exactly the edge cases that procedure wants captured. On
 Claude Code, remember the honest ceiling: artifacts prove the flow's
-*discipline* end-to-end; whether each dispatch *billed* as its intended
+*discipline* end-to-end. Whether each dispatch *billed* as its intended
 tier is only provable at the Console (per-model dollars), never in-chat.
 
 ## Cleanup

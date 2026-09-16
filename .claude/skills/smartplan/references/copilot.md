@@ -24,7 +24,7 @@ summary, budget decisions, fan-out sizing, or repo setup.
 | # | Lever | How |
 | --- | --- | --- |
 | 1 | Cheap default | `/fleet` subagents use a low-cost model by default — native. |
-| 2 | Agent frontmatter | `model:` on the six shipped `.github/agents/` profiles — slug form (`claude-opus-4.8` / family alias `opus`); arrays rejected. Pins can be silently downgraded (§ Per-seat model control), so never mix Auto with tiered dispatch. |
+| 2 | Agent frontmatter | `model:` on the seven shipped `.github/agents/` profiles — slug form (`claude-opus-5` / family alias `opus`). Since v1.0.83 an ordered `models:` list takes the first plan-reachable model, and `modelPolicy: required` refuses substitution. Pins can be silently downgraded (§ Per-seat model control), so never mix Auto with tiered dispatch. |
 | 3 | `/subagents` | Sets default and per-agent subagent models in-session (alias `/agents`). |
 | 4 | NL directive | Name agents inline: `use @smartplan-planner to plan, then @smartplan-implementer per item, then @smartplan-verifier`. |
 | 5 | Scoped pins | `/model --session` pins model/effort for this session only (v1.0.72). **`/model plan` pins a plan-mode-only model (v1.0.74) — the native analog of §A's `opusplan`:** plan on Opus, revert automatically on exit; captures the core rule with zero dispatch machinery. |
@@ -128,12 +128,13 @@ Seat verdicts, cross-vendor. Prices and board numbers live in
   Board evidence plus author direction, no T-record — every result stays
   behind the cross-family verifier, and a bounce rate past ~20-30%
   reclassifies it back.
-- Mid/verifier stays **Sonnet 5**. **Gemini 3.6 Flash** and **GPT-5.4** are
-  the verifier-diversity picks per `check.md`'s Family decorrelation rule,
+- Mid/verifier stays **Sonnet 5**. **Gemini 3.8 Flash** and **GPT-5.4** are
+  the verifier-diversity picks per `check.md`'s Family decorrelation rule
+  (at max-savings, `@smartplan-verifier-cheap` runs Cheap leaves on Luna),
   Gemini the cheaper and the only one cross-family from Luna (3.1 Pro held
-  this seat until Copilot retired it 2026-09-01; T34 cleared the swap).
-  **3.6 Flash itself retires from Copilot 2026-10-02**, successor Gemini
-  3.8 Flash (changelog 2026-09-03).
+  this seat until Copilot retired it 2026-09-01. T34 cleared 3.6 Flash).
+  3.6 Flash retires from Copilot 2026-10-02, so the pin moved to its
+  named successor 2026-09-16, **unmeasured** until a T34 re-run.
 - **Haiku 4.5** is the Copilot fallback when the picker lacks Luna, and
   stays the Claude Code Cheap floor (Luna is not on that harness). GPT-5
   mini stays a deliberate-trial candidate, never a default off secondhand
@@ -233,7 +234,7 @@ limit (default plan-dependent, raise it in `/settings`; distinct from the
 *depth* limit). A maintainer calls this the *agent-driven equivalent of
 `/fleet`* (copilot-cli#3568). <!-- claim:copilot-task-tool-parallel-dispatch --> The plugin agents in `.github/agents/`
 (`@smartplan-planner` / `@smartplan-implementer` / `@smartplan-implementer-cheap` /
-`@smartplan-implementer-reserve` / `@smartplan-verifier` / `@smartplan-scout`) register as
+`@smartplan-implementer-reserve` / `@smartplan-verifier` / `-verifier-cheap` / `@smartplan-scout`) register as
 `task` subagents — name them per leaf; all three implementer variants carry
 `disable-model-invocation`, so tier selection is always the orchestrator's
 explicit call, never Copilot's auto-pick. So Copilot keeps the family's core
@@ -364,13 +365,13 @@ forced-high verify tier. Levers, most impactful first:
 
 1. **Cross-family verify, on price, not because Opus is gated.** A UE5
    gameplay leaf forces an Opus-comparable verify
-   (`cpp-gamedev-check.md`). Route it to the **Gemini 3.6 Flash**
-   cross-family verifier (`gemini-3.6-flash`) per `check.md` —
+   (`cpp-gamedev-check.md`). Route it to the **Gemini 3.8 Flash**
+   cross-family verifier (`gemini-3.8-flash`) per `check.md` —
    decorrelated on the shared-blind-spot categories UE5 lives in, and it
    dodges the gate. **Measured on predecessor 3.1 Pro (T18): tied GPT-5.6
    Terra on seeded UE5 recall at 47% the cost, saving ~24%/leaf vs the
    Sonnet self-verify Pro would degrade to (T17); T34 cleared 3.6 Flash at
-   8/8 before 3.1 Pro retired 2026-09-01.** Holds whether or not your Opus
+   8/8 before 3.1 Pro retired 2026-09-01. Its successor 3.8 is untested.** Holds whether or not your Opus
    pin lands.
 2. **Context discipline is the other ~40%.** Engine headers,
    `*.generated.h` and large TUs reload on each cold 5-min subagent cache,

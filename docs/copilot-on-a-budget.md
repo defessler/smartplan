@@ -8,8 +8,8 @@ GitHub and Anthropic pages, listed under Sources at the end.*
 ## Where this page sits
 
 This is the practical companion to
-[the model guide](https://dougfessler.com/smartplan-plugin/copilot-model-guide.html). It tells you what to pick,
-this tells you how to spend less once you have picked.
+[the model guide](https://dougfessler.com/smartplan-plugin/copilot-model-guide.html). It tells you what to pick.
+This page tells you how to spend less once you've picked.
 
 ## How Copilot Billing Works (the Mental Model)
 
@@ -144,8 +144,7 @@ re-costing.
 GitHub's promotional footnote for the same $2/$10 is gone as of the
 2026-08-31 re-read: the row now reads unqualified standard, matching
 Anthropic's own page. Copilot bills provider list pricing either way, so
-nothing on this page re-costs. The stale-label caveat this paragraph used
-to carry is spent.
+nothing on this page re-costs.
 
 ## Sources
 

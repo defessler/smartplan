@@ -5,7 +5,7 @@
 > anthropics/claude-code CHANGELOG. See the development repo's claim ledger.
 
 Load this only when you want tiering **enforced mechanically**, not just
-socially agreed — a bad dispatch gets blocked outright, not caught later by
+socially agreed. A bad dispatch gets blocked outright, not caught later by
 reading the transcript or the bill. §A's per-call `model:` override stays
 the primary lever. This is a guardrail on top of it.
 
@@ -16,7 +16,7 @@ below, both reproduced in full on this page, and you get the
 warning layer: it prints a `stderr` warning on an un-tiered, or Opus/Fable-on-
 an-implementer-leaf, `Agent`/`Task` dispatch, and **never blocks anything**
 (see the safety note in "Reference instance" below). Everything else on this
-page — including both hard-`deny` variants — is documented as **opt-in**,
+page, including both hard-`deny` variants, is documented as **opt-in**,
 off by default, so adopting this reference can never silently block
 dispatch in a repo (like this one) that fans work out to subagents when a
 fan-out signal holds.
@@ -39,10 +39,10 @@ hard-block a tier from ever landing without a human lifting the rule:
 This blocks Opus/Fable leaf spawns requested by alias or by full model ID.
 Allow rules can't match parameters. Sonnet/Haiku need no entry. It
 does **not** catch a dispatch that omits `model:` entirely (inherits the
-session model) — that needs the hook below.
+session model). That needs the hook below.
 
 **Not active by default.** The development repo's `.claude/settings.json`
-registers only the warn-only hook (next section) — no `permissions` key at
+registers only the warn-only hook (next section), with no `permissions` key at
 all. To turn this on, merge the `permissions` block above into
 `.claude/settings.json` alongside its existing `hooks` key: one paste, no
 script edit.
@@ -72,7 +72,7 @@ script edit.
 ```
 
 (`Task|Agent` covers the dispatch tool's pre-2.1.63 name `Task`, still
-accepted as an alias — the script re-checks `tool_name` itself
+accepted as an alias. The script re-checks `tool_name` itself
 rather than trusting the matcher alone, since this environment has at least
 one unrelated tool whose name merely *contains* "Task" as a substring
 (`TaskStop`). The explicit `bash` prefix sidesteps shebang/exec-bit
@@ -80,9 +80,9 @@ ambiguity on a Windows checkout, which is this repo's own dev environment.)
 
 `Workflow` joined the matcher on 2026-08-05. A dynamic workflow spawns its own
 fleet from inside a script the hook can't read, and every `agent()` stage
-inherits the session model unless the script passes `opts.model` per call — so
-before that change the one dispatch path that fans out widest was also the only
-one the guardrail never saw. The launch is the last point a warning can land,
+inherits the session model unless the script passes `opts.model` per call.
+Before that change, the one dispatch path that fans out widest was also the
+only one the guardrail never saw. The launch is the last point a warning can land,
 since nothing stops the script once it starts. Same contract as the rest: one
 stderr line, always exit 0.
 
@@ -109,25 +109,25 @@ and prints one `stderr` line when:
   model, which may be an expensive tier), or
 - `model` is `opus`/`fable` **and** the description/prompt doesn't read like
   a planning/research task (a crude keyword heuristic, not a real
-  classifier — opus/fable-for-planning is the documented `opusplan`
+  classifier. Opus/fable-for-planning is the documented `opusplan`
   pattern, not a violation).
 
 `subagent_type: fork` is skipped before either check: `model:` is a
 documented no-op there, since a fork always inherits the parent/session
-model. jq is used when present, for a correct parse; a best-effort grep/sed
-fallback covers machines without it — this repo's own Windows/Git-Bash dev
+model. jq is used when present, for a correct parse. A best-effort grep/sed
+fallback covers machines without it. This repo's own Windows/Git-Bash dev
 box has no `jq` at authoring time, so the fallback is the path actually
 exercised day to day here, not a hypothetical. **The script always exits
 0** and never emits a `hookSpecificOutput` object, so there is nothing for
-Claude Code to act on beyond the warning text — wiring it up cannot break
+Claude Code to act on beyond the warning text. Wiring it up cannot break
 existing dispatch, including the fan-out this repo runs on the tasks where
 a fan-out signal holds.
 
 ### Opt-in hard-deny variant (off by default)
 
-To make the *hook itself* block instead of warn — the one thing the
+To make the *hook itself* block instead of warn (the one thing the
 declarative layer above can't do, since it can't see a `model:` field that
-was never provided — swap the reference script's decision tail, its closing
+was never provided), swap the reference script's decision tail, its closing
 `if`/`elif` block, for this. It replaces that block only, never the whole
 script. The `Workflow` and `fork` early exits above it still run first. By
 then `$model`, `$planningish`, `$decisionish` and `$verifier_seat` are all set.
@@ -154,17 +154,17 @@ the other. Pick one per hook rather than mixing them. Keeping the `elif`
 keeps the second warning that an unconditional `exit 0` would drop.
 
 This is a full behavior change (a missing `model:` goes from "printed
-warning" to "blocked dispatch"), not a settings.json toggle — test it
+warning" to "blocked dispatch"), not a settings.json toggle. Test it
 against this repo's own fan-out before shipping it as a project default, or
 the safety note above about not bricking the orchestration stops holding.
 
 ## Caveats
 
-- Hooks run with **user permissions** — no extra sandboxing beyond your shell.
+- Hooks run with **user permissions**, with no extra sandboxing beyond your shell.
 - Keep the deny list in **project** `settings.json` (not local/personal) so
   it ships with the repo and applies to every contributor.
-- An Opus/Fable escalation must go through a **human toggling the rule** —
-  that friction is the point, not a bug to route around.
+- An Opus/Fable escalation must go through a **human toggling the rule**.
+  That friction is the point, not a bug to route around.
 - Enforces §A (Claude Code) only. Other harnesses enforce tiering via their
   own per-harness config (§B in `flow.md`, §C `zcode.md`, §D
   `m365-copilot.md`), not this mechanism.
@@ -174,18 +174,18 @@ the safety note above about not bricking the orchestration stops holding.
 What these layers default is the **routing policy**, not the ceremony. A
 plainly one-context, non-risky task still runs inline without the skill body
 loaded, and smartplan gets invoked when a fan-out signal holds. Three layers,
-weakest to strongest; stack them:
+weakest to strongest. Stack them:
 
-1. **Description matching** — smartplan's description opens with "Use
+1. **Description matching**: smartplan's description opens with "Use
    proactively for any coding or implementation task", the documented lever
    for auto-delegation. The clause right after it does the regime split, so
    a match hands the task to the router rather than to a wave. Free, but
    probabilistic.
-2. **Standing instruction** — CLAUDE.md / AGENTS.md carry the default-policy
+2. **Standing instruction**: CLAUDE.md / AGENTS.md carry the default-policy
    rule ("Route every coding or implementation task by regime yourself ...
    Invoke `smartplan` only when a fan-out signal holds"). Loaded every
    session on every harness that reads those files.
-3. **SessionStart hook (mechanical)** — inject the rule as context at session
+3. **SessionStart hook (mechanical)**: inject the rule as context at session
    start so it survives long sessions and compaction:
 
 ```json
@@ -201,7 +201,7 @@ weakest to strongest; stack them:
 }
 ```
 
-Claude Code only; on other harnesses the standing-instruction layer is the
+Claude Code only. On other harnesses the standing-instruction layer is the
 mechanical one (AGENTS.md-style standing files load unconditionally).
 
 ## Binding code conventions at write time (the inline-route gap)
@@ -209,7 +209,7 @@ mechanical one (AGENTS.md-style standing files load unconditionally).
 The family's review machinery (`smartreview` and its `{{STANDARDS}}` doc)
 runs over a *finished* changelist, and briefs bind executors on the fan-out
 route. Neither reaches the **inline** route, which the default policy makes the
-common case for a single-file edit — and at the moment `Write`/`Edit` fires
+common case for a single-file edit. At the moment `Write`/`Edit` fires
 there, the skill bodies aren't loaded and the reference PreToolUse hook only
 matches `Task|Agent|Workflow`, so it never sees a code write at all. Since
 v4.103.0 the gap is narrower for *correctness* and unchanged for
@@ -218,21 +218,21 @@ hunts breaking defects at the merge gate, so an inline-route bug has one more
 place to get caught before it ships. A convention violation still has none. Honest scope: that
 leaves exactly two surfaces in context, the standing file and any SessionStart
 injection, and both are prompts rather than gates. Neither can *guarantee*
-conformance; they make the doc present at the moment code is written, which is
+conformance. They make the doc present at the moment code is written, which is
 the difference between conforming code and a review that finds the drift later.
 
 Stack the same three layers, pointed at the conventions doc rather than the
 routing doctrine. Epic ships the same mechanism for UE conventions in its own
 Claude Code plugin, so the pattern is not novel.
 
-1. **Standing file** — one line in the project's CLAUDE.md / AGENTS.md naming
+1. **Standing file**: one line in the project's CLAUDE.md / AGENTS.md naming
    the doc and requiring it be read before the first edit to a source file.
-2. **SessionStart injection** — the block above, with the text swapped for:
+2. **SessionStart injection**: the block above, with the text swapped for:
    `Conventions: code written in this project conforms to <abs path>. Read it
    before the first source edit, inline route included. A violation of a
-   declared rule is a defect, not a style note.` Keep it under ~300B; it bills
+   declared rule is a defect, not a style note.` Keep it under ~300B. It bills
    into every session.
-3. **Brief + verify** — on fan-out, `brief.md`'s CONVENTIONS block pins the doc
+3. **Brief + verify**: on fan-out, `brief.md`'s CONVENTIONS block pins the doc
    path and rule IDs, and `check.md` step 5 FAILs a violation of a declared
    rule. This layer *is* mechanical, and it is why fan-out conformance is
    stronger than inline conformance.
@@ -244,8 +244,8 @@ the standards doc travels with the codebase it governs.
 
 Everything above is §A (Claude Code)-only, per the caveat above. Copilot
 CLI sits closest: it has its own real `preToolUse` hook event (JSON, under
-`~/.copilot/hooks/` or `.github/hooks/` — see `references/copilot.md`)
+`~/.copilot/hooks/` or `.github/hooks/`, per `references/copilot.md`)
 that the warn-only pattern above would port to directly. This repo doesn't
-yet ship that port as a file, unlike the Claude Code instance above — a
+yet ship that port as a file, unlike the Claude Code instance above. That's a
 gap, not a claim otherwise. (A Codex CLI worked example lived here until
 Codex support was dropped, 2026-07-10.)

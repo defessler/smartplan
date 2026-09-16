@@ -32,10 +32,10 @@ guardrail already refuses to floor low.
 
 **On Copilot, get that strength cost-consciously.** What stands in for
 Opus-comparable strength there is the cross-family
-verifier — **Gemini 3.6 Flash** (0.75/3.75; T18 measured 3.1 Pro, T34
-cleared this successor at 8/8 before Copilot retired it 2026-09-01) or
+verifier — **Gemini 3.8 Flash** (0.75/3.75; T18 measured 3.1 Pro, T34
+cleared 3.6 Flash at 8/8, and 3.8 took the pin 2026-09-16 untested) or
 GPT-5.6 Terra — per
-`check.md` § Family decorrelation. The registry classes Gemini 3.6 Flash
+`check.md` § Family decorrelation. The registry classes Gemini 3.8 Flash
 **Implementer**, level with Sonnet 5 rather than with Opus (reclassified
 2026-09-07). Naming it here is a deliberate exception for these six
 categories, earned on the decorrelation and price grounds below rather than
@@ -52,10 +52,10 @@ right default on a UE5 gameplay leaf — not the priciest same-goal one.
 
 **Roster note, read 2026-09-15.** Copilot retires Gemini 3.6 Flash on
 2026-10-02 (changelog 2026-09-03). GitHub names **Gemini 3.8 Flash** the
-successor, same 0.75/3.75 promotional price through 2026-12-31. Nothing has
-run 3.8 Flash against T34's seeded fixture. Treat it as a candidate rather
-than a default. Keep GPT-5.6 Terra as the cross-family fallback here until a
-trial clears it. The date is Copilot's alone. On Google's own API
+successor, same 0.75/3.75 promotional price through 2026-12-31. The seat
+pin moved to it on 2026-09-16, but nothing has run 3.8 Flash against T34's
+seeded fixture. For these six categories, use GPT-5.6 Terra as the
+cross-family verifier until a trial clears it. The date is Copilot's alone. On Google's own API
 the model stays stable with no announced shutdown.
 
 ## Contents

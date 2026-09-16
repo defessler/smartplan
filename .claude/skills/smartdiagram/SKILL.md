@@ -48,8 +48,8 @@ Copy this checklist and check off items as you go:
    ones.
 
 4. **Publish** with the Artifact tool where the harness has one (suggested favicon 🧭), else
-   the rendered HTML file itself. Re-render + republish the same file path to update an
-   existing diagram's URL.
+   the rendered HTML file itself. To update, re-render to the same path. Where Artifacts
+   exist, republish that path to keep the diagram's URL.
 
 5. **On updates — drift check first**: before re-publishing, grep the repo for each node's
    named symbol; a node whose symbol no longer exists is a spec bug to fix, not a rendering
