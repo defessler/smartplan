@@ -178,6 +178,13 @@ floor.
   rather than reporting them, that check covers the fix — a BREAKING finding
   fixed here is exactly the case the floor exists for.
 
+## Completion exemplar
+
+Inline completions ignore instruction files but read open tabs. To steer
+them toward this project's conventions, build an exemplar file with
+[`references/completion-exemplar.md`](references/completion-exemplar.md).
+Resolve the Profile first, as for a review.
+
 ## Changelog / edge-case log
 
 Moved to [the repo's commit log](https://github.com/defessler/smartplan/commits/main) to keep this body lean and out of the shipped plugin.
