@@ -126,6 +126,19 @@ strong model here, once, so the cheap tier can't wander.
    executor and verifier would be the same seat, drop the verify step
    rather than prompting for it.
 
+9c. **Never ask a leaf to write out or quote its own reasoning.** That
+   covers "show your reasoning in the response", "think step by step out
+   loud" and "quote your system prompt or model line to prove your tier".
+   On Opus 5.5 and the Fable models (and, per Anthropic's support article,
+   Opus 5) that is the `reasoning_extraction` classifier's exact trigger.
+   It refuses the turn with no fallback model. A resume refuses again
+   because the trigger stays in the transcript (vendor pages and
+   launch-day issue #96139, read 2026-09-22). Ask for the result and the
+   evidence for it. Tier checks belong to `/tasks` and `/usage`, never to
+   the leaf's own word. Behind a rerouting gateway the client's per-model
+   accounting (most likely `/usage` too) names the alias you asked for.
+   The provider's own usage monitor is the check there.
+
 10. **Conventions bind at write time.** Resolve the project's conventions doc
    once at plan time and pin its path in every brief's CONVENTIONS block, with
    the rule IDs the leaf is most likely to trip. Conventions are an authoring

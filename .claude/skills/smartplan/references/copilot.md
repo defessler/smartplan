@@ -1,7 +1,10 @@
 # smartplan §B deep reference — Copilot CLI economics & standing levers
 
 > Facts verified 2026-07-06; re-swept 2026-07-24, 2026-08-05, 2026-08-12,
-> 2026-09-15. Re-check trigger: four Copilot models retire 2026-10-02.
+> 2026-09-15, 2026-09-20, 2026-09-22. Re-check trigger: **ten** Copilot retirements —
+> four on 2026-10-02 (Gemini 3.5/3.6 Flash, Kimi K2.7 Code, Opus 4.7), six
+> more on 2026-10-19 (Gemini 3.7 Flash, GPT-5.5, GPT-5.4, GPT-5.4 mini,
+> GPT-5 mini, Grok 4.5).
 
 Load this only on Copilot CLI — for dispatch mechanics beyond flow.md §B's
 summary, budget decisions, fan-out sizing, or repo setup.
@@ -24,7 +27,7 @@ summary, budget decisions, fan-out sizing, or repo setup.
 | # | Lever | How |
 | --- | --- | --- |
 | 1 | Cheap default | `/fleet` subagents use a low-cost model by default — native. |
-| 2 | Agent frontmatter | `model:` on the seven shipped `.github/agents/` profiles — slug form (`claude-opus-5` / family alias `opus`). Since v1.0.83 an ordered `models:` list takes the first plan-reachable model, and `modelPolicy: required` refuses substitution. Pins can be silently downgraded (§ Per-seat model control), so never mix Auto with tiered dispatch. |
+| 2 | Agent frontmatter | `model:` on the seven shipped `.github/agents/` profiles — slug form (`claude-opus-5` / family alias `opus`), or a display name since 1.0.24 (untested for a model the build doesn't list). Since v1.0.83 an ordered `models:` list takes the first plan-reachable model. Each list leads with the newest version of its line (`model-classes.md` § How to edit). `model:` stays the older-build fallback. `modelPolicy: required` refuses substitution. `reasoningEffort` sets effort. Pins can be silently downgraded (§ Per-seat model control), so never mix Auto with tiered dispatch. |
 | 3 | `/subagents` | Sets default and per-agent subagent models in-session (alias `/agents`). |
 | 4 | NL directive | Name agents inline: `use @smartplan-planner to plan, then @smartplan-implementer per item, then @smartplan-verifier`. |
 | 5 | Scoped pins | `/model --session` pins model/effort for this session only (v1.0.72). **`/model plan` pins a plan-mode-only model (v1.0.74) — the native analog of §A's `opusplan`:** plan on Opus, revert automatically on exit; captures the core rule with zero dispatch machinery. |
@@ -32,25 +35,26 @@ summary, budget decisions, fan-out sizing, or repo setup.
 ## AI-credit economics (billing changed 2026-06-01)
 
 Token-metered AI credits (1 credit = $0.01). Monthly allowances: Pro 1,500 /
-Pro+ 7,000 / Max 20,000 per user. Business 1,900 and Enterprise 3,900 per
+Pro+ 7,000 / Max 20,000 per user, of which 500 / 3,100 / 10,000 is a
+variable flex share that can move. All reset 00:00 UTC on the 1st.
+Business 1,900 and Enterprise 3,900 per
 user, pooled, since the promo ended 2026-09-01 (plans data, 2026-09-15).
 **Subagent tokens bill**, so tiering the fan-out is the bill, not politeness.
 
 Copilot bills Anthropic's list rates, so `model-classes.md`'s Anthropic rows
-are the Copilot rows too (models-and-pricing, re-checked 2026-08-12). One
-cost model across both harnesses — which is why Anthropic making Sonnet 5's
-$2/$10 standard on 2026-08-10 lands here too. GitHub dropped its promo
-footnote on 2026-08-13; the rate is unqualified standard now.
+are the Copilot rows too (models-and-pricing, re-checked 2026-08-12).
 Four SKUs list at $10/$50: "Claude Fable 5", Fable 5.1 (cache read $0.25),
 "Claude Opus 4.8 (fast mode) (Preview)" and GPT-6 Astra (>272K $20/$75,
 the table's top). The Claude three are planning-only.
 
 **soft caps (public preview, CLI 1.0.66+ / SDK 1.0.5+):** `/limits`
-(interactive: view/set/remove), `--max-ai-credits` (programmatic) — an in-flight response
-finishes before the stop takes effect, so usage can slightly exceed the cap.
-Use them to lean on budget pressure, not just watch `/usage` (quota bars;
-the documented per-model token totals did NOT render on AI-credits
-sessions when last watched live, `docs/copilot-on-a-budget.md`). **Caveat (T25, 2026-07-12): caps are visible to the
+(interactive), `--max-ai-credits` (programmatic). An in-flight response
+finishes before the stop takes effect. A cap can't be set under 30
+credits (1.0.67). GitHub's docs disagree on scope. The CLI reference
+resets a cap each user message. The session-limit how-to spans the
+session. A `-p` run is one message either way.
+Use them to lean on budget pressure, not just watch `/usage` (quota bars).
+**Caveat (T25, 2026-07-12): caps are visible to the
 model and can suppress skill loading** — a capped session skipped
 `/smartplan` citing "limited credits"; cap leaves, not a skill-driven
 orchestrator. (`-p` doesn't expand skill slash-commands, so loading is
@@ -65,11 +69,13 @@ stood down, 13.2 cr sunk). Trust the checkout with `--add-dir
 <checkout>` (or the trusted-directories config) in any project that got
 `install-project.ps1` junctions.
 
-Subagent concurrency and depth are now documented settings-file knobs:
-`.github/copilot/settings.json` `subagents.maxConcurrency` (cap 32),
-`subagents.maxDepth` (cap 256), and `subagents.disabledSubagents`
-(cli-config-dir-reference, checked 2026-07-24) — size waves to the
-configured cap.
+Default subagent concurrency is per plan: Free 2, Pro/Pro+ 4, Max 8,
+Business 16, Enterprise and usage-based billing 32, depth 6 (CLI
+reference, read 2026-09-22). It doesn't say which row a Pro user on
+usage-based billing gets. The same page's env-var table says 32, depth 4.
+The `subagents.*` knobs (`maxConcurrency` cap 32, `maxDepth` cap 256,
+`disabledSubagents`) live in `~/.copilot/settings.json` or `/settings`,
+the first two honored only on usage-based billing. Size waves to the row.
 
 **`/usage` has a real ceiling — session-level only, confirmed 2026-07-08.**
 GitHub's own CLI reference documents it as "session usage metrics and
@@ -79,11 +85,10 @@ Claude Code's `/usage`. Don't let a session import Claude Code's
 `/usage`-attribution language here. A live 2026-07-08 case did exactly that,
 quoting §A's skills/subagents breakdown as Copilot's own behavior right after
 correctly observing that `/usage` is aggregate-only.
-The reference now also describes per-model rows with per-model AI-credit
-use on token-billed accounts (read 2026-09-15). Re-test before repeating
-the aggregate-only claim.
+CLI 1.0.85 (2026-09-16) added per-model AI-credit rows, still with no
+skill or subagent attribution. This box runs 1.0.83.
 
-**Correction, live-tested 2026-07-09:** the finer breakdown lives
+**Live-tested 2026-07-09:** the finer breakdown lives
 elsewhere — `/context` under `/experimental` shows per-source attribution
 (skills, subagents, MCP servers, plugins), and `/statusline`'s
 `ai-credits`/`ai-used` options give always-visible live spend. Check
@@ -95,97 +100,127 @@ elsewhere — `/context` under `/experimental` shows per-source attribution
 `assistant_usage_events` table carries per-request nano-AIU (1e9 = one
 credit) — per-session spend is exactly measurable without `/usage`.
 
-Plan gating: Opus 4.8, Opus 5 (GA 2026-07-24), Fable 5 and Fable 5.1 (GA 2026-09-01) are documented Pro+/Max. (T30+B4, 2026-07-25: an account that refused Opus 4.8 on 07-11 served both Opus models, so tiers change. Verify, don't assume the gate.) Both
+Plan gating: Opus 4.8, Opus 5 (GA 2026-07-24), Opus 5.5 (GA 2026-09-22), Fable 5 and Fable 5.1 (GA 2026-09-01) are documented Pro+/Max. (T30+B4, 2026-07-25: an account that refused Opus 4.8 on 07-11 served both Opus models, so tiers change. Verify, don't assume the gate.) Both
 Fables retain data by default for Anthropic's safety classifiers, where
 other Claude models stay zero-data-retention (plans footnote, 2026-09-15).
 **Re-derived 2026-09-15 from `github/docs`
 `model-supported-plans.yml`:** plain Pro excludes GPT-5.5, GPT-5.6 Sol,
-GPT-6 Astra, GPT-5.4 nano and every Opus and Fable SKU — everything else
-on the roster it reaches, including Terra, GPT-5.3-Codex, Kimi K3, the
-Gemini Flashes and both Groks.
+GPT-6 Sol, GPT-6 Astra, GPT-5.4 nano and every Opus and Fable SKU —
+everything else on the roster it reaches, including Terra, GPT-6 Luna,
+GPT-5.3-Codex, Kimi K3, the Gemini Flashes and the Groks (re-read
+2026-09-22).
 
-**Cross-vendor model economics (re-checked 2026-08-14).** Copilot exposes
-Anthropic, OpenAI, Google, xAI, Moonshot and Microsoft models. **Grok is
-back**: 4.5 (2026-07-28) and 4.6 (2026-08-14) are GA on every paid plan,
-plain Pro included, at xAI list 2 / 6. A prompt reaching 200K bills 4 / 12 on
-the WHOLE request — a cliff, not a margin. Grok Code Fast 1 stays deprecated
-(2026-05-15) and is a separate model.
+**Cross-vendor model economics.** Copilot exposes Anthropic, OpenAI,
+Google, xAI, Moonshot and Microsoft models. Grok 4.5 and 4.6 are GA on
+every paid plan at xAI list 2 / 6.
 
-Seat verdicts, cross-vendor. Prices and board numbers live in
-`model-classes.md`.
+Seat verdicts, cross-vendor:
 
-- Planner is **Opus 5** (registry default since 2026-08-05, same 5/25 and
-  same Pro+/Max gate as 4.8, which stays the fallback). GPT-5.5 is Pro-plan-gated (confirmed
-  2026-07-20, which is why T18 missed it) and loses on price and on SWE-Pro,
-  though it edges Opus on TB2.1 (83.1 vs 78.9, 07-24). The Geminis are
-  cheaper and trail further. Neither is a planner swap.
-- **Coding leaves: GPT-5.6 Luna is the Copilot floor** (seated 2026-09-07 at
-  the author's direction, from the 2026-08-20 preference). **0.20 / 1.20**,
-  ~10x under Sonnet 5 in, and above it on both independent boards (SWE-V
-  93.0 vs 79.6, TB4.0 17.3% vs 12.4%). `@smartplan-implementer-cheap` and
-  `@smartplan-scout` pin it; Sonnet 5 is the fail-twice target; never-Cheap
-  classes (security, C++ UB, concurrency, templates) start at Sonnet 5.
-  Board evidence plus author direction, no T-record — every result stays
-  behind the cross-family verifier, and a bounce rate past ~20-30%
+- Planner is **Opus 5.5** (4/20, Pro+/Max). The planner and reserve
+  seats list `[claude-opus-5.5, claude-opus-5]`. The 5.5 slug is in
+  `copilot help config` from prerelease 1.0.89-0, not stable 1.0.88. A
+  stable build lands on Opus 5. GPT-6 Astra gets no seat: it lists at
+  10/50 and scores under Opus 5.5 on AA (53 vs 58) and vals.ai TB4
+  (57.07 vs 61.62).
+- **Coding leaves:** `@smartplan-implementer-cheap` and `@smartplan-scout`
+  list `[gpt-6-luna, gpt-5.6-luna, claude-haiku-4.5]` at
+  `reasoningEffort: low`. GPT-6 Luna (0.10 / 0.50) leads as the newest
+  Luna, level with GPT-5.6 Luna on the AA index (37.26 vs 37.32) at
+  under half the cost per task. No build names `gpt-6-luna` yet. Today
+  the list lands on GPT-5.6 Luna. That one beats
+  Sonnet 5 on vals.ai SWE-V (93.0 vs 79.6) and tbench.ai TB4 (17.3% vs
+  12.4%) but trails on vals.ai TB4 (4.55 vs 8.08). Never-Cheap classes
+  (security, C++ UB, concurrency, templates) start at the Mid seat, the
+  fail-twice target too. Neither Luna has a T-record. Every result stays
+  behind the cross-family verifier. A bounce rate past ~20-30%
   reclassifies it back.
-- Mid/verifier stays **Sonnet 5**. **Gemini 3.8 Flash** and **GPT-5.4** are
-  the verifier-diversity picks per `check.md`'s Family decorrelation rule
-  (at max-savings, `@smartplan-verifier-cheap` runs Cheap leaves on Luna),
-  Gemini the cheaper and the only one cross-family from Luna (3.1 Pro held
-  this seat until Copilot retired it 2026-09-01. T34 cleared 3.6 Flash).
-  3.6 Flash retires from Copilot 2026-10-02, so the pin moved to its
-  named successor 2026-09-16, **unmeasured** until a T34 re-run.
+- **Mid seat:** `@smartplan-implementer` lists
+  `[gpt-6-sol, claude-sonnet-5]` at the author's direction. GPT-6 Sol lists
+  at Sonnet 5's 2/10 with no tbench.ai or vals.ai row yet (AA's own TB4
+  run: 43.9%). Its predecessor GPT-5.6 Sol leads Sonnet 5 on every board
+  both sit on. Sol is Pro+ and up. No build names `gpt-6-sol` yet. Today
+  every plan lands on Sonnet 5. Untrialed.
+- **Verifier:** `gemini-3.8-flash` (in `copilot help config` from CLI
+  1.0.83), cross-family to both the Claude and GPT seats per `check.md`'s
+  Family decorrelation rule. At max-savings, `@smartplan-verifier-cheap`
+  runs Cheap leaves on the Luna list. The pin moved from T34-cleared 3.6
+  Flash (retiring 2026-10-02) to its named successor 2026-09-16,
+  **unmeasured** until a T34 re-run. Copilot's built-in rubber-duck critic
+  runs an opposite-family model too (every family from 1.0.87). It has no
+  PASS/FAIL protocol and doesn't replace smartcheck.
 - **Haiku 4.5** is the Copilot fallback when the picker lacks Luna, and
   stays the Claude Code Cheap floor (Luna is not on that harness). GPT-5
   mini stays a deliberate-trial candidate, never a default off secondhand
   benchmark blogs.
 
-**GPT-5.6 family (Sol / Terra / Luna, in Copilot's roster since
-2026-07-10):** prices, board numbers, and seat placements live in
-`model-classes.md` — don't restate them here. What the registry rows don't
-carry: the OpenAI and xAI SKUs charge a **long-context surcharge**
-Anthropic rows lack (Sol >272K $8/$30 · GPT-5.5 >272K $10/$45 · GPT-5.4
->272K $5/$22.50 · Terra >272K $4/$18 · Luna >200K $0.40/$1.80 · Grok
-4.5/4.6 ≥200K $4/$12, 2026-09-15) — price
-big-context leaves and verifies off that column. Luna holds the Copilot
-coding-leaf floor (above). Terra is an active cross-family verifier. Sol
-stays a deliberate-trial candidate, per `routing.md` § Seat eligibility.
+Opus 5.5 and GPT-6 Luna lead by `model-classes.md`'s newest-version
+rule. GPT-6 Sol over Sonnet 5 is an author move across lines.
+Fall-through past a slug the build doesn't know is untested, since this
+box is on Copilot Free.
+`copilot help config` prints a per-build static list that needs no login or
+paid plan. Availability comes from the authenticated server catalog. On
+Free, 1.0.89-0 refused `--model claude-opus-5.5` as "not available"
+though its static list names it. The `/model` picker also shows server
+models the build doesn't list (code-read).
+So a slug is live once a build names it or a paid-plan probe dispatches it.
 
-**Roster watch (re-swept 2026-09-15).** New-SKU details live in
-`model-classes.md` (MAI-Code-1-Flash, Kimi K2.7 Code, Gemini 3.5/3.6
-Flash — 3.6 joined the roster 2026-07-21, CLI included). **Three landed
-2026-08-11/13/14: MAI-Code-1.1-Flash, Gemini 3.7 Flash, Grok 4.6**, all
-GA. MAI-Code-1-Flash retired 2026-09-10. No seat here pinned it. **Claude Opus 5**
-joined GA + CLI-selectable 2026-07-24 (CLI v1.0.75; Pro+/Max;
-Business/Enterprise admin-enable) at Opus 4.8's exact price — registry
-default since 2026-08-05. Opus 4.8 **fast mode**:
+**The cost ceiling (`routing.md` § The cost ceiling) binds pinned seats
+too.** With the session pinned — never Auto, where the incumbent is
+unknown and pins are ignored — no initial leaf pick prices above the
+session's own model. The profile set above is priced for that, and
+anything above the session seat (Strong verifier, Opus planner, a
+never-Cheap leaf forced to the Mid seat on a Luna session) is the plan-gate
+ask, not a silent default.
+
+**Long-context surcharge.** The OpenAI and xAI SKUs charge one that
+Anthropic rows lack (Sol >272K $8/$30 · GPT-5.5 >272K $10/$45 · GPT-5.4
+>272K $5/$22.50 · Terra >272K $4/$18 · Luna >200K $0.40/$1.80 · GPT-6 Sol
+>272K $4/$15 · GPT-6 Luna >272K $0.20/$0.75 · Grok ≥200K $4/$12,
+2026-09-22) — price
+big-context leaves and verifies off that column.
+
+**Roster watch (re-swept 2026-09-22).** New-SKU details live in
+`model-classes.md`. **Landed 2026-09-22: Claude Opus 5.5** (Pro+ and up,
+4/20), **GPT-6 Sol** (Pro+, 2/10) and **GPT-6 Luna** (every paid plan,
+0.10/0.50). None is in Auto. Each leads a seat's
+list above. Business/Enterprise get new GA models by default since the
+2026-08-26 policy. Opus 4.8 **fast mode**:
 $10/$50, cache-read $1, write $12.50; still "(preview)", Pro+-gated.
-**Retiring 2026-10-02: Gemini 3.5/3.6 Flash, Kimi K2.7 Code, Opus 4.7.**
+Trust the changelog's 2026-10-19 batch (2026-09-18) over GitHub's
+retirement table, which lacked it at the 2026-09-22 read.
 
 **Auto model selection, the honest retreat candidate (re-checked
-2026-08-05):** Auto has been **GA since 2026-04-17 across all plans**, and it
-routes on *evaluated task complexity*, not availability alone (changelog
-2026-04-17, auto-model-selection). Say the uncomfortable part plainly:
+2026-08-05, tiers added 2026-09-20):** Auto has been **GA since 2026-04-17
+across all plans**, and it routes on *evaluated task complexity*, not
+availability alone (changelog 2026-04-17, auto-model-selection). **Three
+user-selectable Auto tiers landed with the 2026-09-14 docs change —
+Efficiency, Balance, Intelligence** — in VS Code, Copilot CLI and the
+Copilot App: a complexity dial over Auto's own routing. Usage bills as the
+model Auto picks, plus the 10% paid-plan discount. Auto won't pick a model
+the plan excludes. **GPT-5.3-Codex is the base and the LTS last resort** on
+Business and Enterprise. CLI Auto's 12-model pool (GPT-6 Astra from
+2026-09-16) holds no Gemini after 2026-10-19 unless GitHub adds 3.8 Flash,
+which no Auto pool lists. Say the uncomfortable part plainly:
 description-level routing is smartplan's stated surviving value, and on this
 harness it's first-party now. What's left for us here is the regime gate and
-the verify floor, not the act of picking a model. The **10% discount** is
-10% off model costs billed through Auto, on paid plans only (docs
-reusable, re-read 2026-09-15). Routing runs "along
+the verify floor, not the act of picking a model. Routing runs "along
 natural cache boundaries" so it stays cache-safe, though that's the page's
 rationale rather than a worded guarantee. Split guidance:
 **inline/fast-path sessions → Auto is the sensible default, and the fair
-control to measure against.** Sessions *dispatching a tiered wave* still pin
+control to measure against.** On individual plans Auto can also route to
+codenamed evaluation models. Record or disable the evaluation-models
+setting for a control arm. Sessions *dispatching a tiered wave* still pin
 explicit models (under Auto a subagent inherits the resolved session model
 whatever its pin says, per the CLI reference, read 2026-09-15).
 
-**Repo-level pins (CLI v1.0.70, verified locally 2026-07-13):**
-`.github/copilot/settings.json` supports `subagents.agents.<name>` with
-per-agent `model`/`modelPolicy`/`effortLevel`/`contextTier` — this repo
-(no bundle) pins effortLevel **low** for `smartplan-implementer-cheap` and
-`smartplan-scout`. That key is documented in the CLI config reference
-(2026-09-15), though it isn't frontmatter (see § Standing levers). Reasoning bills as output, and the
-effort ladder is none/minimal/low/medium/high/xhigh/max since v1.0.55–60.
-Judgment seats stay unpinned deliberately.
+**Per-seat effort rides frontmatter:** `reasoningEffort: low` on
+`smartplan-implementer-cheap` and `smartplan-scout`, `high` on the Mid
+implementer, the Reserve and both verifiers, applied on `task`
+dispatch and, from 1.0.88, on selection (unprobed). The repo's
+`.github/copilot/settings.json` honors a fixed key list and silently
+ignores every `subagents.*` key (CLI config reference, read 2026-09-22).
+`subagents.agents.<name>` works only in `~/.copilot/settings.json`.
+Reasoning bills as output. The planner stays unpinned, so the mode's effort lands on the plan turn.
 
 **Verify on credits:** the default verify ladder here is `check.md`'s
 credit-billed default — script stage first, model pass batched + sampled
@@ -230,12 +265,12 @@ After the step-2 plan gate, fan the leaves out yourself — **don't ask the
 human to activate anything.** The model-invocable path is Copilot's built-in
 **`task` tool** (`task(agent_type=…)`): issue several `task` calls in one
 turn and they **run in parallel**, bounded by the subagent *concurrency*
-limit (default plan-dependent, raise it in `/settings`; distinct from the
+limit (set per plan, § AI-credit economics, and distinct from the
 *depth* limit). A maintainer calls this the *agent-driven equivalent of
 `/fleet`* (copilot-cli#3568). <!-- claim:copilot-task-tool-parallel-dispatch --> The plugin agents in `.github/agents/`
 (`@smartplan-planner` / `@smartplan-implementer` / `@smartplan-implementer-cheap` /
 `@smartplan-implementer-reserve` / `@smartplan-verifier` / `-verifier-cheap` / `@smartplan-scout`) register as
-`task` subagents — name them per leaf; all three implementer variants carry
+`task` subagents — name them per leaf; all seven carry
 `disable-model-invocation`, so tier selection is always the orchestrator's
 explicit call, never Copilot's auto-pick. So Copilot keeps the family's core
 rule (*never ask the user to invoke anything*) without giving up the
@@ -244,17 +279,16 @@ concurrent wave.
 **What still needs a human is `/fleet`** — the heavier *orchestrated* engine
 on the same task machinery (decompose → manage dependencies → background run
 → validate → synthesize; its validation is NOT a substitute for
-`smartcheck`). The model **can't** self-trigger `/fleet` (two human triggers
-only: typed, or autopilot after `/plan`/Shift+Tab) — treat it as an
+`smartcheck`). The model **can't** self-trigger `/fleet` (three human triggers:
+typed, autopilot after `/plan`/Shift+Tab, or the `--fleet` launch flag,
+which also runs headless under `-p`) — treat it as an
 **optional** upgrade for a big background wave, offered in passing, never
 blocked on.
 
-Two honest caveats: whether `task` subagents parallelize *by default* depends
-on the plan's default concurrency limit, which GitHub doesn't publish per
-tier, so set it yourself with the settings knobs above. And the one genuinely
-serial path is single-agent auto-inference (`infer`/
-`disable-model-invocation`), which delegates to *one* agent. Concurrency
-comes from the `task` tool. Monitor with `/tasks`.
+One honest caveat: the genuinely serial path is single-agent
+auto-inference, which delegates to *one* agent. `disable-model-invocation`
+turns it off. The older `infer` key is retired, though the CLI
+reference's table still lists it. Concurrency comes from the `task` tool. Monitor with `/tasks`.
 
 ## Command naming — plugin `sp`, executor hidden (why it's set up this way)
 
@@ -310,22 +344,30 @@ Copilot CLI plugin reference.)
   carries over for free), plus path-scoped `NAME.instructions.md` under
   `.github/instructions/` with `applyTo:` globs. Encode the non-negotiables
   (verification-before-done, smallest-diff, tiering defaults) there so they
-  hold when no skill fires.
+  hold when no skill fires. A custom agent dispatched as a subagent gets
+  none of them unless it sets `include-custom-instructions: true` (CLI
+  1.0.86, default false).
 - **Hooks:** fully documented at docs.github.com's hooks-reference
   (checked 2026-07-24): JSON under `.github/hooks/` (repo),
   `~/.copilot/hooks/` (user), or inline in the settings files; 14 events
-  including `preToolUse` — exit 2 denies, and it is the one **fail-closed**
-  event (other hook errors fail open) — and `agentStop`, where an
+  including `preToolUse` — the one **fail-closed** event, where a crash
+  or any non-zero exit denies (a timeout fails open) — and `agentStop`, where an
   always-blocking hook force-ends after 8 consecutive blocks
   (`stop_hook_active` flag, v1.0.72). The §A enforcement-hook pattern ports
   directly; a smartcheck-before-done gate belongs on `agentStop`/
   `preToolUse`.
+- **Claude Code hooks run here too.** In a trusted folder Copilot runs a
+  repo's `.claude/settings.json` hooks (`PreToolUse` matches `task` as
+  `Agent` or `Task`) and loads `.claude/agents/`, where same-named
+  `.github/agents/` seats win. A non-zero exit there denies every
+  dispatch, which is why the enforcement hook's command exits 0 when its
+  script is missing (`docs/enforcement-hook.md`).
 - **Reasoning effort:** `--effort none|minimal|low|medium|high|xhigh|max` tunes depth
   separately from model — drop effort on mechanical fan-outs before dropping
-  model tier. `--effort` and `~/.copilot/config.json` are session-wide,
-  with no per-dispatch drop (copilot-cli#2904 still open). Per-seat effort
-  rides `subagents.agents.<name>.effortLevel` above. The CLI reference now
-  lists a `reasoningEffort` frontmatter field too (2026-09-15, unprobed).
+  model tier. `--effort` and `~/.copilot/settings.json`'s `effortLevel`
+  (low to xhigh) are session-wide. Per-seat effort rides `reasoningEffort`
+  frontmatter (above), spelled `reasoning-effort` in the 1.0.88 changelog
+  (copilot-cli#2904 closed 2026-09-16).
 
 ## Testing against Copilot cheaply (the probe-cost playbook, 2026-07-12)
 
@@ -347,15 +389,16 @@ levers, in order of measured impact:
    (independence requires fresh context).
 5. **`/limits` / `--max-ai-credits` caps on probe sessions** — bound the
    runaway-repair tail (a single uncapped inline repair once burned 167
-   cr, T9).
+   cr, T9). Caps can't go under 30 cr. They bound that tail, not a
+   normal 1 to 13 cr leaf.
 6. **Minimal probe workspace** — dispatch context is ~40% of a Copilot
    dispatch's bill (cache reads of the session tree); probes that don't
    need the full skill tree should run from a stripped directory.
 7. **Cheapest-capable probe models** — mechanism probes (does the lever
-   work?) don't need top tiers; the registry's Cheap-tier candidates
-   (GPT-5 mini at ~¼ Haiku's price) are trialed deliberately for
-   probe-workhorse duty — outcomes recorded before any floor moves, per
-   `routing.md` § Seat eligibility.
+   work?) don't need top tiers. GPT-5.6 Luna now holds the
+   probe-workhorse role GPT-5 mini earned in T16 (mini retires
+   2026-10-19). GPT-6 Luna leads the Luna seats untrialed. Record its
+   probe outcomes (`routing.md` § Seat eligibility).
 
 ## Running real UE5 work cheaply on Copilot (not just probing, 2026-07-12)
 
@@ -371,13 +414,19 @@ forced-high verify tier. Levers, most impactful first:
    dodges the gate. **Measured on predecessor 3.1 Pro (T18): tied GPT-5.6
    Terra on seeded UE5 recall at 47% the cost, saving ~24%/leaf vs the
    Sonnet self-verify Pro would degrade to (T17); T34 cleared 3.6 Flash at
-   8/8 before 3.1 Pro retired 2026-09-01. Its successor 3.8 is untested.** Holds whether or not your Opus
-   pin lands.
+   8/8 before 3.1 Pro retired 2026-09-01. Its successor 3.8 is untested.**
+   The 47% predates Terra's 2026-08-12 reprice to 3.1 Pro's rate. The 3.8
+   Flash pin at 0.75 / 3.75 is the cheaper judge outright. Holds whether
+   or not your Opus pin lands.
 2. **Context discipline is the other ~40%.** Engine headers,
-   `*.generated.h` and large TUs reload on each cold 5-min subagent cache,
+   `*.generated.h` and large TUs reload on each cold subagent cache (5 min
+   on Claude seats, 30 min at OpenAI from GPT-5.6, pass-through undocumented),
    and dispatch context is ~40% of a Copilot bill. Scope each brief to the
    touched TU plus the *minimal* engine surface; never hand a leaf a whole
    module. Keep the cached prefix stable across a wave (`caching.md`).
+   The CLI's C++ language server indexes the whole codebase by default
+   from 2026-09-22. Symbol lookups may undercut grep-and-read on engine
+   headers (unmeasured). The first UE5 index build costs time and memory.
 3. **Batch-verify gameplay leaves.** ~3 same-profile leaves share one
    verifier context (`check.md`) at 32% of per-leaf verify cost, and the
    engine-context load is paid once, not three times.
@@ -388,8 +437,9 @@ forced-high verify tier. Levers, most impactful first:
    UE5 stub's forced Mid+ verify out-costs the Cheap saving. Cheap-tier UE5
    pays only on *wide* scaffolding waves.
 
-**Attribution discipline for any UE5 cost claim.** `/usage` is aggregate
-only; the credits a wave "cost" blend skill + engine-context
+**Attribution discipline for any UE5 cost claim.** Even with per-model
+rows (CLI 1.0.85+), `/usage` has no skill or context attribution. The
+credits a wave "cost" blend skill + engine-context
 overhead with the work itself. For a defensible number, run the measured
 leaf in a **minimal workspace** and cross-check `/context` under
 `/experimental` (§ `/usage` ceiling above) so the figure attributed to the

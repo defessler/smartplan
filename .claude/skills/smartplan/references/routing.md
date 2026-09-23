@@ -9,8 +9,9 @@ governed by the escalation rule.
 loaded. Every class has a floor — the cheapest tier that reliably lands it.
 Start at the floor; escalate one tier only on fail-twice (canonical rule:
 flow.md). Never route above the floor "to be safe," never below it to save
-pennies, and never above the session seat unasked (SKILL.md § Seat
-ceiling).
+pennies, never above the session seat unasked (SKILL.md § Seat
+ceiling), and never an initial pick above the incumbent's price at all
+(§ The cost ceiling).
 
 ## Contents
 
@@ -19,6 +20,7 @@ ceiling).
 - Seat-aware pre-flight — when the seat is below the work
 - The second dial — effort
 - Seat eligibility — mapping a user-named roster
+- The cost ceiling — no initial pick above the incumbent
 - C++ gamedev task classes
 - What a wave costs (T33 · T35, 2026-08-05, Copilot Pro)
 - Session-limit pressure (caps are a routing signal)
@@ -34,21 +36,23 @@ which model sits in each tier** — edit classifications there, not here.
 | Tier | Anchor model | Character |
 | --- | --- | --- |
 | **Max** | Fable 5.1 *(where exposed)* | Hardest architecture/decomposition *decisions* only. Never research, audit, or implementation. |
-| **Strong** | Opus 5 (+ cross-vendor Reasoning-class peers) | Planning escalation, cross-cutting judgment, brief-writing at fan-out. |
-| **Mid** | The newest Sonnet | Near-frontier implementer and default verifier. The workhorse floor. |
-| **Cheap** | Haiku 4.5 (Claude Code) · GPT-5.6 Luna (Copilot), + Mechanical-class peers | Tightly-scoped leaves behind a verifier. Fails *silently* — never unverified. |
+| **Strong** | Opus 5.5 (+ cross-vendor Reasoning-class peers) | Planning escalation, cross-cutting judgment, brief-writing at fan-out. |
+| **Mid** | The newest Sonnet (GPT-6 Sol first on Copilot) | Near-frontier implementer and default verifier. The workhorse floor. |
+| **Cheap** | Haiku 4.5 (Claude Code) · GPT-6 Luna (Copilot), + Mechanical-class peers | Tightly-scoped leaves behind a verifier. Fails *silently* — never unverified. |
 | **Script** | No model — an existing script | A deterministic action an already-written script performs. Zero cost, zero drift. |
 
-GPT-5.6 Luna is classed Implementer but holds Copilot's Cheap seat on price
-(hard floor #6). Its class decides which leaves it may take. The seat it
-holds decides its ceiling.
+Both Lunas are classed Implementer but hold Copilot's Cheap seat on price
+(hard floor #6). Class decides which leaves one may take. The seat
+decides its ceiling.
 
-**Dated 2026-08-12:** Sonnet 5's $2/$10 became Anthropic's standard price on
-2026-08-10 — the 2026-09-01 step to $3/$15 was cancelled. The Opus→Sonnet
-multiple stays 2.5× and the fan-out break-even does not move.
+**Dated 2026-09-22:** Sonnet 5's $2/$10 is Anthropic's standard price (the
+$3/$15 step was cancelled 2026-08-10). Opus 5.5 lists at $4/$20. So
+Opus→Sonnet is 2× on the current Opus, down from 2.5× on Opus 5. A
+fallback from Opus 5.5 to Opus 5 or 4.8 is a climb in price.
 
 **Window follows the seat, and the harness caps it below native** — Copilot
-serves Claude at 264K against Opus 5's 1M (`copilot.md`), so **"beyond one
+serves Claude at 264K against a native 1M (`copilot.md`, read 2026-08-06,
+before Opus 5.5). So **"beyond one
 context" is a live regime there and nearly unreachable in Claude Code: the
 same task routes differently per harness.** Within one, a subagent's window
 is its *own* model's — five Haiku seats give five 200k, not five 1M — so
@@ -65,7 +69,7 @@ seats. Routing down shrinks the window you fanned out to get.
 | Leaf implementation from an approved brief | **Mid** | Sonnet lands briefed leaves at near-Opus parity. |
 | Leaf implementation, *single-concern + scripted acceptance check* | **Cheap** — only via smartexec behind smartcheck | The family's point. No brief or no verifier → route Mid. |
 | Mechanical transforms: renames, formatting, codemods, boilerplate-from-exemplar, test skeletons, docstrings, commit/changelog text | **Cheap** *(lone leaf → Mid, hard-floor #4)* | Imitation work — give an exemplar; Cheap-class models imitate far better than they follow prose. |
-| Verifying a leaf | **Floor tracks the executor** — Mid for Cheap leaves, Strong for Mid/Strong leaves (`check.md` § Tiering) | Fully scripted zero-judgment checks may drop to Cheap. Never the executing instance. |
+| Verifying a leaf | **Floor tracks the executor** — Mid for Cheap leaves, Strong for Mid/Strong leaves (`check.md` § Tiering) | Fully scripted zero-judgment checks may drop to Cheap. Never the executing instance. Max-savings on Copilot: a fresh Luna verifies Cheap leaves instead (`modes.md` matrix). |
 | Scouting: find files/symbols/usages, compress a subsystem into a context pack | **Cheap** | Cheap reads feeding a strong decision. No diff → no smartcheck; the consumer spot-checks load-bearing facts (`check.md`). |
 | Security-sensitive: authn/authz, secrets, crypto, input validation | **Mid**, never Cheap | Verifier-catchability guardrail. |
 | Irreducibly cross-cutting leaf (a mini-plan) | **Strong** | A planner escape, not a "hard leaf." |
@@ -135,12 +139,13 @@ and that's usually cheaper. Seat effort at plan time, next to the tier.
   nothing on the BILL below `max`** — `none`/`low`/`medium`/`high` within
   0.4%; only `max` moved it (1.92×). Quality tied everywhere, but on a task
   `none` already aced, so that's a ceiling, not parity evidence.
-- **Pick a level at the start and hold it** — changing effort mid-session
+- **Pick a level at the start and hold it** — changing effort mid-session on most models
   invalidates the cached prefix (`caching.md`).
 - **Low effort means fewer tool calls**, so an underspecified brief fails
-  *harder* there — it raises the bar on brief quality.
-- **Frontmatter effort is §A-only.** On Copilot it's session-wide
-  (`--effort`) or a repo-level per-agent pin (`copilot.md`).
+  *harder* there — it raises the bar on brief quality. A low-effort
+  executor can also stop noticing it's stuck, which weakens its BLOCKED.
+- **A seat's effort pin lives in its frontmatter:** `effort:`, or
+  `reasoningEffort:` on Copilot (`copilot.md`). `--effort` sets the session.
 
 ## Seat eligibility — mapping a user-named roster
 
@@ -149,7 +154,7 @@ instruction to obey literally** — naming a stronger model doesn't change
 what the work needs. **`model-classes.md` holds the class→seat map** and
 the per-model registry (e.g. Fable is Reasoning-class but **planner-only**,
 never a verifier or a fail-twice target). Provisional rows are
-deliberate-trial only. **Mapping procedure** at Plan time: (1) classify each
+deliberate-trial only unless the author seats one. **Mapping procedure** at Plan time: (1) classify each
 named model by published price + benchmarks, never silently guess; (2)
 seat from the roster: planner = strongest Reasoning-class named, floors =
 cheapest named class covering each task class, verifier per `check.md` §
@@ -158,6 +163,10 @@ seats from the harness and say so; only a stated hard constraint seats a
 too-strong model low, flagged as an over-tier; (4) **refuse over-seating by
 default** — "use Opus to implement" is reseated and presented at the gate;
 an explicit "seat it anyway" is honored and recorded, never a default.
+**Newest version first:** seat and dispatch the newest version of a model
+line the harness serves, the previous one as fallback (`model-classes.md`
+§ How to edit). A roster naming an older version gets the newest, said at
+the gate.
 
 ## C++ gamedev task classes
 
@@ -203,6 +212,49 @@ per-leaf price.
    caps count *finished* leaves, nesting depth is capped; the §A/§B
    references have the numbers.
 
+## The cost ceiling — no initial pick above the incumbent
+
+Cheap hard floor #6's rule, generalized to every seat: **at dispatch
+time, an initial seat pick never costs more effectively than the model
+currently doing the job — the session seat, or the seat handing the leaf
+down.** Seat each leaf on the cheapest registry row that (1) meets the
+class floor for the leaf's class, (2) holds measured adequacy
+(`model-classes.md`: candidate and provisional rows are
+deliberate-trial-only, never default picks unless the author or its
+newest-version rule seats them), (3) passes the joint
+executor-plus-verifier bounce breakeven (hard floor #4 — the ceiling
+compares the PAIR's combined cost, because on small leaves the verify
+alone exceeds the Cheap saving), and (4) prices no more than the
+incumbent. `scripts/seat-map.py compare <candidate> <incumbent>` is the
+deterministic list-price check: exit 1 means above on both axes.
+
+**Climbs above the seat stay legal only through the named gates** — the
+ask-first Seat ceiling (SKILL.md), fail-twice escalation with its report
+attached, the planner seat, and the verifier floor (`check.md` §
+Tiering, including a cross-family verifier priced over a Cheap
+executor). Each is a deliberate spend named at the gate, never a
+default. A Cheap seat climbs none of them (hard floor #6).
+
+**Effective cost, not list price, where it flips:** the ~30% tokenizer
+multiple on newer rows, cache-read tiers, plan credit multipliers
+(6.9/1.7/24 on GLM-5.3 vs 2.3/0.56/8 on Flash), DeepSeek peak vs
+off-peak, and the switch cost of re-paying a warm prefix cold mid-job.
+Below break-even warm prefix, stay on the incumbent even when the
+alternative is cheaper per token.
+
+**Pre-conditions, or the rule no-ops:** the incumbent must be known
+(under Copilot Auto it is not, and subagent pins are ignored — never
+mix, `copilot.md`; Auto's inherit-everything equalizes per-token price
+while each subagent still pays its own context reload, so never read
+Auto as free tiering), and the registry row must sit inside gate (n)'s
+30-day freshness line. When the executor-relative verify floor and this
+seat-relative ceiling diverge, the floor sets the minimum and the ask
+bridges everything above the seat. **Verify the landing from the bill** — `/usage`
+by model, `/tasks`, workflow progress records — never the dispatch
+intent: a tier that silently resolved elsewhere voids the comparison.
+Pre-registered validation: `the development repo's benchmark records
+t41-cost-ceiling-validation-prereg.md`.
+
 ## Hard floors for the Cheap class (non-negotiable)
 
 1. **Never plan, decompose, or make cross-cutting decisions.** Not even
@@ -219,13 +271,17 @@ per-leaf price.
    Cheap-vs-Mid saving *at a 0% bounce rate*. Route tiny leaves Mid (+ the
    session-diff-read exception) or Script-check; the Cheap floor pays only
    on leaves wide or large enough to out-earn the verify, or whose verify
-   is scripted.
+   is scripted. **The one bought exception:** max-savings on Copilot
+   verifies Cheap leaves with a fresh Luna (`modes.md` matrix) at a
+   fraction of a Mid verify's input price — an unmeasured same-model
+   trade, said out loud at the gate.
 5. **C++ isn't automatically cheap.** Template metaprogramming, engine
    internals, perf hot-paths, and determinism-critical code are never
    Cheap-floor — they fail silently in ways a clean compile won't catch.
 6. **Never dispatch above its own price.** A Cheap seat, the session
    model or a leaf, hands work only to the same model, a model priced no
-   higher on input or output (`model-classes.md`), or a script. A cheaper
+   higher on input or output (`model-classes.md`), or a script. The
+   general form of this rule binds every seat: see § The cost ceiling. A cheaper
    model never stands in for the verify its own work needs. That check
    stays the script (`check.md` § Tiering). It never asks for more. Work
    that needs a stronger model needs a stronger session, which the user

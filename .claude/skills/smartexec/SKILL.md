@@ -2,7 +2,7 @@
 name: smartexec
 description: Execute a single BRIEF exactly as written — implement only what it specifies, prove DONE by pasting the acceptance output, or report BLOCKED. Terse executor protocol for cheap executor models.
 user-invocable: false
-disable-model-invocation: true  # machine payload — the orchestrator attaches this file's CONTENT to Cheap briefs; never Skill-invoked by user or model, so keep it out of the session skill listing. disable-model-invocation confirmed at code.claude.com/docs/en/skills 2026-07-11 (the development repo's claim ledger); user-invocable has no ledger row — its only in-repo trail is Copilot-side (copilot-cli#3095, copilot.md)
+disable-model-invocation: true  # machine payload — the orchestrator attaches this file's CONTENT to Cheap briefs; never Skill-invoked by user or model, so keep it out of the session skill listing. Both fields are documented in the skills page's frontmatter table (read 2026-09-20, the development repo's claim ledger); user-invocable's behavioral trail stays Copilot-side (copilot-cli#3095, copilot.md)
 ---
 
 # smartexec

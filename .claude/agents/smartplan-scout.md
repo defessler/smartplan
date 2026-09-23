@@ -2,7 +2,7 @@
 name: smartplan-scout
 description: Read-only context-gathering seat of the smartplan tiering policy — find files/symbols/usages and compress them into a small context pack for a planner or brief-writer. Never for anything that changes code.
 model: haiku
-effort: low
+effort: low  # a no-op on Haiku 4.5, which has no effort dial. It still rides a per-call model override (a model sonnet scout ran Sonnet 5 at low, 2026-09-02)
 tools: Read, Glob, Grep
 ---
 

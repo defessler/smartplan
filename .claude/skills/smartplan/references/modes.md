@@ -37,9 +37,10 @@ cheaper (13.6 vs ~14.4 cr). Step up to `budget` for a narrow wave, or
 to `balanced` wherever every leaf should keep its model verify.
 
 On Claude Code the default is **max-quality**, by the author's choice.
-A subscription carries no per-token bill inside plan limits, but its
-five-hour and weekly windows are a meter of their own, fast mode draws
-usage credits at $10/$50 per MTok, and a Fable-class seat can draw them
+A subscription carries no per-token bill inside plan limits. Its
+five-hour and weekly windows are a meter of their own, though. Fast mode
+draws usage credits at $8/$40 per MTok on Opus 5.5 ($10/$50 on Opus 5 and
+4.8), and a Fable-class seat can draw them
 too, depending on plan and seat tier — so max-quality's extras (Opus
 planner, one-strike escalation, 3-verifier panel) spend real headroom.
 The 2026-09-07 cost audit measured budget at parity and proposed it on
@@ -54,10 +55,18 @@ invocation when a session races a cap, and say so at the gate.
 | Implementer floor | Sonnet for mechanical, Opus for correctness-sensitive | Today's floors; doubt rounds up to Mid | Class floors (`routing.md`) | Cheap wherever the check is scriptable, incl. borderline-mechanical | Cheap for anything checkable; Mid only via fail-twice |
 | Verify | Verifier one tier above executor (capped at Strong — Strong leaves get a fresh cross-family Strong verifier, never Fable), no session-diff exception; 3-verifier decorrelated panel on correctness-sensitive leaves | No session-diff exception; Strong verify on Mid leaves | `check.md` tiering + the documented session-diff exception; credit-billed harness → check.md's credit-billed default (script-first, sampled batch) | Exception preferred where legal; script pre-checks first, script-only where scriptable | Script checks wherever scriptable; on Copilot, Cheap leaves take a fresh Luna (`@smartplan-verifier-cheap`, same-model, noted in the verdict) unless the leaf is unsuitable for it; single Mid-verifier cap (an escalated-to-Mid leaf keeps its Strong/cross-family verifier — `check.md` hard rule); sampling on homogeneous waves ≥5 — verify ⌈N/3⌉, all on any failure (**accepts silent-failure risk on unsampled leaves; said out loud at the gate**) |
 | Escalation | One strike escalates | fail-twice (canonical) | fail-twice | fail-twice | fail-twice |
-| Effort | high/max everywhere | high on plan + verify | Harness defaults; low on Cheap leaves | low on Cheap + mechanical Mid | low everywhere but the plan turn |
+| Effort | high everywhere, xhigh/max only on a measured gain | high on plan + verify | Harness defaults; low on Cheap leaves | low on Cheap + mechanical Mid | low everywhere but the plan turn |
 | Output register | Full prose allowed (templates still apply) | Terse templates (`check.md` § Verdict budget) | Terse templates + telegraphic agent-consumed prose (caveman *lite*) | Caveman *full* on all agent-consumed prose | Caveman *ultra* — fragments |
 | Fan-out | ≤3 leaves/wave, extra Integrate attention | 3–5 | 3–5 (flow default) | Size to survive caps; wider cheap waves | Width stops paying past ≥5 (T27); batch/sample the verify |
 | Inline output ceiling | No ceiling (templates apply) | One-paragraph close | One-paragraph close | Routing line + diffs only; echo-free edits (never reprint file content); ≤3-line close; no offers/retro | Same as budget, fragments allowed |
+
+**On Claude Code the Mid seats pin `effort: high`**, Sonnet 5's default.
+It beats `/effort` and ultracode and rides a per-call `model: opus`
+(`claude-code.md`, probed 2026-09-22). Mid leaves, Strong verify and
+escalations run high in every mode. The cheaper Effort cells land on
+the plan turn (stock Opus 5.5 runs medium). Set it with `--effort` at
+launch, since `/effort` saves per model. Haiku 4.5 has no dial.
+Budget's mechanical Mid lands only as a workflow `agent()` effort.
 
 **Inline output ceiling — the narration cap.**
 Output bills ≈5× input, so the ceiling row above is a hard cap on the
@@ -112,10 +121,13 @@ micro-leaves where it can't pay.
   mode.
 - **The seat ceiling** — no mode dispatches above the session seat
   unasked (`SKILL.md` § Seat ceiling). max-quality's Opus floors and
-  Fable planner are asks on a Sonnet seat, and a fail-twice climb above
+  Fable planner are asks on any seat below them, and a fail-twice climb above
   the seat is the same ask at every mode. A Cheap seat doesn't ask
   at all. Nothing leaves it priced above its own model (`routing.md`
-  Cheap hard floor #6).
+  Cheap hard floor #6). **The cost ceiling binds at every mode too**:
+  no initial pick prices above the incumbent, whatever the dial says
+  (`routing.md` § The cost ceiling). The modes move floors and verify
+  machinery, never that invariant.
 - **Byte-verbatim code/paths/errors** in every register.
 
 ## Harness mapping
@@ -124,7 +136,8 @@ micro-leaves where it can't pay.
   `effort:`; the panel is 3 concurrent verifier dispatches, cross-family
   when the roster allows.
 - **Copilot (§B):** floors pick among `@smartplan-implementer-cheap` /
-  `-implementer` / `-implementer-reserve`; effort via `--effort`; budget
+  `-implementer` / `-implementer-reserve`; effort via `--effort` or a
+  seat's `reasoningEffort:`; budget
   modes lean on `/limits` soft caps (`copilot.md`). **Confirm the Opus pin
   actually lands:** the documented **Pro+/Max** requirement is the base-Pro
   expectation, and a refusal prints a downgrade warning (live 2026-07-11) —
@@ -134,15 +147,21 @@ micro-leaves where it can't pay.
   gate rather than presenting the mode as landed. **Route the verify
   cross-family on price either way**, not because Opus is gated: `check.md`
   § Tiering sends every Mid leaf to a Strong verifier — prefer the
-  Gemini/GPT-5.6 Terra judge (`check.md` § Family decorrelation; Gemini is
-  the measured cost-sensitive default, T18), never a silent
-  Sonnet-judging-Sonnet self-check. Panel concurrency rides the
+  Gemini/GPT-5.6 Terra judge (`check.md` § Family decorrelation; the
+  pinned Gemini 3.8 Flash at 0.75/3.75 is the price-sensitive pick, and
+  T18's "measured cost-sensitive default" label for Gemini died with the
+  2026-08-12 Terra reprice that set Terra at exactly 3.1 Pro's old rate),
+  never a silent
+  Sonnet-judging-Sonnet self-check. Both judges still clear the cost
+  ceiling against the session seat (`routing.md`): Terra's 2/12
+  out-prices a Sonnet session on output, so on that seat Terra is the
+  ask and 3.8 Flash is not. Panel concurrency rides the
   plan's subagent cap — it may partially serialize on Pro. **And the
   effort lever excludes Haiku** (live 2026-07-11: `--effort` on
   `claude-haiku-4.5` errors pre-flight, "does not support reasoning
-  effort configuration") — budget/max-savings' low-effort row applies to
-  Sonnet-and-up leaves only on Copilot; the Cheap floor's savings there
-  come from the register + verify machinery rows alone.
+  effort configuration"). The Luna Cheap and scout seats pin
+  `reasoningEffort: low`, so budget/max-savings' low-effort row reaches
+  them. A Haiku fallback saves only through the register and verify rows.
 
 ## Measured economics + budget personas (Copilot, live 2026-07-13)
 
@@ -206,7 +225,8 @@ human's, at session start):
 1. **Model:** Auto for an inline session (10% off on paid plans,
    cache-safe) or an explicit cheap model. Any tiered wave takes
    explicit per-agent pins. Never Opus/Fable for a whole session.
-   Mechanical → GPT-5.6 Luna ($0.20/$1.20, the Copilot Cheap seat).
+   Mechanical → GPT-6 Luna ($0.10/$0.50, the Copilot Cheap seat's first
+   pick), or GPT-5.6 Luna ($0.20/$1.20) where the picker lacks it.
 2. **Cap leaves, not the orchestrator:** `--max-ai-credits` bounds a
    runaway repair, but a cap can suppress skill loading (T25) — cap leaves.
 3. **Warm cache:** `--resume` for repairs; minimal context (re-read every

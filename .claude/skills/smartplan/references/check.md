@@ -239,7 +239,10 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
 - **Tiering — the verifier floor tracks the executor** *(research-backed,
   2026-07-09; budget/max-savings may modulate the machinery per `modes.md`,
   but an escalated-to-Mid leaf keeps its Strong/cross-family verifier)*:
-  never weaker than the executor it judges. The **session-diff exception**
+  never weaker than the executor it judges. The verifier rides the cost
+  ceiling's **joint pick** (`routing.md` § The cost ceiling): executor
+  plus verifier are priced as a pair against the incumbent, because on a
+  small leaf the verify alone out-eats the Cheap saving (hard floor #4). The **session-diff exception**
   (canonical: flow.md step 4): an Opus-or-stronger session model reading
   the full diff may verify leaves it did not author.
   - **Cheap executor → Mid (Sonnet) verifier.** A Cheap verifier only for
@@ -274,16 +277,27 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
   minimum a different instance. Current picks (registry is the source of
   truth, re-pinned 2026-09-16): on Copilot, Cheap leaves → **Gemini 3.8
   Flash** (or Sonnet 5); **GPT-5.4** only when the executor is not an
-  OpenAI model, since GPT-5.6 Luna holds the Cheap seat from 2026-09-07
-  and would be same-family; never mini/nano tiers. At max-savings a fresh
+  OpenAI model, since the Cheap seat is OpenAI (GPT-6 Luna first by author
+  direction 2026-09-22, GPT-5.6 Luna the untested fall-through until a
+  CLI build names `gpt-6-luna`) and would be same-family; never mini/nano
+  tiers. GPT-5.4 leaves Copilot
+  2026-10-19 and its named successor Sol is Pro+-gated, so plain Pro's
+  cross-family pool after that date is Gemini 3.8 Flash and Grok 4.7.
+  At max-savings a fresh
   Luna verifies Cheap leaves instead (`modes.md`), an unmeasured
-  same-model trade. Sonnet/Opus leaves →
+  same-model trade. Mid and Strong leaves (Sonnet, Opus, or GPT-6 Sol once
+  a CLI build names it) →
   **Gemini 3.8 Flash** (0.75/3.75, cost-sensitive, Implementer-class,
   ungated on Copilot Pro. Its predecessor 3.6 Flash earned the seat on
-  measured recall. 3.8 is unmeasured, so Terra holds C++ UB leaves) or **GPT-5.6 Terra** only when its thoroughness edge earns
+  measured recall. 3.8 is unmeasured, so Terra holds C++ UB leaves) or,
+  on a non-GPT executor, **GPT-5.6 Terra** only when its thoroughness edge earns
   ~2× the cost. **Measured (T18, Gemini 3.1 Pro): tied Terra on seeded C++
   recall, 14/15 each, at 47% the cost at July prices. T34 cleared 3.6 Flash
-  at 8/8, before 3.8 took the pin untested** — don't reach for the pricier judge by habit. When strength and
+  at 8/8, before 3.8 took the pin untested** — don't reach for the pricier judge by habit.
+  Copilot's built-in rubber-duck critic (default on from CLI 1.0.58,
+  auto-invoke off, every session family from 1.0.87) runs on an
+  opposite-family model. It's a second opinion, not a verifier: no
+  PASS/FAIL protocol, undisclosed model. When strength and
   decorrelation conflict: shared-blind-spot domains (C++ UB, concurrency,
   security — **UE5 gameplay is all of these**) favor the decorrelated
   judge; subtle-judgment domains favor the stronger same-family judge

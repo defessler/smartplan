@@ -81,7 +81,9 @@ invoke anything.**
    approve before it starts, because nothing stops it after.
 3. **Dispatch leaves in parallel** with your harness's lever (§A/§B). A
    dispatch is a *subagent with its own model* — never in-context work by
-   the session model. Fire every ready, disjoint-FILES leaf **concurrently**;
+   the session model. Seat every leaf under the **cost ceiling**
+   (`routing.md`): the initial pick never prices above the incumbent,
+   and every climb is a named gate. Fire every ready, disjoint-FILES leaf **concurrently**;
    one-at-a-time dispatch wastes the fan-out. **Stagger for cache:** a
    cache entry is readable only once its first response starts streaming —
    dispatch ONE leaf, await first output, then fire the rest so siblings
@@ -94,7 +96,8 @@ invoke anything.**
    Measured 2026-09-07: seven Haiku scouts under an ~80K-token Fable
    seat, stagger loses by about 4×; fire that wave in one turn.
    **Claude Code workflows now do this for you** (a ~5s hold on all but the
-   first), so the manual stagger is for other harnesses and hand-rolled
+   first, when model, effort, agent type, tools, schema and directory
+   match), so the manual stagger is for other harnesses and hand-rolled
    dispatch.
    Sonnet-tier leaves take the plan's task text; Cheap leaves take a
    compiled brief (**`brief.md`**) *plus* the `smartexec` protocol. Track
@@ -132,8 +135,8 @@ invoke anything.**
 
 ## Model-role matrix
 
-Lineup, strongest → cheapest: **Fable 5.1 > Opus 5 > Opus 4.8 > Sonnet 5
-> Haiku 4.5.** <!-- claim:anthropic-model-lineup --> The full cross-vendor
+Lineup, strongest first: **Fable 5.1 > Opus 5.5 > Opus 5 > Opus 4.8 >
+Sonnet 5 > Haiku 4.5.** <!-- claim:anthropic-model-lineup --> The full cross-vendor
 roster (classes, dated prices, default/candidate/provisional status) is the
 hand-editable registry **`references/model-classes.md`** — reclassify there,
 never inline here.
@@ -143,11 +146,11 @@ capability class, refuse over-seating by default, and present any reseating
 at the gate — full procedure in `routing.md` § Seat eligibility. An explicit
 "seat it anyway" is honored and recorded in `run-state.md`.
 
-### Planner seat — default Opus 5, drop on fit
+### Planner seat — default Opus 5.5, drop on fit
 
 | Choice | Model | Use when |
 | --- | --- | --- |
-| **Default** | **Opus 5** | Multi-file, cross-cutting, ambiguous, or any plan whose blast radius you can't bound at a glance. |
+| **Default** | **Opus 5.5** | Multi-file, cross-cutting, ambiguous, or any plan whose blast radius you can't bound at a glance. |
 | Drop down (on fit) | Sonnet 5 | The plan is unmistakably small, bounded, single-domain, unambiguous. |
 | Max (opt-in) | **Fable 5.1** | The hardest architecture/decomposition decisions. **Planning only.** |
 
@@ -169,7 +172,7 @@ a verdict**: reproduce before acting, log every cap (`check.md` § Review).
 | --- | --- | --- |
 | **Cheap** | Haiku 4.5 | Mechanical, single-concern, verifier-checkable leaves (renames, formatting, codemods, boilerplate-from-exemplar) — only via smartexec **behind smartcheck**. Fails silently; never unverified. (Scouting: Cheap-floor, no-diff — step 4's spot-check path, not smartexec.) |
 | **Mid** | The newest Sonnet | Everything else — briefed/correctness-sensitive leaves, and anywhere the check can't be scripted. |
-| Reserve | Opus 5 | An *irreducibly* cross-cutting leaf (a mini-plan), or a fail-twice target. Not "hard algorithm." |
+| Reserve | Opus 5.5 | An *irreducibly* cross-cutting leaf (a mini-plan), or a fail-twice target. Not "hard algorithm." |
 
 **Two guardrails:** (1) **Bounce breakeven** — weaker-first *raises* token
 count (escalations are extra rounds) and pays back only on price/limit,
@@ -180,20 +183,22 @@ failure is *checkable*; where executor and verifier share a blind spot
 
 **Effort is a second axis** — Cheap leaves run low/medium effort; a planner
 escalation raises effort too (Claude Code: frontmatter `effort:` /
-`--effort`; Copilot: `--effort`, ladder none–max; reasoning bills as
+`--effort`; Copilot: `--effort` or seat `reasoningEffort:`, ladder none–max; reasoning bills as
 output). Pin it in the **seat** — a Claude Code `Agent()` call takes no
-`effort` param and Copilot's is session-global, so neither harness offers
-a per-dispatch drop. Cheap seats ship pinned (`effort: low`). **Output verbosity is the third notch**:
+`effort` param and Copilot's `--effort` is session-global, so neither harness offers
+a per-dispatch drop. Cheap seats ship pinned low, the Mid seats high. **Output verbosity is the third notch**:
 output tokens price ≈5× input, so terse executor blocks and the lean
 default style are the fan-out norm.
 
 **Universal escalation — the fail-twice rule** *(canonical statement; other
 files point here, never restate)*: a smartcheck FAIL is a strike.
 **Classify before counting.** A leaf that died on a 5xx/529, a
-`stop_reason: "refusal"` (Opus 5's safety classifiers end turns clean, HTTP
+`stop_reason: "refusal"` (Opus and Fable safety classifiers end turns clean, HTTP
 200, no error), or `max_tokens` truncation is **infrastructure, not a
 strike** — check status.claude.com, retry with backoff, don't escalate a
-tier for weather. An
+tier for weather. A refusal is the exception to the retry: re-brief it
+fresh without the flagged text, never a resume, since the same context
+refuses again. `reasoning_extraction` has no fallback at all. An
 executor BLOCKED gets exactly one same-tier retry with a repaired brief
 before it counts, and that retry **resumes the same executor** (warm
 context), never a cold re-dispatch (Claude Code: `SendMessage` auto-resumes
@@ -253,8 +258,9 @@ most of this flow **cannot ship there**, so read its verdict table first.
   per-model: its `Usage by model:` block prints a token line per model, so
   run a cheap wave and look for that model's line. An all-Opus breakdown
   after a Haiku wave is free in-harness evidence the tier didn't land (on a
-  subscription seat the dollars aren't a bill, the attribution still is). A
-  silently failing lever makes tiering cost-additive, so `/model opusplan`
+  subscription seat the dollars aren't a bill, the attribution still is).
+  A rerouting gateway likely shows the alias asked for (`claude-code.md`).
+  A silently failing lever makes tiering cost-additive, so `/model opusplan`
   stays the routing-free fallback when the core rule must be guaranteed.
 - **Undo:** background subagent edits land outside the session's
   checkpoints, so `/rewind` won't restore them — revert with git. A forked
@@ -267,7 +273,7 @@ most of this flow **cannot ship there**, so read its verdict table first.
 ### §B · GitHub Copilot CLI
 - **Lever:** no per-call override — pinned agents in `.github/agents/`
   (`@smartplan-planner` / `-implementer` / `-implementer-cheap` /
-  `-implementer-reserve` / `-verifier` / `-scout`, slug-form `model:`),
+  `-implementer-reserve` / `-verifier` / `-verifier-cheap` / `-scout`, slug-form `model:`),
   `/subagents` for in-session pins, inline naming. **Never mix Auto with
   tiered dispatch** (pins reported downgraded on 0x-cost-tier sessions,
   copilot-cli#2758). **`/model plan`** (v1.0.74) pins a plan-mode-only
@@ -288,12 +294,16 @@ rebuilding it out of this flow.
   worktree-isolated subagent and one PR per unit.
 - **Dynamic workflows** / **`/effort ultracode`** — scripted orchestration,
   loop and intermediates in script variables instead of your context.
-  **Ask first:** the tool requires explicit opt-in, and "this task would
-  benefit" doesn't count.
+  **Ask first:** the tool needs the user's own opt-in. Neither this skill
+  nor "this task would benefit" counts.
 - **`/verify`** (builds and runs the app) and **`/code-review`** (reads the
   diff in a fresh subagent) — the two verification shapes.
 - **`opusplan`**, Copilot's **`/model plan`** — plan-then-execute tiering
   with no dispatch machinery.
+- **`/advisor`** (experimental, Anthropic API only): the main model
+  consults a stronger one at decision points, each call reading the
+  transcript uncached at the advisor's rates. Subagents inherit it. A
+  Haiku seat can then reach an Opus or Fable advisor above its own price.
 
 None of them makes verification *mandatory*. That's the half worth carrying.
 

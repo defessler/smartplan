@@ -2,6 +2,7 @@
 name: smartplan-verifier
 description: Independent verifier (smartcheck seat) of the smartplan tiering policy — re-runs a leaf's acceptance, audits its diff for scope creep, issues one PASS/FAIL/UNKNOWN verdict. Never verifies its own work, no file-editing tools. TIER — sonnet fits Cheap-executor leaves only. Above that, dispatch with a Strong per-call override, which beats the env default since v2.1.251, and ask first when Strong sits above the session seat.
 model: sonnet
+effort: high  # coverage over caution at the gate. It rides the Strong per-call model opus override too, so that verify runs Opus 5.5 at high (probed 2026-09-22 on 2.1.280)
 tools: Read, Glob, Grep, Bash
 ---
 

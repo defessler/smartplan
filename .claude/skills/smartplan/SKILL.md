@@ -76,7 +76,9 @@ inline still wins.
   system prompt or `/model` names it; can't name it → treat it as Mid.
   **Nothing dispatches at a tier above your seat until the user says
   yes**: an escalated verify, a fail-twice target, an Opus or Fable
-  planner. Write the artifact first, then ask in ONE
+  planner. And no initial seat pick prices above the incumbent at all —
+  cheapest adequate row, a named gate for every climb (`routing.md` §
+  The cost ceiling). Write the artifact first, then ask in ONE
   line — what it's for, which model, that the brief is already written —
   and dispatch on the yes. One yes covers that tier for the rest of the
   session. At or below the seat needs no ask. The ask names a spend, so
@@ -123,7 +125,7 @@ to route around.**
 **A lone verify dispatch is not a fan-out.** The table's *inline +
 independent verify* row is an inline route, and so is an escalated
 seat-aware verify — send the `smartplan-verifier` seat at the tier you
-named and carry on. Your harness reference owns the lever.
+named, within the seat ceiling, and carry on. Your harness reference owns the lever.
 
 Copy this checklist and work it in order:
 

@@ -4,7 +4,8 @@
 > declarative-agent JSON schemas at `developer.microsoft.com`, and Microsoft's
 > published pricing, re-read 2026-09-15. Nothing here is measured — no
 > Microsoft surface is installed on this machine, so every claim is read
-> rather than observed.
+> rather than observed. The product became Microsoft Copilot in August
+> 2026. Learn uses the new name, pricing pages the old.
 
 Load this only when the target is a Microsoft 365 Copilot surface. **Read the
 verdict first — most of this family does not ship here, and knowing which
@@ -31,7 +32,7 @@ rules, and smartplan's fit differs sharply across them:
 | **Declarative agent** (M365 Copilot) | **Maybe, preview** | 8,000-char base instructions, one inline string, no frontier-model pick. Custom skills add SKILL.md and progressive disclosure, Frontier Preview only |
 | **Copilot Studio — GitHub Copilot harness** | **Yes, partially** | Ships a real `SKILL.md` Skills feature and a per-agent model picker |
 | **Copilot Studio — standard harness** | Policy only, no skills | Has model choice and a `reason` escalation keyword, but its "Skills" is a different, legacy feature |
-| **Copilot Cowork** | **Maybe — unprobed** | Microsoft documents direct conversion of Claude plugin packages, bundled skills included |
+| **Copilot Cowork** | **Maybe — documented, unprobed** | Microsoft documents `atk import openplugin` converting Claude plugin packages with skills copied verbatim, `references/` and `scripts/` included (2026-09-21) |
 
 So the honest shape is: **a mapping doc plus a narrow export for the GitHub
 Copilot harness.** The *declarative-agent* path was closed by structure. It
@@ -46,12 +47,22 @@ bare `.md` holding a single `SKILL.md` (1 MB cap), or a `.zip`/`.skill`
 archive with `SKILL.md` at its root (10 MB compressed, 50 MB uncompressed,
 100 files).
 
-Read that as a **lead, not a shipping path**. Nobody here has probed whether a
-bundled `references/` tree survives the conversion, and that is precisely the
-property this family depends on. The 100-file cap also sits at about twice
-the release bundle's file count. The same page caps one skill at 20 companion
-files, above smartplan's 15. Probe before any export doc promises
-it.
+Read that as a **documented path, still unprobed here**. The
+plugin-development page (ms.date 2026-09-21) documents
+`atk import openplugin`, which reads a Claude Code
+plugin's `.claude-plugin/plugin.json`, `.mcp.json` and `skills/` directory,
+with skills "Copied verbatim - identical format," and documents per-skill
+`references/` (loaded on demand) and `scripts/` subdirectories under the
+same three-layer progressive disclosure — frontmatter always, SKILL.md body
+on trigger, references on demand. It also names the Agent Skills open
+standard and lists `commands/`, `agents/`, `hooks/`, `settings.json` and
+`bin/` as **not converted**. Still nobody here has run it, so probe before
+any export doc promises it. The 100-file cap also sits at about twice
+the release bundle's file count. Import needs `atk` 1.1.12+. A package
+holds up to 20 skills, a skill up to 20 companion files (above smartplan's
+15) at 5 MB each and 10 MB total. Each `name` must be kebab-case and match
+its folder. `atk export openplugin --manifest-kind claude-plugin` exports
+back out.
 
 ## Declarative agents — why the family barely fits
 
@@ -82,8 +93,7 @@ and the tutorial states the file's contents *"are inserted in the
 `instructions` property in the agent's manifest during provisioning."* So:
 **no *runtime* file reference, only a token that inlines at provisioning,
 and the 8,000-character cap applies to the expanded string.** It buys editor
-ergonomics, not headroom, and never progressive disclosure. Worth knowing
-before building tooling that assumes either extreme.
+ergonomics, not headroom, and never progressive disclosure.
 
 **Don't route around the cap through knowledge.** The "Write effective
 instructions" page carries an Important callout naming XPIA
@@ -115,7 +125,7 @@ Three qualifiers that put it back in its box:
 1. **These are not frontier models.** The schema calls them "tenant/task
    specific models" and the docs "task-specific models", identified by opaque
    tenant-scoped IDs. You cannot select Opus over Sonnet with it.
-2. **They come from Microsoft 365 Copilot Tuning**, whose overview page is
+2. **They come from Microsoft Copilot Tuning**, whose overview page is
    titled "(early access preview)" and states availability is limited to
    customers in early access programs.
 3. **It is not new in v1.8** — it first appears in v1.4 (v1.0/1.2/1.3 have
@@ -142,7 +152,9 @@ published a 1.8 known issue voiding it under @mention, then removed the note
 without saying it was fixed. Open the agent directly.
 
 Map smartplan's effort axis onto it and stop there. It cannot express a
-model ladder.
+model ladder. The cost ceiling (`routing.md`) has nothing to bind here:
+no dispatch carries a model price, and the `reason` escalation below is
+vendor-gated, not seat-priced.
 
 ### Multi-agent — `worker_agents`
 
@@ -173,13 +185,9 @@ separation of concerns, not tiering.
 
 The current "Choose a harness" page documents **three**: the **GitHub Copilot
 harness**, the **standard harness**, and the **Copilot chat harness**.
-`agents-experience/overview` (updated 2026-09-09) no longer carries its "the
-two harnesses" wording. The docs agree now.
-
-"Agents cannot be transferred between them" is confirmed **verbatim but
-narrowly** — that sentence, on `agents-experience/overview`, covers the
-GitHub Copilot / standard pair only. Nothing published addresses the Copilot
-chat harness either way.
+`agents-experience/overview`'s no-transfer sentence names the pair it
+covers outright, GitHub Copilot and standard (updated 2026-09-22). Nothing
+published addresses the Copilot chat harness either way.
 
 ### The Skills feature — real, and its specifics are thinner than they look
 
@@ -207,11 +215,9 @@ Copilot Studio source, and four of them are traps:
    question as ZCode, and for the same reason.
 4. **The "Skills | 100 per agent" quota is a name collision, not a limit on
    these skills.** That row sits on a page banner-scoped to the **standard**
-   harness. (The "Azure Bot Framework skills" gloss belongs to the Messages
-   RPM row in a different table on that page, not to this one, so the
-   name-collision case rests on the banner scoping alone — weaker, but still
-   enough for the hedge.) Citing it as a cap on `SKILL.md` skills would be
-   wrong.
+   harness. (The "Azure Bot Framework skills" gloss belongs to another
+   table's Messages RPM row. The case rests on the banner alone, which is
+   enough for the hedge.) Citing it as a cap on `SKILL.md` skills is wrong.
 
 The name rule is real but wrongly framed: *"Use only lowercase letters,
 numbers, and hyphens. Don't start or end the name with a hyphen"* describes
@@ -228,21 +234,43 @@ to test on upload, not a fact.
 ### Model selection, per harness
 
 - **GitHub Copilot harness:** *"Select the Build tab. In the components
-  panel, select the Model list. Select the model you want. Select Save."*
-- **Standard harness:** Overview → Model. This path carries the banner
-  "Features in this article are powered by the standard harness", so a doc
-  that says "Copilot Studio exposes a dropdown at Overview → Model" is wrong
-  for one of the three harnesses. Qualify it.
+  panel, select the Model list. Select the model you want. Select Save to
+  apply the change."*
+- **Standard harness:** Overview → Model, on a page bannered "This article
+  describes features used in agents or agent flows powered by the standard
+  harness." A doc that says "Copilot Studio exposes a dropdown at Overview →
+  Model" is wrong for one of the three harnesses. Qualify it.
 
-Published availability includes Claude Opus 4.7 and 4.6 (Deep, GA), Claude
-Sonnet 5 (GA, **GitHub Copilot harness only**), Claude Sonnet 4.6, GPT-5.5
-Chat, GPT-5 Chat, GPT-4.1 (Default), GPT-5 Reasoning / GPT-5 Auto (Preview),
-plus Experimental GPT-5.3/5.4/5.5, Grok 4.1 Fast and Mistral Medium 3.5.
-GPT-4o and Claude Sonnet 4.5 are **Retired in every region**.
+Published availability (GitHub Copilot harness table, ms.date 2026-09-10,
+updated 2026-09-17, re-read 2026-09-22) lists eleven models: **Claude Opus 5
+and Opus 4.8 (Deep, GA cross-geo)**, **Claude Fable 5 and Fable 5.1 (GA,
+absent in Australia and Saudi Arabia)**, Claude Sonnet 5 and Sonnet 4.6
+(GA), GPT-6 Astra, GPT-5.5 Chat and GPT-5 Chat (GA), GPT-5.6 Reasoning
+(Deep, Experimental, US early-access only), and Mistral Medium 3.5
+(Experimental). In the US column both Fables and Sonnet 5 read "GA (early
+access environment)". A standard-release US tenant lacks all three.
+Sonnet 5 also skips Australia and Saudi Arabia. The standard harness keeps
+its own table (ms.date 2026-09-18), where GPT-5.5 Chat is default and
+Claude stops at Opus 4.7. Opus 4.6, GPT-4.1 and Grok 4.1 Fast live there
+too. A policy-only port there gets an older Claude ladder.
 
-Note what that roster means for this family: **Opus 5, Fable 5 and Haiku 4.5
-are absent.** The ladder smartplan routes against does not exist here. Seat
-by capability class against what's actually offered, and say so at the gate.
+On the GitHub harness, **Opus 5 is live. So are both Fables, except in
+Australia, Saudi Arabia and standard-release US tenants.** Fable 5 also
+needs an admin's separate "Anthropic models with Data Retention" opt-in,
+outside Microsoft's DPA, with Anthropic keeping most inputs and outputs up
+to 30 days. Fable 5.1 gets Anthropic as subprocessor only "for certain
+organizations" (`connect-to-ai-subprocessor`, 2026-09-18). EU/EFTA and UK
+tenants must opt in to any Anthropic model. Copilot Studio also needs
+Power Platform's external-models switch. Of the government clouds only
+non-federal GCC can opt in (since 2026-07-22). So the ladder *mostly*
+exists here. With no Haiku 4.5, its bottom rung is Sonnet. GPT-6 Luna
+isn't announced for Copilot, Cowork or Copilot Studio either. Microsoft's
+Copilot blog announced Opus 5.5 and GPT-6 Sol rolling out from 2026-09-22
+across Word, Excel, PowerPoint, Chat, Cowork and Copilot Studio, by
+license, access and region. The Learn roster tables still stop at Opus 5
+and GPT-6 Astra (read 2026-09-22). Researcher offers only an unversioned
+"Claude". Seat by capability class against what's actually offered. Say
+so at the gate.
 
 ### `reason` — step-level escalation, heavily gated
 
@@ -310,8 +338,8 @@ Not a GUI-only surface:
   new/add/provision/deploy/package/validate/publish/preview/install/uninstall.
   `atk new -c declarative-agent` scaffolds one directly.
 - **Work IQ Dev Tools** — binary `wiqd`, official Microsoft
-  (github.com/microsoft/wiqd, docs and downloads only), preview 0.14.0 on
-  npm, with
+  (github.com/microsoft/wiqd, docs and downloads only), a preview at npm
+  `latest` 0.15.0 (2026-09-16), with
   `wiqd agent create|validate|provision|package|eval` and an alpha
   `wiqd plugin` tree.
 
@@ -324,9 +352,13 @@ Not a GUI-only surface:
 - **M365 Copilot Business (SMB):** $18.00 user/month paid yearly on
   promotional pricing **through 2026-12-31** (regular $21.00), or $25.20
   billed monthly. <!-- RECHECK:2026-10-01 -->
-- **Bundles:** Business Premium with Copilot $32.00; Business Standard with
-  Copilot $23.50, both user/month paid yearly.
+- **Bundles:** Business Premium with Copilot $32.00 paid yearly ($38.40
+  monthly), Business Standard with Copilot $23.50 ($28.20), read 2026-09-22.
 - **Copilot Chat** is included at no extra cost with an eligible M365 license.
+- **Copilot Cowork** bills by usage (responses, tool and skill calls,
+  images, browser tasks), more at higher effort. Access comes from a Cost
+  Management spending policy that selects Cowork, not from the license.
+  Even a one-credit limit grants it.
 - **Copilot Studio capacity pack:** $200.00/pack/month for 25,000 Copilot
   Credits, tenant-wide, replenished each billing period.
 
@@ -342,13 +374,16 @@ accessing or using extensibility features (Copilot connectors, agents,
 plugins)."** Declarative agents incur no hosting cost — Microsoft hosts them.
 Custom engine agents you host yourself.
 
-Pay-as-you-go is **$0.01 per Copilot Credit** in the default US region of 61
-listed, the rest unchecked. (An Azure pricing page read without a browser
-renders it literally as "$-", which is a scraping artifact, not an
-unpublished price.) The GitHub Copilot harness, the one Copilot Studio
-harness that carries SKILL.md skills, is credit-billed from build time. The
-M365 Copilot license doesn't cover it. Credits also sell as a Pre-purchase
-plan of commit units at up to 20% off (read 2026-09-15).
+Pay-as-you-go is **$0.01 per Copilot Credit** in all 37 regions the Azure
+page's price data lists (read 2026-09-22). A browserless read renders
+"$-", a scraping artifact. The GitHub Copilot harness, the one Copilot
+Studio harness that carries SKILL.md skills, is credit-billed from build
+time. The M365 Copilot license doesn't cover it. A one-year Copilot Credit
+Pre-Purchase Plan saves up to 20% (5% to 20% over nine tiers, 300,000 to
+300,000,000 credits), per microsoft.com's Copilot Studio pricing page and
+its September 2026 Licensing Guide. Unused credits expire. An
+Agent Pre-Purchase Plan pools Copilot Studio and Foundry usage at $1 per
+Agent Commit Unit (100 credits), 5% to 15% off.
 
 ## What smartplan actually becomes here
 
@@ -358,19 +393,21 @@ Say this at the gate rather than implying more:
   spiral guard, the verify floor and the honesty rules are all prose and
   survive intact in a `SKILL.md` on the GitHub Copilot harness.
 - **Tiering degrades to two coarse dials:** a per-agent model pick from a
-  Copilot Studio roster with no Opus 5, Fable 5 or Haiku, and a three-way
-  effort mode. There is no per-call override anywhere on this surface.
+  Copilot Studio roster, and a three-way effort mode. The roster has no
+  Haiku and doesn't list Opus 5.5 yet, though Microsoft announced it
+  (2026-09-22). There is no per-call override anywhere on this surface.
+  Pick the newest version of a line the roster lists
+  (`model-classes.md` § How to edit).
 - **Independent verify has no dispatch lever.** Nothing here lets you send a
   diff to a *different* model and get a verdict back under your control.
   `flow.md`'s verifier seat has no home on M365. Say so rather than
   pretending a `reason` step is a smartcheck.
 - **Nothing here is measured, and on this machine nothing can be.** No
   T-record exists for any Microsoft surface. Checked directly on
-  2026-08-12: `atk` and `wiqd` are both unrecognized, `npm ls -g` carries no
-  `@microsoft/*` toolkit package, and there is no `.fx`, `.teamsapp`,
-  `TeamsToolkit`, `.m365` or `.atk` directory anywhere under the user
-  profile, nor any tenant-login trace. So this page is documentation-only
-  **by necessity rather than by choice**. The one runnable Microsoft surface
-  here is this repo's own tenant agents. None of them exercises this family.
+  2026-08-12: no `atk`, no `wiqd`, no `@microsoft/*` toolkit package, and
+  no toolkit directory or tenant-login trace under the user profile. So
+  this page is documentation-only **by necessity rather than by choice**.
+  The one runnable Microsoft surface here is this repo's own tenant
+  agents. None of them exercises this family.
   Never describe a claim on this page as observed. Compare
   `zcode.md`, whose install section *is* observation, and say which you mean.

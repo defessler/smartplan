@@ -1,6 +1,6 @@
 # smartplan
 
-**v4.130.0** · MIT · Model-tiering skills for AI coding agents.
+**v4.135.0** · MIT · Model-tiering skills for AI coding agents.
 
 Plan with the strong model. Implement with the cheaper model. Escalate on
 demonstrated failure, never on a hunch.
@@ -47,7 +47,7 @@ Commands land namespaced, so you get `/sp:smartplan`. The bare
 ```
 
 Copilot also reads `.claude/skills/` directly, so cloning this repo into a
-project works without the plugin step. The six pinned agent seats in
+project works without the plugin step. The seven pinned agent seats in
 `.github/agents/` come with the plugin install.
 
 **One caveat worth knowing.** Plugin skills load at the lowest precedence
@@ -105,7 +105,7 @@ the site sources, the gates) is separate.
 .claude/agents/          four tool-locked Claude Code agent seats
 .claude-plugin/          Claude Code marketplace manifest
 .github/plugin/          Copilot plugin + marketplace manifests
-.github/agents/          six pinned Copilot agent seats
+.github/agents/          seven pinned Copilot agent seats
 docs/                    the four reference pages the skills link to
 scripts/                 the mechanical verifier and the install selftest
 ```

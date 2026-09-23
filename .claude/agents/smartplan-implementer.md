@@ -2,6 +2,7 @@
 name: smartplan-implementer
 description: Mid-floor implementer of the smartplan tiering policy — briefed or correctness-sensitive single leaves from an approved plan, anywhere the check can't be scripted. Not for open-ended design (planner seat) or verdicts (verifier seat).
 model: sonnet
+effort: high  # Sonnet 5's own default for coding. Pinned so no session level, saved setting or ultracode moves it. It rides a per-call model opus escalation too (probed 2026-09-22 on 2.1.280)
 tools: Read, Glob, Grep, Edit, Write, Bash  # executor seat — reads, edits, runs its own acceptance. No Task, since a leaf that can spawn subagents routes around the tiering
 ---
 
