@@ -112,11 +112,21 @@ box, not yet through a live Copilot dispatch:
   No note and no deny.
 
 `Workflow` joined the matcher on 2026-08-05. A dynamic workflow spawns its own
-fleet from inside a script the hook can't read. Each workflow agent's model
+fleet from inside a script the hook can't gate. Each workflow agent's model
 follows the subagent order. A model the script names counts as the
 per-invocation model, then comes the agent definition's model, then
-`CLAUDE_CODE_SUBAGENT_MODEL`, then the session model. So exporting
-`CLAUDE_CODE_SUBAGENT_MODEL` also catches stages that set no model.
+`CLAUDE_CODE_SUBAGENT_MODEL`, then the session model. So setting
+`CLAUDE_CODE_SUBAGENT_MODEL=sonnet` in the user settings `env` block also
+catches stages that set no model. A Bash-tool `export` can't do that, since
+it never reaches the running harness. The settings entry was probed live on
+2.1.280 on 2026-09-23.
+
+Since 2026-09-23 the hook also scans an inline script. When it finds
+`agent(` calls but no `model` key and no `smartplan-*` seat anywhere, it adds
+a note that every stage will fall through to the default. That was the
+common miss. In the month before, 104 of 133 workflow scripts on this box
+named no model, and about 62,000 workflow agent turns ran the session's Opus.
+A script passed by `scriptPath` isn't scanned.
 `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` (v2.1.257 or later) forces one model onto
 subagents, teammates and workflow agents alike. Before 2026-08-05 the one
 dispatch path that fans out widest was also the only one the guardrail never

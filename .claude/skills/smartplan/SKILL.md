@@ -87,6 +87,12 @@ inline still wins.
   the answer would be. It writes the artifact, stops, and names the
   session model the work needs. That stop is the one hand-back allowed
   (`routing.md` Cheap hard floor #6).
+  Copilot's GPT-6 Luna session is the exception: it asks instead, and
+  one yes covers one dispatch (`copilot.md` § Luna ceiling).
+- **Claude Code roles** (author, 2026-09-23). Sonnet writes every code
+  change, a fail-twice leaf included: an Opus session briefs
+  `smartplan-implementer` and never edits code inline. An Opus verifier
+  checks the diff. Haiku only scouts.
 - **Spiral guard.** Two failed self-repairs against the same failing
   signature = STOP. Dispatch ONE fresh-context Mid-tier diagnosis instead of
   a third blind attempt, carrying the ESCALATION REPORT — **task · tier
@@ -178,6 +184,8 @@ a preview of it.
   resolution order, spawn and depth caps, the enforcement hook.
 - [`zcode.md`](references/zcode.md) — per-agent model pin, no per-call
   override, reads `AGENTS.md` and never `CLAUDE.md`.
+- [`glm-and-local.md`](references/glm-and-local.md) — a `glm-*` or local
+  model behind a shim: read the real ladder first.
 - [`m365-copilot.md`](references/m365-copilot.md) — read its verdict table
   first: most of this flow cannot ship there.
 

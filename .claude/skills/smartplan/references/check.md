@@ -276,22 +276,21 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
   spots — prefer a cross-family verifier when the harness offers one, at
   minimum a different instance. Current picks (registry is the source of
   truth, re-pinned 2026-09-16): on Copilot, Cheap leaves → **Gemini 3.8
-  Flash** (or Sonnet 5); **GPT-5.4** only when the executor is not an
-  OpenAI model, since the Cheap seat is OpenAI (GPT-6 Luna first by author
-  direction 2026-09-22, GPT-5.6 Luna the untested fall-through until a
-  CLI build names `gpt-6-luna`) and would be same-family; never mini/nano
+  Flash** (or Sonnet 5.5); **GPT-5.4** only when the executor is not an
+  OpenAI model, since the Cheap seat is OpenAI (GPT-6 Luna alone from
+  2026-09-23) and would be same-family; never mini/nano
   tiers. GPT-5.4 leaves Copilot
   2026-10-19 and its named successor Sol is Pro+-gated, so plain Pro's
   cross-family pool after that date is Gemini 3.8 Flash and Grok 4.7.
   At max-savings a fresh
-  Luna verifies Cheap leaves instead (`modes.md`), an unmeasured
-  same-model trade. Mid and Strong leaves (Sonnet, Opus, or GPT-6 Sol once
-  a CLI build names it) →
+  Luna runs Cheap leaves' scripted acceptance instead (`modes.md`). It
+  measures Mechanical, so judgment returns UNKNOWN. Mid and Strong leaves (Sonnet, Opus, or GPT-6 Sol) →
   **Gemini 3.8 Flash** (0.75/3.75, cost-sensitive, Implementer-class,
   ungated on Copilot Pro. Its predecessor 3.6 Flash earned the seat on
-  measured recall. 3.8 is unmeasured, so Terra holds C++ UB leaves) or,
-  on a non-GPT executor, **GPT-5.6 Terra** only when its thoroughness edge earns
-  ~2× the cost. **Measured (T18, Gemini 3.1 Pro): tied Terra on seeded C++
+  measured recall. 3.8 caught 13 of 16 on T42, level with Terra at a
+  seventh of the cost, so C++ UB leaves take a Strong verifier) or, on a
+  non-GPT executor, **GPT-5.6 Terra** only when its thoroughness edge
+  earns ~7× the cost. **Measured (T18, Gemini 3.1 Pro): tied Terra on seeded C++
   recall, 14/15 each, at 47% the cost at July prices. T34 cleared 3.6 Flash
   at 8/8, before 3.8 took the pin untested** — don't reach for the pricier judge by habit.
   Copilot's built-in rubber-duck critic (default on from CLI 1.0.58,

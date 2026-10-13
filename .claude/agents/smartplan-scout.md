@@ -2,7 +2,7 @@
 name: smartplan-scout
 description: Read-only context-gathering seat of the smartplan tiering policy — find files/symbols/usages and compress them into a small context pack for a planner or brief-writer. Never for anything that changes code.
 model: haiku
-effort: low  # a no-op on Haiku 4.5, which has no effort dial. It still rides a per-call model override (a model sonnet scout ran Sonnet 5 at low, 2026-09-02)
+effort: low
 tools: Read, Glob, Grep
 ---
 
@@ -20,3 +20,5 @@ are read-only by design, not just by instruction).
   errors byte-verbatim.
 - If the subsystem is too large to compress honestly, say so and propose a
   split — a pack that silently drops half the picture poisons the plan.
+
+**Line numbers come from a tool, never from counting.** Take every file:line from `grep -n`, `rg -n` or a numbered `view`, and re-check one before you report. T43 (2026-09-23) caught a scout that found every right call site and misnumbered most of them.

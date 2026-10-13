@@ -2,7 +2,7 @@
 
 > Facts verified 2026-08-12 against `learn.microsoft.com`, the raw
 > declarative-agent JSON schemas at `developer.microsoft.com`, and Microsoft's
-> published pricing, re-read 2026-09-15. Nothing here is measured — no
+> published pricing, re-read 2026-09-29. Nothing here is measured — no
 > Microsoft surface is installed on this machine, so every claim is read
 > rather than observed. The product became Microsoft Copilot in August
 > 2026. Learn uses the new name, pricing pages the old.
@@ -62,7 +62,8 @@ the release bundle's file count. Import needs `atk` 1.1.12+. A package
 holds up to 20 skills, a skill up to 20 companion files (above smartplan's
 15) at 5 MB each and 10 MB total. Each `name` must be kebab-case and match
 its folder. `atk export openplugin --manifest-kind claude-plugin` exports
-back out.
+back out. Import also needs `--privacy-url` and `--terms-url` and emits
+a `devPreview` manifest (read 2026-09-29).
 
 ## Declarative agents — why the family barely fits
 
@@ -268,7 +269,7 @@ isn't announced for Copilot, Cowork or Copilot Studio either. Microsoft's
 Copilot blog announced Opus 5.5 and GPT-6 Sol rolling out from 2026-09-22
 across Word, Excel, PowerPoint, Chat, Cowork and Copilot Studio, by
 license, access and region. The Learn roster tables still stop at Opus 5
-and GPT-6 Astra (read 2026-09-22). Researcher offers only an unversioned
+and GPT-6 Astra (re-read 2026-09-29). Researcher offers only an unversioned
 "Claude". Seat by capability class against what's actually offered. Say
 so at the gate.
 
@@ -339,7 +340,7 @@ Not a GUI-only surface:
   `atk new -c declarative-agent` scaffolds one directly.
 - **Work IQ Dev Tools** — binary `wiqd`, official Microsoft
   (github.com/microsoft/wiqd, docs and downloads only), a preview at npm
-  `latest` 0.15.0 (2026-09-16), with
+  `latest` 0.17.0 (2026-09-28), with
   `wiqd agent create|validate|provision|package|eval` and an alpha
   `wiqd plugin` tree.
 
@@ -351,7 +352,7 @@ Not a GUI-only surface:
   $31.50 paid monthly on an annual commitment.
 - **M365 Copilot Business (SMB):** $18.00 user/month paid yearly on
   promotional pricing **through 2026-12-31** (regular $21.00), or $25.20
-  billed monthly. <!-- RECHECK:2026-10-01 -->
+  billed monthly. <!-- RECHECK:2026-12-31 -->
 - **Bundles:** Business Premium with Copilot $32.00 paid yearly ($38.40
   monthly), Business Standard with Copilot $23.50 ($28.20), read 2026-09-22.
 - **Copilot Chat** is included at no extra cost with an eligible M365 license.

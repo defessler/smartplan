@@ -91,13 +91,13 @@ prefix and pays its own write.
 
 | Trigger | Why |
 | --- | --- |
-| Switching `/model` mid-session, or `/effort` on most models | Each model has its own cache. On most models so does each effort level. Opus 5.5 and Fable 5.1 on an API key or a subscription keep the cache across an effort change. Claude Code applies the new level there without asking (on Fable 5.1 since v2.1.260). Not on Bedrock, Google Cloud's Agent Platform, a Claude apps gateway, with `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`, or for an org with a HIPAA configuration (read 2026-09-22). Elsewhere Claude Code asks you to confirm an effort switch only while the cache is warm. `/model` asks only while the cache is warm and the new model isn't the one that produced the last response. |
+| Switching `/model` mid-session, or `/effort` on most models | Each model has its own cache. On most models so does each effort level. Opus 5.5, Sonnet 5.5 and Fable 5.1 on an API key or a subscription keep the cache across an effort change. Claude Code applies the new level there without asking (on Fable 5.1 since v2.1.260). Not on Bedrock, Google Cloud's Agent Platform, a Claude apps gateway, with `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`, or for an org with a HIPAA configuration (read 2026-09-29). Elsewhere Claude Code asks you to confirm an effort switch only while the cache is warm. `/model` asks only while the cache is warm and the new model isn't the one that produced the last response. |
 | A skill or command whose `model:` frontmatter differs from the session, an automatic safety fallback, or an `opusplan` plan-mode toggle | Each is a model switch. So the next request re-reads the whole history uncached. |
 | **First** fast-mode enable in a conversation | Fast mode adds a request header that is part of the cache key, so that one turn re-reads the whole history uncached — **at fast-mode rates**, which makes enabling it late in a long session the expensive case. Turning it off and on again later is free. `/clear` and `/compact` reset the once-per-conversation clock. The header is set once per turn. So a mid-turn enable moves the miss to the next turn's first request. Enabling it on an unsupported model also switches models, which starts a fresh cache. Running out of usage credits retries at standard speed and keeps the cache (read 2026-09-22). |
 | Falling into usage-credit overage (subscription) | Silently drops the main conversation from the 1-hour to the 5-minute TTL — a long orchestrator session near plan limits loses its TTL margin exactly when spend matters. |
 | Churning the tool/MCP set | Tool defs live in the prefix; adding or removing one invalidates tools+system+messages together. The one exception is toggling `/advisor`. Its tool definition sits after the cache breakpoint. So enabling or disabling it keeps the prefix. |
 | A deny that removes a whole tool, when tool search is off or unavailable. That's a bare name like `deny:["Bash"]`, `Bash(*)`, a tool-name glob like `"*"`, or an MCP-only glob like `"mcp__*"` | Strips the tool definition, which busts the cache. Removing the rule later does it again. With tool search on (the default on supported models) the prefix survives. A *scoped* rule like `Bash(rm *)` never touches it. |
-| Setting `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` | Three costs at once. Claude Code stops marking its mid-conversation system context (file-change notices and the like) for caching. MCP tool search turns off. Every MCP tool then loads into the prefix, where each connect busts it, unless managed settings keep tool search on (v2.1.227+). Opus 5.5 and Fable 5.1 also lose the effort-change keep in the first row. |
+| Setting `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS` | Three costs at once. Claude Code stops marking its mid-conversation system context (file-change notices and the like) for caching. MCP tool search turns off. Every MCP tool then loads into the prefix, where each connect busts it, unless managed settings keep tool search on (v2.1.227+). Opus 5.5, Sonnet 5.5 and Fable 5.1 also lose the effort-change keep in the first row. |
 | Accumulating many images or PDFs | Two limits apply: the API's image and PDF count per request, and Claude Code's own cap on their total size. When the next request would pass either one, Claude Code drops a batch of the oldest images and PDFs. The next request reprocesses from the earliest affected message. So a screenshot-heavy session pays a periodic partial rebuild. |
 | A Claude Code version upgrade | The new version's system prompt makes the next *new* conversation build its cache from the top. A `--resume` keeps the prompt it started with by default. So its rebuild moves to the first compaction instead. Auto-update applies on next launch, never mid-session. `DISABLE_AUTOUPDATER=1` for predictable timing. |
 
@@ -165,12 +165,11 @@ still works where `/usage` isn't available.
 
 ### 2. The two smartplan seams (why this reference exists)
 
-**Seam A — the §A belt-and-suspenders is safe.** §A's wave guarantee —
-`export CLAUDE_CODE_SUBAGENT_MODEL=sonnet` before an implementer wave,
-`=inherit` after — only changes which model a *dispatched subagent* resolves
+**Seam A — the §A belt-and-suspenders is safe.** §A's standing default —
+`CLAUDE_CODE_SUBAGENT_MODEL=sonnet` in the settings `env` block — only
+changes which model a *dispatched subagent* resolves
 to when nothing else already names one (a per-call model or a seat's own
-frontmatter wins). Setting it is a shell export plus a tool call appended to
-the *end* of the orchestrator's transcript, not an edit to the
+frontmatter wins). It is set before the session starts, not an edit to the
 orchestrator's own model,
 tools, or system prompt — by the documented cache-key rules (§1: model,
 tools, and system define the key; appending new turns doesn't retroactively
@@ -178,12 +177,12 @@ change any of them), that means it never touches the main thread's cache.
 That's a different action from the general rule it sits next to: **switching
 the MAIN session's own `/model` mid-run busts that session's whole prompt
 cache** (§1, above). So does `/effort` on most models. The exception is an
-Opus 5.5 or Fable 5.1 orchestrator on an API key or a subscription, where an
+Opus 5.5, Sonnet 5.5 or Fable 5.1 orchestrator on an API key or a subscription, where an
 effort change keeps the cache. There you can raise effort for one hard step
 without a cold rebuild. Drop the orchestrator itself to Sonnet
 mid-run instead of exporting the env var, and you pay full retail to rebuild
 everything already in its transcript. On Opus 5.5 there's little to win
-from that drop anyway. Its $0.20 cache-read is Sonnet 5's exact rate. A
+from that drop anyway. Its $0.20 cache-read is Sonnet 5.5's exact rate. A
 mostly-cached orchestrator turn costs the same on either. The saving lives
 only in cold input (4 vs 2) and output (20 vs 10). A `PreModelSwitch` hook
 (v2.1.251+) runs before Claude Code applies a requested model switch and
@@ -246,8 +245,8 @@ matter specifically to a fan-out run:
   rather than just accumulated, the **1M context window** is
   the alternative to fighting compaction: no pricing premium above 200K (a
   900K-token request bills at the same per-token rate as a 9K-token one).
-  On the Anthropic API, Sonnet 5 and every Opus from 4.7 on, Opus 5.5
-  included, run 1M on every plan, Pro included. Every native-1M model
+  On the Anthropic API, Sonnet 5.5, Sonnet 5 and every Opus from 4.7 on,
+  Opus 5.5 included, run 1M on every plan, Pro included. Every native-1M model
   there, the Fable models too, auto-compacts near 967K unless you set an
   auto-compact window. That includes the Opus 5.5 orchestrator whose thread
   this bullet is sizing. `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` drops them to
@@ -378,12 +377,12 @@ pruning protects instructions by its own design — same verdict.)
   write, break-even on the 2nd read per §1's table). Only Copilot has no
   control for it. On the API a request can mix both TTLs as long as the
   1-hour entries come before the 5-minute ones.
-- **API-axis prefix edits that keep the cache** (read 2026-09-22).
+- **API-axis prefix edits that keep the cache** (read 2026-09-29).
   Appending a `role: "system"` message mid-conversation keeps the system
   and message caches on Fable 5.1, Mythos 5.1, Fable 5, Mythos 5, Opus 5.5,
-  Opus 4.8 and Opus 5 (Claude API, Bedrock and Google Cloud). Sonnet 5
-  isn't on that list. A Sonnet-seated harness still pays a full miss for
-  a system edit. Adding or removing tools mid-conversation needs the
+  Sonnet 5.5, Opus 4.8 and Opus 5 (Claude API, Bedrock and Google Cloud).
+  Sonnet 5 isn't on that list. A harness seated on Sonnet 5 still pays a
+  full miss for a system edit. Adding or removing tools mid-conversation needs the
   `mid-conversation-tool-changes-2026-07-01` beta header. Defining a tool
   by value in a `tool_addition` block uses `inline-tools-2026-09-15`
   instead (beta since 2026-09-22, Claude API only). It adds a tool,
@@ -394,8 +393,8 @@ pruning protects instructions by its own design — same verdict.)
   turns' thinking can stay valid through it on preserved-thinking models,
   Opus 5.5 included.
 - **One API-axis prefix edit is an error, not a miss.** For accounts
-  created on or after 2026-08-31, replaying an Opus 5.5 or Fable 5.1
-  thinking block after the system prompt, tools or an earlier message
+  created on or after 2026-08-31, replaying a Fable 5.1, Opus 5.5 or
+  Sonnet 5.5 thinking block after the system prompt, tools or an earlier message
   changed returns a 400 by default, on the Claude API and the cloud
   platforms. The fix is an append-only conversation, or `drop_block` under
   the `thinking-binding-controls-2026-08-01` beta. Claude Code is already
@@ -411,8 +410,9 @@ pruning protects instructions by its own design — same verdict.)
   Claude Platform on AWS. `/usage` applies it since v2.1.239. So a
   benchmark priced from list rates undercounts a US-residency org by 10%.
 - **OpenAI seats cache on the same write shape, with a longer life**
-  (OpenAI prompt-caching guide, read 2026-09-22). From GPT-5.6 on, GPT-6
-  included, a cache write costs 1.25× uncached input and a read 0.1×.
+  (OpenAI prompt-caching guide, read 2026-09-29). From GPT-5.6 on, GPT-6
+  included, a cache write costs 1.25× uncached input and a read 0.1×
+  (0.05× on GPT-6.1 Sol).
   Earlier OpenAI models carry no write charge. A cached prefix stays
   eligible at least 30 minutes after its latest write or reuse. Thirty
   minutes is both the only value and the default. The floor is 1,024
@@ -624,19 +624,20 @@ announces itself.
 **Some spend mysteries are harness bugs, not your prompt.** 2.1.248 fixed a
 prompt-cache miss (and lost extended-thinking context) recurring roughly
 hourly in long sessions, caused by tool definitions re-rendering after an
-OAuth token refresh. Eleven more prompt-cache fixes landed after 2.1.267,
-which is still npm's `stable` tag while `latest` is 2.1.280 (read
-2026-09-22). That's one in 2.1.268 (SDK sessions using
+OAuth token refresh. Thirteen more prompt-cache fixes landed from 2.1.268
+to 2.1.281. npm's `stable` tag reached 2.1.277 by 2026-09-29, with
+`latest` at 2.1.284. That's one in 2.1.268 (SDK sessions using
 `excludeDynamicSections`), three in 2.1.269 (output-token-limit resume,
 interrupted resume, the cloud first request), one in 2.1.273 (`/login`,
 `/upgrade` and `/extra-usage` dropping thinking), one in 2.1.275 (the
 memory age note), three in 2.1.277 (SessionStart hook output after
 `/clear`, resumed subagents and teammates re-rendering their MCP tool
 definitions, re-rendered attachments) and two in 2.1.280 (a host-app model
-switch, resumed fork subagents rebuilding their tool list). The 2.1.277 and
-2.1.280 resume fixes bear on a same-tier `SendMessage` retry
-(`claude-code.md`). On the stable channel a resumed subagent or fork still
-pays those misses. Separately, 2.1.273 fixed the context meter and
+switch, resumed fork subagents rebuilding their tool list) and two in
+2.1.281 (resume after a pending permission prompt, an MCP disconnect with
+tool search off). The resume fixes bear on a same-tier `SendMessage` retry
+(`claude-code.md`). On the stable channel (2.1.277) a resumed session or
+fork subagent still pays the 2.1.280 and 2.1.281 misses. Separately, 2.1.273 fixed the context meter and
 auto-compact counting advisor-tool turns at twice their real size, which
 fired auto-compact at about half the real window. Check your version
 before designing around an unexplained cost spike.
@@ -715,9 +716,9 @@ own level and everything after it:
   model-specific for tools and system. Two exceptions. An explicit effort
   equal to the model default is a no-op. A per-message effort change in a
   `role: "system"` message keeps the prefix. That works on Fable 5.1,
-  Mythos 5.1, Opus 5.5 and Opus 5, behind the
+  Mythos 5.1, Opus 5.5, Sonnet 5.5 and Opus 5, behind the
   `mid-conversation-output-config-2026-07-01` beta header, on the Claude
-  API and Google Cloud (read 2026-09-22). Models without per-message
+  API and Google Cloud (read 2026-09-29). Models without per-message
   effort, Fable 5 included, return a 400. A top-level effort change starts
   the cache over.
 - **Dropped thinking blocks** invalidate the messages cache from that
@@ -735,7 +736,7 @@ cache on an older, cheaper one:
 
 | Floor | Models |
 | --- | --- |
-| 512 | Fable 5.1, Mythos 5.1, Opus 5.5, Opus 5, Fable 5, Mythos 5 |
+| 512 | Fable 5.1, Mythos 5.1, Opus 5.5, Opus 5, Sonnet 5.5, Fable 5, Mythos 5 |
 | 1,024 | Opus 4.8, Sonnet 5, Sonnet 4.6, Sonnet 4.5, Opus 4.1, Opus 4, Sonnet 4 |
 | 2,048 | Opus 4.7, Mythos Preview, Haiku 3.5 (retired, except on Bedrock and Google Cloud) |
 | 4,096 | Opus 4.6, Opus 4.5, **Haiku 4.5** |

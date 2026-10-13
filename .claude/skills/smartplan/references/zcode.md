@@ -37,8 +37,9 @@ Load this only when the session is ZCode. For the flow itself, see `flow.md`.
 A desktop **Agentic Development Environment** from Z.ai — not a
 CLI, not an IDE fork. Electron, with macOS (Apple Silicon + Intel), Windows
 (x64 + ARM64) and Linux (x64 + ARM64; AppImage, DEB and RPM, no Beta marker)
-installers. Vendor's current release is **v3.14.3, 2026-09-22** (read
-2026-09-22, docs download links `ZCode-3.14.3-*`). Recent releases: 3.12.3
+installers. Vendor's current release is **v3.14.4, 2026-09-29** (read
+2026-09-29, docs download links `ZCode-3.14.4-*`), a single fix that drops
+the CAPTCHA on free-tier model requests. Recent releases: 3.12.3
 (2026-09-17, PDF/media previews, per-workspace plugins, an OpenCode Go
 provider template), 3.14.0 (2026-09-19, **dynamic workflows**, Office vs
 Coding mode, an independent Start Plan), 3.14.1 (bug fixes, now dated
@@ -49,12 +50,13 @@ changelog fetches statically to its floor, v3.10.1 (2026-08-28).
 
 The build installed here reads **3.14.3.7762, with `zcode.cjs` 0.16.9
 rebuilt 2026-09-22** (`ZCode.exe` VersionInfo plus the uninstall entry).
-It auto-updates and matched the vendor on 2026-09-21 and 2026-09-22.
+It auto-updates and matched the vendor on 2026-09-21 and 2026-09-22. It
+hadn't taken 3.14.4 by the 2026-09-29 read.
 
 **It's open source now.** Z.ai published `github.com/zai-org/ZCode` under
 Apache-2.0 on 2026-09-20: the clients, backend services, shared UI, and
-the Agent CLI and runtime. The snapshot there is 3.14.0 while this box runs
-3.14.3. Pin a code-level claim to a version. "Code-read" below means
+the Agent CLI and runtime. `main` moved to 3.14.3 on 2026-09-23, the build
+this box runs. Pin a code-level claim to a version. "Code-read" below means
 read from that source or the installed bundle, not run.
 
 ## The one fact that decides everything
@@ -350,6 +352,8 @@ and up run max, and thinking off still runs low. So an effort sweep there
 has three real levels, not five (docs.z.ai, read 2026-09-22).
 
 ## Models — ZCode is not GLM-only
+
+Seat picks on GLM or a local model: `glm-and-local.md`.
 
 The docs name nine provider families: **Z.ai (Global), BigModel (China),
 Anthropic, OpenAI, OpenRouter, Moonshot/Kimi, MiniMax, Xiaomi MiMo**, and

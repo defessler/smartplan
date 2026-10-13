@@ -51,19 +51,21 @@ invocation when a session races a cap, and say so at the gate.
 
 | Knob | **max-quality** (default) | high-quality | balanced | budget | **max-savings** (default on Copilot) |
 | --- | --- | --- | --- | --- | --- |
-| Planner seat | Opus; Fable freely for the hardest decomposition (planning only, as ever) | Opus, no drop-down | Opus default, drop on fit | Sonnet default; Opus only for cross-cutting or ambiguous plans | Sonnet always; flag when a plan needed more |
+| Planner seat | Opus; Fable only for the toughest decomposition, by ask (planning only) | Opus, no drop-down | Opus default, drop on fit | Sonnet default; Opus only for cross-cutting or ambiguous plans | Sonnet always; flag when a plan needed more |
 | Implementer floor | Sonnet for mechanical, Opus for correctness-sensitive | Today's floors; doubt rounds up to Mid | Class floors (`routing.md`) | Cheap wherever the check is scriptable, incl. borderline-mechanical | Cheap for anything checkable; Mid only via fail-twice |
-| Verify | Verifier one tier above executor (capped at Strong — Strong leaves get a fresh cross-family Strong verifier, never Fable), no session-diff exception; 3-verifier decorrelated panel on correctness-sensitive leaves | No session-diff exception; Strong verify on Mid leaves | `check.md` tiering + the documented session-diff exception; credit-billed harness → check.md's credit-billed default (script-first, sampled batch) | Exception preferred where legal; script pre-checks first, script-only where scriptable | Script checks wherever scriptable; on Copilot, Cheap leaves take a fresh Luna (`@smartplan-verifier-cheap`, same-model, noted in the verdict) unless the leaf is unsuitable for it; single Mid-verifier cap (an escalated-to-Mid leaf keeps its Strong/cross-family verifier — `check.md` hard rule); sampling on homogeneous waves ≥5 — verify ⌈N/3⌉, all on any failure (**accepts silent-failure risk on unsampled leaves; said out loud at the gate**) |
+| Verify | Verifier one tier above executor (capped at Strong — Strong leaves get a fresh cross-family Strong verifier, never Fable), no session-diff exception; 3-verifier decorrelated panel on correctness-sensitive leaves | No session-diff exception; Strong verify on Mid leaves | `check.md` tiering + the documented session-diff exception; credit-billed harness → check.md's credit-billed default (script-first, sampled batch) | Exception preferred where legal; script pre-checks first, script-only where scriptable | Script checks wherever scriptable; on Copilot, Cheap leaves take a fresh Luna's scripted acceptance (`@smartplan-verifier-cheap`, same-model, noted in the verdict, UNKNOWN on judgment) unless the leaf is unsuitable for it; single Mid-verifier cap (an escalated-to-Mid leaf keeps its Strong/cross-family verifier — `check.md` hard rule); sampling on homogeneous waves ≥5 — verify ⌈N/3⌉, all on any failure (**accepts silent-failure risk on unsampled leaves; said out loud at the gate**) |
 | Escalation | One strike escalates | fail-twice (canonical) | fail-twice | fail-twice | fail-twice |
 | Effort | high everywhere, xhigh/max only on a measured gain | high on plan + verify | Harness defaults; low on Cheap leaves | low on Cheap + mechanical Mid | low everywhere but the plan turn |
 | Output register | Full prose allowed (templates still apply) | Terse templates (`check.md` § Verdict budget) | Terse templates + telegraphic agent-consumed prose (caveman *lite*) | Caveman *full* on all agent-consumed prose | Caveman *ultra* — fragments |
 | Fan-out | ≤3 leaves/wave, extra Integrate attention | 3–5 | 3–5 (flow default) | Size to survive caps; wider cheap waves | Width stops paying past ≥5 (T27); batch/sample the verify |
 | Inline output ceiling | No ceiling (templates apply) | One-paragraph close | One-paragraph close | Routing line + diffs only; echo-free edits (never reprint file content); ≤3-line close; no offers/retro | Same as budget, fragments allowed |
 
-**On Claude Code the Mid seats pin `effort: high`**, Sonnet 5's default.
-It beats `/effort` and ultracode and rides a per-call `model: opus`
-(`claude-code.md`, probed 2026-09-22). Mid leaves, Strong verify and
-escalations run high in every mode. The cheaper Effort cells land on
+**On Claude Code the Mid implementer pins `effort: medium`** (author,
+2026-09-29). T44 measured it at `high`'s full scores for 38 to 59% less
+per passing run. The Strong verifier pins `high`. A pin beats `/effort`
+and ultracode and rides a per-call `model: opus` (`claude-code.md`,
+probed 2026-09-22). Mid leaves and their escalations run medium, and
+Strong verify high, in every mode. The cheaper Effort cells land on
 the plan turn (stock Opus 5.5 runs medium). Set it with `--effort` at
 launch, since `/effort` saves per model. Haiku 4.5 has no dial.
 Budget's mechanical Mid lands only as a workflow `agent()` effort.
@@ -161,7 +163,7 @@ micro-leaves where it can't pay.
   `claude-haiku-4.5` errors pre-flight, "does not support reasoning
   effort configuration"). The Luna Cheap and scout seats pin
   `reasoningEffort: low`, so budget/max-savings' low-effort row reaches
-  them. A Haiku fallback saves only through the register and verify rows.
+  them.
 
 ## Measured economics + budget personas (Copilot, live 2026-07-13)
 
@@ -222,11 +224,9 @@ when the ask names none (a standing default alone doesn't re-print it).
 It confirms the **launch levers the skill can't set itself** (the
 human's, at session start):
 
-1. **Model:** Auto for an inline session (10% off on paid plans,
-   cache-safe) or an explicit cheap model. Any tiered wave takes
-   explicit per-agent pins. Never Opus/Fable for a whole session.
-   Mechanical → GPT-6 Luna ($0.10/$0.50, the Copilot Cheap seat's first
-   pick), or GPT-5.6 Luna ($0.20/$1.20) where the picker lacks it.
+1. **Model:** `gpt-6-luna` ($0.10/$0.50), never Auto: the Luna
+   ceiling (`copilot.md`). Any tiered wave takes explicit per-agent
+   pins. Never Opus/Fable for a whole session.
 2. **Cap leaves, not the orchestrator:** `--max-ai-credits` bounds a
    runaway repair, but a cap can suppress skill loading (T25) — cap leaves.
 3. **Warm cache:** `--resume` for repairs; minimal context (re-read every

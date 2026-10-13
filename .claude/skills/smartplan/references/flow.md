@@ -136,7 +136,7 @@ invoke anything.**
 ## Model-role matrix
 
 Lineup, strongest first: **Fable 5.1 > Opus 5.5 > Opus 5 > Opus 4.8 >
-Sonnet 5 > Haiku 4.5.** <!-- claim:anthropic-model-lineup --> The full cross-vendor
+Sonnet 5.5 > Haiku 4.5.** <!-- claim:anthropic-model-lineup --> The full cross-vendor
 roster (classes, dated prices, default/candidate/provisional status) is the
 hand-editable registry **`references/model-classes.md`** — reclassify there,
 never inline here.
@@ -151,7 +151,7 @@ at the gate — full procedure in `routing.md` § Seat eligibility. An explicit
 | Choice | Model | Use when |
 | --- | --- | --- |
 | **Default** | **Opus 5.5** | Multi-file, cross-cutting, ambiguous, or any plan whose blast radius you can't bound at a glance. |
-| Drop down (on fit) | Sonnet 5 | The plan is unmistakably small, bounded, single-domain, unambiguous. |
+| Drop down (on fit) | Sonnet 5.5 | The plan is unmistakably small, bounded, single-domain, unambiguous. |
 | Max (opt-in) | **Fable 5.1** | The hardest architecture/decomposition decisions. **Planning only.** |
 
 This is the balanced baseline. `modes.md` § The matrix moves it per mode
@@ -170,7 +170,7 @@ a verdict**: reproduce before acting, log every cap (`check.md` § Review).
 
 | Choice | Model | Floor for |
 | --- | --- | --- |
-| **Cheap** | Haiku 4.5 | Mechanical, single-concern, verifier-checkable leaves (renames, formatting, codemods, boilerplate-from-exemplar) — only via smartexec **behind smartcheck**. Fails silently; never unverified. (Scouting: Cheap-floor, no-diff — step 4's spot-check path, not smartexec.) |
+| **Cheap** | Haiku 4.5 (Sonnet on Claude Code) | Mechanical, single-concern, verifier-checkable leaves (renames, formatting, codemods, boilerplate-from-exemplar) — only via smartexec **behind smartcheck**. Fails silently; never unverified. (Scouting: Cheap-floor, no-diff — step 4's spot-check path, not smartexec.) |
 | **Mid** | The newest Sonnet | Everything else — briefed/correctness-sensitive leaves, and anywhere the check can't be scripted. |
 | Reserve | Opus 5.5 | An *irreducibly* cross-cutting leaf (a mini-plan), or a fail-twice target. Not "hard algorithm." |
 
@@ -241,11 +241,12 @@ most of this flow **cannot ship there**, so read its verdict table first.
 - **Lever:** per-call `model:` on each dispatch — **since v2.1.251 that beats
   `CLAUDE_CODE_SUBAGENT_MODEL`**, which now sets a *default* rather than
   overriding everything. So a Strong verifier's per-call `model:` lands even
-  with the env var pinned. **Wave guarantee:**
-  `export CLAUDE_CODE_SUBAGENT_MODEL=sonnet` before an implementer wave, then
-  **unset it** after — it still catches every leaf with no per-call or
-  frontmatter model, and since v2.1.196 `=inherit` is merely identical to
-  unset, not a pin to the session model. On a pre-2.1.251 binary the old
+  with the env var pinned. **Standing default:**
+  `CLAUDE_CODE_SUBAGENT_MODEL=sonnet` in the settings `env` block (a Bash
+  export never reaches the running harness) catches every leaf with no
+  per-call or frontmatter model. **Every workflow `agent()` names a
+  `model` or a `smartplan-*` seat**, or it runs the session model. Since
+  v2.1.196 `=inherit` is identical to unset. On a pre-2.1.251 binary the old
   order holds and the env var *does* outrank the per-call value, so clear
   it before verify dispatches there or the gate silently becomes
   Sonnet-judging-Sonnet.

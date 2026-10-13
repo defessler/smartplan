@@ -73,7 +73,12 @@ The two are separable, and only one collapses. Independent verification still
 gates risky merges at **any** size — C++ shared blind spots (UB, concurrency,
 templates) and security — because a cold model shares the writer's training
 and blind spots while a compiler doesn't. Ceremony collapses. The verify floor
-never does.
+never does. **T42 (2026-09-23)** puts numbers on the verifier: on 16 seeded
+C++ defects Opus caught 16 twice, GPT-6 Sol 14 to 15, Gemini 3.8 Flash,
+GPT-5.6 Terra and GPT-6 Luna 13, both GLMs 11 to 12, Sonnet 9 to 10 and
+Haiku 6 to 7. A C++ review wants the Strong seat. **T43**: Haiku's own
+tests encoded its misreading of semver. Sonnet tested against the real
+library and missed nothing. Test against a reference when one exists.
 
 ## Old patterns
 

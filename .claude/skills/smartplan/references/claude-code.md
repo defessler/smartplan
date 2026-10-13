@@ -24,12 +24,14 @@ of the per-invocation read.*
   `inherit` is **identical to unset** (re-verified 2026-08-12).
 - **Per-leaf lever = per-call `model:`** on each dispatch. It takes only
   the aliases `sonnet`, `opus`, `haiku` and `fable` (2.1.280 schema). A
-  full id goes in seat frontmatter or the env var. **Wave
-  guarantee:** `export CLAUDE_CODE_SUBAGENT_MODEL=sonnet` before an
-  implementer wave so a leaf with no per-call or frontmatter model can't
-  silently inherit the session (priciest) model, then **unset it** after.
-  Keep it a shell export. A settings `env` entry was reported ignored
-  (#43869, 2.1.263, third-party).
+  full id goes in seat frontmatter or the env var. **Standing
+  default:** `CLAUDE_CODE_SUBAGENT_MODEL=sonnet` in the settings `env`
+  block, so a leaf or workflow `agent()` with no per-call or frontmatter
+  model can't silently inherit the session (priciest) model. Probed
+  2026-09-23 on 2.1.280: an unnamed dispatch ran Sonnet under a Haiku
+  session, and a per-call `haiku` still won. That supersedes #43869's
+  ignored-entry report (2.1.263). A Bash-tool `export` never reaches the
+  running harness, so it can't do this job.
   `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` (v2.1.257) pins every leaf, verifier
   and named seat included, and drops `model` from the Agent schema and
   workflow `agent()` opts. No dispatch can then name a tier. Never set it
@@ -39,16 +41,17 @@ of the per-invocation read.*
   mid-run busts *its* prompt cache instead — see `caching.md`.
 - **Effort has no per-dispatch knob here.** An ad-hoc `Agent()` call takes
   `model` but *not* `effort`. A seat's frontmatter `effort:` carries it,
-  or an `agent()` opt in a workflow script. The Mid seats pin `high`. The
-  Haiku seats pin `low`, inert on Haiku 4.5. A pin beats `/effort` and
-  ultracode's xhigh. It also rides a per-call `model:`. A Strong
-  `model: opus` dispatch then runs Opus 5.5 at high. Escalate a Cheap
+  or an `agent()` opt in a workflow script. The Mid implementer pins
+  `medium` (T44), the verifier `high`, the Cheap seats `low` (inert on
+  Haiku 4.5). A pin beats `/effort` and
+  `--effort ultracode`'s xhigh. It also rides a per-call `model:`. A Strong
+  `model: opus` escalation then runs Opus 5.5 at medium. Escalate a Cheap
   leaf by switching seat, never by `model:`. Its low pin would ride
   along. Only `CLAUDE_CODE_EFFORT_LEVEL`, `auto` included, outranks a
   pin. A `maxEffortLevel` cap clamps one. An unpinned seat takes an
   explicit session level, else its own model's saved level or default.
-  Both links probed 2026-09-22 on 2.1.280. Opus 5.5 defaults to
-  **medium**, every other effort model high (Opus 4.7 xhigh). A legacy
+  Both links probed 2026-09-22 on 2.1.280. Opus 5.5 and Sonnet 5.5
+  default to **medium**, every other effort model high (Opus 4.7 xhigh). A legacy
   top-level `effortLevel` in user settings no longer reaches Opus 5.5.
   <!-- claim:cc-agent-call-has-no-effort-param -->
 - **Naming your seat** for SKILL.md § Seat ceiling: the system prompt's
@@ -66,8 +69,8 @@ of the per-invocation read.*
   Where an alias lags (`sonnet` is Sonnet 4.6 on Claude Platform on AWS,
   4.5 on Bedrock, Google Cloud and Foundry), point it at the newest id
   with `ANTHROPIC_DEFAULT_SONNET_MODEL` or `_OPUS_MODEL`. 2.1.280 is
-  the floor for Opus 5.5. On 2026-09-22 npm's `stable` tag still sat at
-  2.1.267.
+  the floor for Opus 5.5. `sonnet` is Sonnet 5.5 on the API from 2.1.284.
+  On 2026-09-29 npm's `stable` tag sat at 2.1.277.
 - **`/fast` is not a cheap tier.** Fast mode runs Opus with faster output —
   same model, not a smaller one (Opus 5.5/5/4.8, 5.5 the default at
   $8/$40). It buys latency, never budget. Its header is part of the cache
@@ -78,12 +81,12 @@ of the per-invocation read.*
   <!-- claim:cc-fast-mode-is-not-a-model-downgrade -->
 - **A seat's window is sized by its own model, not yours** — five Haiku
   seats give five 200k windows, not five 1M. The beyond-one-context
-  argument only holds for same-tier fan-out, forks, or Sonnet 5 seats.
+  argument only holds for same-tier fan-out, forks, or Sonnet seats.
 - **Fan-out mechanism:** subagents run **background-by-default** (since
   v2.1.198) — wide dispatch
   is just *fire every Agent call*, then monitor the agent panel.
-- **Auto mode (permissions) is the shipped starting mode on Pro, Max and
-  Team** (effective 2026-08-14, version-gated). Its classifier runs
+- **Auto mode (permissions) is the built-in starting mode on every plan
+  and provider** (2.1.283+). Its classifier runs
   **Sonnet 5** unless Anthropic sets one server-side, pinned after
   first-request validation, and bills as token usage on API and
   Enterprise. From 2.1.278 Enterprise, API, cloud-platform and
@@ -204,10 +207,11 @@ model (or `/usage` the line).
 **Measurement hazard: the safety fallback.** A content-flagged request
 re-runs on a different model and the **session continues** there. It can
 fire on the first request, which carries your CLAUDE.md and git status
-(`--safe-mode` isolates your customizations). The published map (read 2026-09-22): on Opus 5.5, Fable
+(`--safe-mode` isolates your customizations). The published map (read 2026-09-29): on Opus 5.5, Fable
 5.1 and Fable 5, biology falls to Opus 5 and cybersecurity to Opus 4.8.
 Opus 5.5's frontier-LLM-development flag falls to Opus 5. On Opus 5,
-cybersecurity falls to 4.8 and biology refuses. `reasoning_extraction`
+cybersecurity falls to 4.8 and biology refuses. On Sonnet 5.5,
+cybersecurity falls to Sonnet 5 and biology refuses. `reasoning_extraction`
 refuses everywhere. From Opus 5.5 a fallback is down in capability but up
 in price. Set `switchModelsOnFlag: false` in any
 benchmark harness: an interactive flag then asks and a `-p` main-thread
@@ -355,8 +359,8 @@ contested resolution order (#43869, above), so confirm the tier with
   listing. `/skill-doctor` (2.1.252+) reports per-skill context cost and
   usage.
 - **2.1.277 reads `AGENTS.md` directly when a project has no
-  `CLAUDE.md`** (configurable under Project instructions in `/config`; not
-  on Bedrock, Vertex, Foundry, or telemetry-disabled sessions). On Windows
+  `CLAUDE.md`** (configurable under Project instructions in `/config`, on
+  every provider and telemetry setting from 2.1.281). On Windows
   the docs still recommend an `@AGENTS.md` import inside `CLAUDE.md`,
   which doesn't double-read.
 - **claude.ai skill sync (2.1.275) is a new standing-load surface:**

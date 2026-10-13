@@ -49,8 +49,11 @@ DEFAULT_OUT = REPO_ROOT / "dist" / "seat-map.json"
 # takes only the four aliases. A full id goes in agent frontmatter or
 # CLAUDE_CODE_SUBAGENT_MODEL. Off the Anthropic API the `sonnet` alias
 # reaches an older Sonnet (claude-code.md), so these rows assume that API.
+# `sonnet` moved to Sonnet 5.5 in v2.1.284 (2026-09-28).
 ALIASES = {
-    "sonnet": "Sonnet 5",
+    "sonnet": "Sonnet 5.5",
+    "claude-sonnet-5-5": "Sonnet 5.5",
+    "claude-sonnet-5.5": "Sonnet 5.5",
     "claude-sonnet-5": "Sonnet 5",
     "opus": "Opus 5.5",
     "claude-opus-5-5": "Opus 5.5",
@@ -74,6 +77,7 @@ ALIASES = {
     "luna": "GPT-6 Luna",
     "gpt-6-luna": "GPT-6 Luna",
     "gpt-6-sol": "GPT-6 Sol",
+    "gpt-6.1-sol": "GPT-6.1 Sol",
     "gpt-5.6-terra": "GPT-5.6 Terra",
     "terra": "GPT-5.6 Terra",
     "gpt-5.6-sol": "GPT-5.6 Sol",

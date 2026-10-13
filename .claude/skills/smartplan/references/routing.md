@@ -38,15 +38,15 @@ which model sits in each tier** — edit classifications there, not here.
 | **Max** | Fable 5.1 *(where exposed)* | Hardest architecture/decomposition *decisions* only. Never research, audit, or implementation. |
 | **Strong** | Opus 5.5 (+ cross-vendor Reasoning-class peers) | Planning escalation, cross-cutting judgment, brief-writing at fan-out. |
 | **Mid** | The newest Sonnet (GPT-6 Sol first on Copilot) | Near-frontier implementer and default verifier. The workhorse floor. |
-| **Cheap** | Haiku 4.5 (Claude Code) · GPT-6 Luna (Copilot), + Mechanical-class peers | Tightly-scoped leaves behind a verifier. Fails *silently* — never unverified. |
+| **Cheap** | Sonnet on Claude Code (author rule) · GPT-6 Luna (Copilot), + Mechanical-class peers | Tightly-scoped leaves behind a verifier. Fails *silently* — never unverified. |
 | **Script** | No model — an existing script | A deterministic action an already-written script performs. Zero cost, zero drift. |
 
-Both Lunas are classed Implementer but hold Copilot's Cheap seat on price
-(hard floor #6). Class decides which leaves one may take. The seat
-decides its ceiling.
+Both Lunas measure Mechanical (AA 37.3, `model-classes.md`). GPT-6 Luna
+holds Copilot's Cheap seat and is its session ceiling (`copilot.md`).
+Class decides which leaves one may take. The seat decides its ceiling.
 
-**Dated 2026-09-22:** Sonnet 5's $2/$10 is Anthropic's standard price (the
-$3/$15 step was cancelled 2026-08-10). Opus 5.5 lists at $4/$20. So
+**Dated 2026-09-29:** Sonnet 5.5 and 5 list at $2/$10, the standard price
+(Sonnet 5's $3/$15 step was cancelled 2026-08-10). Opus 5.5 lists at $4/$20. So
 Opus→Sonnet is 2× on the current Opus, down from 2.5× on Opus 5. A
 fallback from Opus 5.5 to Opus 5 or 4.8 is a climb in price.
 
@@ -56,7 +56,7 @@ before Opus 5.5). So **"beyond one
 context" is a live regime there and nearly unreachable in Claude Code: the
 same task routes differently per harness.** Within one, a subagent's window
 is its *own* model's — five Haiku seats give five 200k, not five 1M — so
-scale argues for fan-out only at the same tier, via a fork, or on Sonnet 5
+scale argues for fan-out only at the same tier, via a fork, or on Sonnet
 seats. Routing down shrinks the window you fanned out to get.
 
 ## Routing table
@@ -228,6 +228,14 @@ alone exceeds the Cheap saving), and (4) prices no more than the
 incumbent. `scripts/seat-map.py compare <candidate> <incumbent>` is the
 deterministic list-price check: exit 1 means above on both axes.
 
+**Cheapest means cheapest per merged leaf** (author, 2026-09-29). Price a
+row by its measured cost per task at the effort it runs, plus its retries,
+escalation and verify, never by list price alone. So try the cheaper row
+first on any class it lands under the bounce breakeven, and climb only
+where measured bounces make it the dearer pick. T43: Luna at medium
+matched Sol on semver2 for a thirteenth of the credits, while Sonnet
+renamed for less than Haiku ($0.10 against $0.13) in half the time.
+
 **Climbs above the seat stay legal only through the named gates** — the
 ask-first Seat ceiling (SKILL.md), fail-twice escalation with its report
 attached, the planner seat, and the verifier floor (`check.md` §
@@ -290,6 +298,7 @@ t41-cost-ceiling-validation-prereg.md`.
    work needs more (a Mid verify, the spiral diagnosis, a fail-twice
    target, a never-Cheap class), it writes the brief or the ESCALATION
    REPORT in full, stops, and names the session model to switch to.
+   Copilot's Luna ceiling asks for that one dispatch instead (`copilot.md`).
 
 ## Harness dispatch notes
 
