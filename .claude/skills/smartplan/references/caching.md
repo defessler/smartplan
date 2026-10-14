@@ -53,9 +53,10 @@ anywhere in the prefix invalidates everything *after* it, not just the part
 that changed.
 
 Exception: cache hits and refreshes on Fable 5.1 and Mythos 5.1 bill at
-0.025× base input, about a 97.5% discount, and on Opus 5.5 at 0.05×,
-about 95%. On those models a broken prefix costs 50× the read (25× on
-Opus 5.5), not 12.5×. Opus 5.5 has been the default Opus since
+0.025× base input, about a 97.5% discount, and on Opus 5.5 and
+Sonnet 5.5 at 0.05×, about 95% (pricing footnote, read 2026-10-13). On
+those models a broken prefix costs 50× the read (25× on Opus 5.5 and
+Sonnet 5.5), not 12.5×. Opus 5.5 has been the default Opus since
 2026-09-22. Byte-stability now matters twice as much on the planner seat
 as it did on Opus 5.
 
@@ -91,7 +92,7 @@ prefix and pays its own write.
 
 | Trigger | Why |
 | --- | --- |
-| Switching `/model` mid-session, or `/effort` on most models | Each model has its own cache. On most models so does each effort level. Opus 5.5, Sonnet 5.5 and Fable 5.1 on an API key or a subscription keep the cache across an effort change. Claude Code applies the new level there without asking (on Fable 5.1 since v2.1.260). Not on Bedrock, Google Cloud's Agent Platform, a Claude apps gateway, with `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`, or for an org with a HIPAA configuration (read 2026-09-29). Elsewhere Claude Code asks you to confirm an effort switch only while the cache is warm. `/model` asks only while the cache is warm and the new model isn't the one that produced the last response. |
+| Switching `/model` mid-session, or `/effort` on most models | Each model has its own cache. On most models so does each effort level. Opus 5.5, Sonnet 5.5, Haiku 5.5 and Fable 5.1 on an API key or a subscription keep the cache across an effort change (re-read 2026-10-13). Claude Code applies the new level there without asking (on Fable 5.1 since v2.1.260). Not on Bedrock, Google Cloud's Agent Platform, a Claude apps gateway, with `CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS`, or for an org with a HIPAA configuration (read 2026-09-29). Elsewhere Claude Code asks you to confirm an effort switch only while the cache is warm. `/model` asks only while the cache is warm and the new model isn't the one that produced the last response. |
 | A skill or command whose `model:` frontmatter differs from the session, an automatic safety fallback, or an `opusplan` plan-mode toggle | Each is a model switch. So the next request re-reads the whole history uncached. |
 | **First** fast-mode enable in a conversation | Fast mode adds a request header that is part of the cache key, so that one turn re-reads the whole history uncached — **at fast-mode rates**, which makes enabling it late in a long session the expensive case. Turning it off and on again later is free. `/clear` and `/compact` reset the once-per-conversation clock. The header is set once per turn. So a mid-turn enable moves the miss to the next turn's first request. Enabling it on an unsupported model also switches models, which starts a fresh cache. Running out of usage credits retries at standard speed and keeps the cache (read 2026-09-22). |
 | Falling into usage-credit overage (subscription) | Silently drops the main conversation from the 1-hour to the 5-minute TTL — a long orchestrator session near plan limits loses its TTL margin exactly when spend matters. |
@@ -177,14 +178,15 @@ change any of them), that means it never touches the main thread's cache.
 That's a different action from the general rule it sits next to: **switching
 the MAIN session's own `/model` mid-run busts that session's whole prompt
 cache** (§1, above). So does `/effort` on most models. The exception is an
-Opus 5.5, Sonnet 5.5 or Fable 5.1 orchestrator on an API key or a subscription, where an
+Opus 5.5, Sonnet 5.5, Haiku 5.5 or Fable 5.1 orchestrator on an API key or a subscription, where an
 effort change keeps the cache. There you can raise effort for one hard step
 without a cold rebuild. Drop the orchestrator itself to Sonnet
 mid-run instead of exporting the env var, and you pay full retail to rebuild
 everything already in its transcript. On Opus 5.5 there's little to win
-from that drop anyway. Its $0.20 cache-read is Sonnet 5.5's exact rate. A
-mostly-cached orchestrator turn costs the same on either. The saving lives
-only in cold input (4 vs 2) and output (20 vs 10). A `PreModelSwitch` hook
+from that drop anyway. Its $0.20 cache-read is double Sonnet 5.5's $0.10
+(halved 2026-10-07), so a mostly-cached orchestrator turn saves half of a
+small number. The real saving lives in cold input (4 vs 2) and output (20
+vs 10). A `PreModelSwitch` hook
 (v2.1.251+) runs before Claude Code applies a requested model switch and
 can allow, deny or ask. That turns "don't switch the orchestrator mid-run"
 into an enforced rule rather than a remembered one.
@@ -420,7 +422,7 @@ pruning protects instructions by its own design — same verdict.)
   implicit breakpoint takes one of the four. GitHub's own price table
   charges the cache write on Anthropic models and on GPT-5.6 and later
   only. So the stagger arithmetic above now holds for every GPT slug on
-  the Copilot seats (GPT-6 Sol, GPT-6 Luna, GPT-5.6 Luna). N simultaneous same-prefix
+  the Copilot seats (GPT-6.1 Sol, GPT-6 Luna, GPT-5.6 Luna). N simultaneous same-prefix
   dispatches all pay the cold write. Cached state lives on individual
   machines. Traffic above 15 requests per minute can overflow to other
   machines. So a wide same-prefix wave on an OpenAI seat can miss even
@@ -716,10 +718,14 @@ own level and everything after it:
   model-specific for tools and system. Two exceptions. An explicit effort
   equal to the model default is a no-op. A per-message effort change in a
   `role: "system"` message keeps the prefix. That works on Fable 5.1,
-  Mythos 5.1, Opus 5.5, Sonnet 5.5 and Opus 5, behind the
+  Mythos 5.1, Opus 5.5, Sonnet 5.5, Opus 5 and Haiku 5.5, behind the
   `mid-conversation-output-config-2026-07-01` beta header, on the Claude
-  API and Google Cloud (read 2026-09-29). Models without per-message
-  effort, Fable 5 included, return a 400. A top-level effort change starts
+  API and Google Cloud (read 2026-10-13). Amazon Bedrock lists only Fable
+  5.1, Mythos 5.1 and Opus 5.5, and InvokeModel only Fable 5.1 and Opus
+  5.5. Sonnet 5.5 on `between_tools` and Haiku 5.5 on `disabled` can't
+  change effort mid-conversation, and a differing per-message effort
+  returns a 400. Models without per-message effort, Fable 5 included,
+  also return a 400. A top-level effort change starts
   the cache over.
 - **Dropped thinking blocks** invalidate the messages cache from that
   block onward. The API drops a Fable 5.1 or Mythos 5.1 thinking block
@@ -736,7 +742,7 @@ cache on an older, cheaper one:
 
 | Floor | Models |
 | --- | --- |
-| 512 | Fable 5.1, Mythos 5.1, Opus 5.5, Opus 5, Sonnet 5.5, Fable 5, Mythos 5 |
+| 512 | Fable 5.1, Mythos 5.1, Opus 5.5, Opus 5, Sonnet 5.5, Haiku 5.5, Fable 5, Mythos 5 |
 | 1,024 | Opus 4.8, Sonnet 5, Sonnet 4.6, Sonnet 4.5, Opus 4.1, Opus 4, Sonnet 4 |
 | 2,048 | Opus 4.7, Mythos Preview, Haiku 3.5 (retired, except on Bedrock and Google Cloud) |
 | 4,096 | Opus 4.6, Opus 4.5, **Haiku 4.5** |

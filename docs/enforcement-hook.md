@@ -65,7 +65,7 @@ script edit.
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'f=\"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/require-tiered-dispatch.sh\"; if [ -f \"$f\" ]; then exec bash \"$f\"; fi; exit 0'"
+            "command": "bash -c 'f=\"${CLAUDE_PROJECT_DIR:-.}/.claude/hooks/require-tiered-dispatch.sh\"; if [ -f \"$f\" ]; then exec bash \"$f\"; fi; exit 0'; exit 0"
           }
         ]
       }
@@ -96,11 +96,19 @@ Copilot section at the end):
 - **`if [ -f "$f" ] ... exit 0`.** A missing script becomes a silent no-op,
   never a non-zero exit. Copilot fails closed on a non-zero `preToolUse`
   exit. Without this test a bad path there denies the dispatch.
+- **`; exit 0` after the bash call.** When PowerShell can't find `bash` at
+  all, the call is a non-terminating error and the line runs on to this
+  exit. A Git for Windows install puts only `Git\cmd` on PATH, not the
+  `Git\bin` that holds `bash.exe`, so this is the normal state of a
+  Windows box that never added it. Without the tail, CLI 1.0.93 denied
+  both seats of a live dispatch on 2026-10-08. With it the same dispatch
+  served both. The hook then runs nowhere on such a box, which is the
+  warn-only contract degrading to nothing rather than to a deny.
 
 Running the script as `bash "$f"` still sidesteps shebang and exec-bit
 ambiguity on a Windows checkout, which is this repo's own dev environment.
 The string was tested on 2026-09-22 by running it under each shell on that
-box, not yet through a live Copilot dispatch:
+box, and through a live Copilot dispatch on 2026-10-08:
 
 - bash with `CLAUDE_PROJECT_DIR` set, the Claude Code shape: runs the hook.
 - bash with the variable unset, from the repo root, the Copilot shape on
@@ -110,6 +118,9 @@ box, not yet through a live Copilot dispatch:
   silently.
 - Windows PowerShell 5.1: strips the inner quotes, then exits 0 silently.
   No note and no deny.
+- pwsh 7 with no `bash` on PATH, the state of this box under Copilot's
+  own launch: prints a command-not-found error and exits 0 (2026-10-08).
+  A live `task` dispatch of two seats went through.
 
 `Workflow` joined the matcher on 2026-08-05. A dynamic workflow spawns its own
 fleet from inside a script the hook can't gate. Each workflow agent's model
@@ -128,7 +139,12 @@ common miss. In the month before, 104 of 133 workflow scripts on this box
 named no model, and about 62,000 workflow agent turns ran the session's Opus.
 A script passed by `scriptPath` isn't scanned.
 `CLAUDE_CODE_SUBAGENT_MODEL_FORCE` (v2.1.257 or later) forces one model onto
-subagents, teammates and workflow agents alike. Before 2026-08-05 the one
+subagents, teammates and workflow agents alike.
+`CLAUDE_CODE_WORKFLOW_SUBAGENT_MODEL` (2.1.296, in the changelog only) is a
+workflow-scoped version of that. Read from the 2.1.296 binary, unprobed: when
+set, it overrides each stage's `opts.model` and the seat's `model:`, logs a
+"Workflow agent model ... ignored" note, and flattens a tiered wave. `inherit`
+counts as unset. Don't set it for one (checked 2026-10-13). Before 2026-08-05 the one
 dispatch path that fans out widest was also the only one the guardrail never
 saw. The launch is the last point a note can reach you or Claude, since
 nothing stops the script once it starts. Same contract as the rest: one JSON
@@ -418,7 +434,16 @@ switch. It skips every hook from every source, user-level hooks included.
 Only policy hooks survive it. Fixing the command string is the narrower
 repair.
 
+Claude Code 2.1.295 added `onFailure: "block"` for command and HTTP hooks, so
+a hook that can't start or exits oddly blocks the action. We leave it unset in
+`.claude/settings.json`. The wrapper above is fail-open on purpose, and Copilot
+loads the same file (read 2026-10-13).
+
 Copilot also has its own native `preToolUse` event (JSON under
 `.github/hooks/` or `~/.copilot/hooks/`, per `references/copilot.md`).
 This repo ships no native port, since the Claude-format entry above
 already reaches Copilot.
+
+Copilot CLI 1.0.97 also added agent-scoped declarative hooks for custom
+agents (release notes, read 2026-10-13). That is a second route to the same
+gate, declared in a seat's own profile. We haven't tried it here.

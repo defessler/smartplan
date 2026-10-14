@@ -136,10 +136,10 @@ invoke anything.**
 ## Model-role matrix
 
 Lineup, strongest first: **Fable 5.1 > Opus 5.5 > Opus 5 > Opus 4.8 >
-Sonnet 5.5 > Haiku 4.5.** <!-- claim:anthropic-model-lineup --> The full cross-vendor
+Sonnet 5.5 > Haiku 5.5.** <!-- claim:anthropic-model-lineup --> The full cross-vendor
 roster (classes, dated prices, default/candidate/provisional status) is the
 hand-editable registry **`references/model-classes.md`** — reclassify there,
-never inline here.
+never inline here. Every tier below is offered, never required (`routing.md`).
 
 **User-named models are a roster, not a routing instruction.** Seat them by
 capability class, refuse over-seating by default, and present any reseating
@@ -170,7 +170,7 @@ a verdict**: reproduce before acting, log every cap (`check.md` § Review).
 
 | Choice | Model | Floor for |
 | --- | --- | --- |
-| **Cheap** | Haiku 4.5 (Sonnet on Claude Code) | Mechanical, single-concern, verifier-checkable leaves (renames, formatting, codemods, boilerplate-from-exemplar) — only via smartexec **behind smartcheck**. Fails silently; never unverified. (Scouting: Cheap-floor, no-diff — step 4's spot-check path, not smartexec.) |
+| **Cheap** | Haiku 5.5 | Mechanical, single-concern, verifier-checkable leaves (renames, formatting, codemods, boilerplate-from-exemplar) — only via smartexec **behind smartcheck**. Fails silently; never unverified. (Scouting: Cheap-floor, no-diff — step 4's spot-check path, not smartexec.) |
 | **Mid** | The newest Sonnet | Everything else — briefed/correctness-sensitive leaves, and anywhere the check can't be scripted. |
 | Reserve | Opus 5.5 | An *irreducibly* cross-cutting leaf (a mini-plan), or a fail-twice target. Not "hard algorithm." |
 
@@ -206,16 +206,16 @@ the completed subagent, tier-safe ≥2.1.211; Copilot: `--resume`). **Two
 strikes** — two FAILs, a FAIL after a repaired-BLOCKED, or two post-repair
 BLOCKEDs — **escalate exactly one tier** with the ESCALATION REPORT
 attached. A target above the session seat is asked for first, report
-already written (SKILL.md § Seat ceiling). On a Cheap seat nothing is
-asked. The run stops there with the report written (`routing.md` Cheap
-hard floor #6).
+already written (SKILL.md § Seat ceiling). On a no, or a Cheap seat,
+the leaf gets one fresh retry at the top tier allowed, report attached,
+then returns as the best attempt with its caveats (`check.md`).
 Never silently re-run; never skip tiers. Attempt counts persist in
 `run-state.md` and survive a resume. **Terminal case:** an Opus strike-out
 has no higher implementer tier (Max/Fable is planning-only, never an
 escalation target) — the orchestrator takes the leaf over itself,
-in-context, report attached, if its seat is Strong or above. Below that it
-stops, report written, naming the session model the leaf needs. The same
-arithmetic governs the inline route (SKILL.md § Spiral guard).
+in-context, report attached, offering a stronger session first when its
+seat is below Strong. The same arithmetic governs the inline route
+(SKILL.md § Spiral guard).
 
 ## Quality↔cost mode (one dial; default max-quality, max-savings on Copilot)
 

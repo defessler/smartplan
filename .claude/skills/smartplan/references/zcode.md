@@ -37,9 +37,11 @@ Load this only when the session is ZCode. For the flow itself, see `flow.md`.
 A desktop **Agentic Development Environment** from Z.ai — not a
 CLI, not an IDE fork. Electron, with macOS (Apple Silicon + Intel), Windows
 (x64 + ARM64) and Linux (x64 + ARM64; AppImage, DEB and RPM, no Beta marker)
-installers. Vendor's current release is **v3.14.4, 2026-09-29** (read
-2026-09-29, docs download links `ZCode-3.14.4-*`), a single fix that drops
-the CAPTCHA on free-tier model requests. Recent releases: 3.12.3
+installers. Vendor's current release is **v3.15.3, 2026-10-13** (changelog, read
+2026-10-13). It follows 3.14.4 (09-29, drops the CAPTCHA on free-tier
+requests), 3.14.5 (10-09) and 3.15.1 (10-12). 3.15.3 fixes the app hanging
+on exit during updates, and an upgrade from 3.15.1 may still hang.
+Earlier releases: 3.12.3
 (2026-09-17, PDF/media previews, per-workspace plugins, an OpenCode Go
 provider template), 3.14.0 (2026-09-19, **dynamic workflows**, Office vs
 Coding mode, an independent Start Plan), 3.14.1 (bug fixes, now dated
@@ -51,12 +53,13 @@ changelog fetches statically to its floor, v3.10.1 (2026-08-28).
 The build installed here reads **3.14.3.7762, with `zcode.cjs` 0.16.9
 rebuilt 2026-09-22** (`ZCode.exe` VersionInfo plus the uninstall entry).
 It auto-updates and matched the vendor on 2026-09-21 and 2026-09-22. It
-hadn't taken 3.14.4 by the 2026-09-29 read.
+was still on 3.14.3 at the 2026-10-13 read.
 
 **It's open source now.** Z.ai published `github.com/zai-org/ZCode` under
 Apache-2.0 on 2026-09-20: the clients, backend services, shared UI, and
 the Agent CLI and runtime. `main` moved to 3.14.3 on 2026-09-23, the build
-this box runs. Pin a code-level claim to a version. "Code-read" below means
+this box runs. Tag `v3.15.1` (`aac4755`, 2026-10-10) is the newest. No
+GitHub Release exists for 3.15.x. Pin a code-level claim to a version. "Code-read" below means
 read from that source or the installed bundle, not run.
 
 ## The one fact that decides everything
@@ -174,12 +177,14 @@ from the plus menu or a `/workflow` command, the same shape as Claude
 Code's. No web docs page covers them. The contract is a bundled
 `dynamic-workflows` skill (93,907 bytes) that can't be disabled and doesn't
 list. `CreateWorkflow` refuses to run until it loads. Every workflow pays
-that context first. It answers two questions. **A workflow is
-single-tier per run**: every subagent runs on the session's model, or on a
-run-level `subagent_model` (`providerId/modelId` or a bare id, optional
-`$level`) set on `CreateWorkflow` or `AmendWorkflow` only when the user
-asks. There's no per-agent pick. A tiered wave needs separate runs or
-seats. And workflow subagents can't call `CreateWorkflow` (bundled skill,
+that context first. It answers two questions. **From 3.15.1 a
+workflow can tier per subagent**: `agent(name, { model })` takes a literal
+or a `model()` ref (`$level` allowed), resolved at launch and shown in the
+confirmation window. Precedence is that name, then the run-level
+`subagent_model`, then the resume pin, then the session model (source
+`workflow-actor-model.ts` at `aac4755`, read 2026-10-13). There's still
+no per-subagent tool profile. This box runs 3.14.3, where a run is
+single-tier. And workflow subagents can't call `CreateWorkflow` (bundled skill,
 read 2026-09-22). Gate a workflow the way flow.md gates one everywhere:
 the human gate happens at launch, because nothing stops it after.
 
@@ -369,7 +374,7 @@ Anthropic key, with ZCode supplying the harness. That is the configuration
 to prefer if you want the tiering policy to mean what it means everywhere
 else. It isn't parity yet. The 3.14.3 Anthropic template tops out at
 `claude-fable-5-1` and `claude-opus-5`, with no Opus 5.5. The OpenAI one
-tops out at `gpt-6-astra`, with no GPT-6 Sol or Luna (read 2026-09-22). Opus
+tops out at `gpt-6-astra`, with no GPT-6 Sol or Luna (read 2026-09-22). The 3.15.1 source catalog still lacks them (read 2026-10-13). Opus
 5.5 is reachable only as a hand-added `claude-opus-5-5`. Two cautions before
 seating a Claude 5-series model. A hand-added model gets a 200K window
 unless its ID ends in `[1m]` or you enter one. And the bundle's Anthropic
@@ -448,7 +453,7 @@ mechanical waves off-peak still pays. ZCode 3.8.1 added a 5-hour quota
 reset benefit during off-peak hours. The devpack page claims up to 92%
 savings versus pay-as-you-go under full off-peak use.
 
-**Two promotions skew plan measurements until 2026-10-07.** From
+**Two promotions ended 2026-10-07, so plan measurements from 2026-10-08 are on standard rules.** From
 2026-09-25 to 2026-10-07 every hour bills at the off-peak rate. Timing
 buys nothing then, since the clock spread is 1×. The GLM-5.3-Flash campaign
 (2026-09-03 to 2026-10-07, extended from 09-20) makes Flash use from 23:00
@@ -456,7 +461,7 @@ to 09:00 UTC+8 zero-quota through ZCode 3.10+ and gives other supported
 agents doubled quota. It covers Flash only, not GLM-5.3. An account
 already at its 5-hour or weekly limit sits out until the reset. A cost or
 quota number taken on the plan in that window isn't comparable with one
-taken outside it. Re-check both after 2026-10-07 (read 2026-09-22).
+taken outside it. Both ended on schedule (docs.z.ai, read 2026-10-13).
 
 ## Vendor benchmark claims — treat as self-reported
 

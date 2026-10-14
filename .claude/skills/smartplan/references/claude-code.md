@@ -35,25 +35,29 @@ of the per-invocation read.*
   `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` (v2.1.257) pins every leaf, verifier
   and named seat included, and drops `model` from the Agent schema and
   workflow `agent()` opts. No dispatch can then name a tier. Never set it
-  for a verified wave.
+  for a verified wave. `CLAUDE_CODE_WORKFLOW_SUBAGENT_MODEL` (2.1.296,
+  read from the binary, unprobed) is a workflow-scoped `_FORCE`: set, it
+  beats `opts.model` and the seat's `model:`. Never set it for a tiered one.
   The swap is subagent-scoped and cache-safe.
   Switching the **main** session's model, or its effort on most models,
   mid-run busts *its* prompt cache instead — see `caching.md`.
-- **Effort has no per-dispatch knob here.** An ad-hoc `Agent()` call takes
-  `model` but *not* `effort`. A seat's frontmatter `effort:` carries it,
-  or an `agent()` opt in a workflow script. The Mid implementer pins
-  `medium` (T44), the verifier `high`, the Cheap seats `low` (inert on
-  Haiku 4.5). A pin beats `/effort` and
+- **Effort has a per-dispatch knob from 2.1.292.** An ad-hoc `Agent()`
+  call takes `effort` beside `model`, and it beats the seat's pin
+  (probed 2026-10-08 on 2.1.294: a `low` seat ran `high`). Otherwise a
+  seat's frontmatter `effort:` carries it, or an `agent()` opt in a
+  workflow script. The Mid implementer pins
+  `medium` (T44), the verifier `high`, the Cheap seats `low` (live on
+  Haiku 5.5). A pin beats `/effort` and
   `--effort ultracode`'s xhigh. It also rides a per-call `model:`. A Strong
   `model: opus` escalation then runs Opus 5.5 at medium. Escalate a Cheap
   leaf by switching seat, never by `model:`. Its low pin would ride
   along. Only `CLAUDE_CODE_EFFORT_LEVEL`, `auto` included, outranks a
   pin. A `maxEffortLevel` cap clamps one. An unpinned seat takes an
   explicit session level, else its own model's saved level or default.
-  Both links probed 2026-09-22 on 2.1.280. Opus 5.5 and Sonnet 5.5
-  default to **medium**, every other effort model high (Opus 4.7 xhigh). A legacy
+  Both links re-probed 2026-10-08 on 2.1.294. Opus 5.5, Sonnet 5.5 and
+  Haiku 5.5 default to **medium**, the rest high (Opus 4.7 xhigh). A legacy
   top-level `effortLevel` in user settings no longer reaches Opus 5.5.
-  <!-- claim:cc-agent-call-has-no-effort-param -->
+  <!-- claim:cc-agent-call-effort-param -->
 - **Naming your seat** for SKILL.md § Seat ceiling: the system prompt's
   model line, or `/model` and `/status`. A per-call `model:` above it
   waits on the user's yes; the brief doesn't. A Haiku seat never waits
@@ -69,8 +73,8 @@ of the per-invocation read.*
   Where an alias lags (`sonnet` is Sonnet 4.6 on Claude Platform on AWS,
   4.5 on Bedrock, Google Cloud and Foundry), point it at the newest id
   with `ANTHROPIC_DEFAULT_SONNET_MODEL` or `_OPUS_MODEL`. 2.1.280 is
-  the floor for Opus 5.5. `sonnet` is Sonnet 5.5 on the API from 2.1.284.
-  On 2026-09-29 npm's `stable` tag sat at 2.1.277.
+  the floor for Opus 5.5. `sonnet` is Sonnet 5.5 on the API from 2.1.284,
+  `haiku` Haiku 5.5 from 2.1.293 (2026-10-07).
 - **`/fast` is not a cheap tier.** Fast mode runs Opus with faster output —
   same model, not a smaller one (Opus 5.5/5/4.8, 5.5 the default at
   $8/$40). It buys latency, never budget. Its header is part of the cache
@@ -80,7 +84,7 @@ of the per-invocation read.*
   Don't let it stand in for a tier drop.
   <!-- claim:cc-fast-mode-is-not-a-model-downgrade -->
 - **A seat's window is sized by its own model, not yours** — five Haiku
-  seats give five 200k windows, not five 1M. The beyond-one-context
+  4.5 seats give five 200k windows, not five 1M (Haiku 5.5 has 1M). The beyond-one-context
   argument only holds for same-tier fan-out, forks, or Sonnet seats.
 - **Fan-out mechanism:** subagents run **background-by-default** (since
   v2.1.198) — wide dispatch
@@ -383,6 +387,7 @@ contested resolution order (#43869, above), so confirm the tier with
   1M), `--autocompact` per launch, or `CLAUDE_CODE_AUTO_COMPACT_WINDOW`,
   which wins and takes a plain integer only: `500k` reads as 500 and
   clamps to 100K. `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE` can only lower the
-  threshold, subagents included. Earlier compaction shrinks per-turn
+  threshold, subagents included. Subagent frontmatter takes
+  `autoCompactWindow` (2.1.296). Earlier compaction shrinks per-turn
   re-reads. Each compact busts the prefix, though. Measure before
   adopting.

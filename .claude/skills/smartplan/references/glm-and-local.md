@@ -15,9 +15,10 @@ resolves to, never by the alias name. `CLAUDE_CODE_SUBAGENT_MODEL=sonnet`
 follows the same map.
 
 **When every alias resolves to one model, the ladder has collapsed.**
-Tiering is moot. Route by regime only, and let that model's class cap the
-work. Anything above its class stops, with the brief written, naming the
-backend to switch to. That's the Cheap-seat rule in `SKILL.md`.
+Tiering is moot. Route by regime only. Work above that model's class gets
+the brief written and a stronger backend offered. Unless the user switches,
+this model does it and names the gap. That's the Cheap-seat rule in
+`SKILL.md`.
 
 ## z.ai GLM (a z.ai shim, or ZCode)
 
@@ -38,16 +39,17 @@ backend to switch to. That's the Cheap-seat rule in `SKILL.md`.
 - **Zero per-token cost, but not free.** The window is the server's
   per-request context, not the model's native one. One slot (`-np 1`)
   serves subagents one at a time, so a wall-clock fan-out doesn't pay.
-- **Class caps the work.** AA measures full-precision weights, and a Q4
+- **Class caps what you can trust.** AA measures full-precision weights, and a Q4
   quant scores at or below them (read 2026-09-23). Only Qwen3.8-27B (33.7),
   Qwen3.6-27B (21.4) and Qwen3.6-35B-A3B (18.2) measure Mechanical. The
   Qwen3-Coder rows, gpt-oss, Devstral, the VL and GLM-4.x rows and the R1
   distills are Unclassified. No local model reaches Implementer.
 - **Pin one model per class.** Mechanical: Qwen3.8-27B for quality, or
-  Qwen3.6-35B-A3B for speed. Implementer and Reasoning go to a cloud CLI:
-  `claude -p --model sonnet` or `opus` on the subscription, or a z.ai
-  shim on GLM-5.3-Flash or GLM-5.3. A 3B utility model may serve the
-  haiku slot's titles and summaries, never a seat.
+  Qwen3.6-35B-A3B for speed. Implementer and Reasoning go to a cloud CLI
+  where one is on offer: `claude -p --model sonnet` or `opus` on the
+  subscription, or a z.ai shim on GLM-5.3-Flash or GLM-5.3. A 3B
+  utility model may serve the haiku slot's titles and summaries, never
+  a seat.
 - A text-only seat fails on images. Route an image-bearing request to a
   vision row or a cloud model.
 

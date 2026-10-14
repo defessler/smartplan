@@ -243,7 +243,7 @@ to test on upload, not a fact.
   Model" is wrong for one of the three harnesses. Qualify it.
 
 Published availability (GitHub Copilot harness table, ms.date 2026-09-10,
-updated 2026-09-17, re-read 2026-09-22) lists eleven models: **Claude Opus 5
+updated 2026-10-12, re-read 2026-10-13) lists eleven models: **Claude Opus 5
 and Opus 4.8 (Deep, GA cross-geo)**, **Claude Fable 5 and Fable 5.1 (GA,
 absent in Australia and Saudi Arabia)**, Claude Sonnet 5 and Sonnet 4.6
 (GA), GPT-6 Astra, GPT-5.5 Chat and GPT-5 Chat (GA), GPT-5.6 Reasoning
@@ -351,7 +351,8 @@ Not a GUI-only surface:
 - **M365 Copilot (Enterprise add-on):** $30.00 user/month paid yearly, or
   $31.50 paid monthly on an annual commitment.
 - **M365 Copilot Business (SMB):** $18.00 user/month paid yearly on
-  promotional pricing **through 2026-12-31** (regular $21.00), or $25.20
+  promotional pricing **through 2026-12-31**, first year only (regular
+  $21.00), or $25.20
   billed monthly. <!-- RECHECK:2026-12-31 -->
 - **Bundles:** Business Premium with Copilot $32.00 paid yearly ($38.40
   monthly), Business Standard with Copilot $23.50 ($28.20), read 2026-09-22.

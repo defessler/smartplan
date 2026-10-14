@@ -11,7 +11,9 @@ Start at the floor; escalate one tier only on fail-twice (canonical rule:
 flow.md). Never route above the floor "to be safe," never below it to save
 pennies, never above the session seat unasked (SKILL.md § Seat
 ceiling), and never an initial pick above the incumbent's price at all
-(§ The cost ceiling).
+(§ The cost ceiling). **Floors are offered, never required** (SKILL.md).
+A declined or unserved tier falls to the strongest model on offer, said
+at the gate. "Never Cheap" means never while a stronger tier is offered.
 
 ## Contents
 
@@ -24,7 +26,7 @@ ceiling), and never an initial pick above the incumbent's price at all
 - C++ gamedev task classes
 - What a wave costs (T33 · T35, 2026-08-05, Copilot Pro)
 - Session-limit pressure (caps are a routing signal)
-- Hard floors for the Cheap class (non-negotiable)
+- Hard floors for the Cheap class
 - Harness dispatch notes
 - Outcome record and amendments
 
@@ -37,11 +39,11 @@ which model sits in each tier** — edit classifications there, not here.
 | --- | --- | --- |
 | **Max** | Fable 5.1 *(where exposed)* | Hardest architecture/decomposition *decisions* only. Never research, audit, or implementation. |
 | **Strong** | Opus 5.5 (+ cross-vendor Reasoning-class peers) | Planning escalation, cross-cutting judgment, brief-writing at fan-out. |
-| **Mid** | The newest Sonnet (GPT-6 Sol first on Copilot) | Near-frontier implementer and default verifier. The workhorse floor. |
-| **Cheap** | Sonnet on Claude Code (author rule) · GPT-6 Luna (Copilot), + Mechanical-class peers | Tightly-scoped leaves behind a verifier. Fails *silently* — never unverified. |
+| **Mid** | The newest Sonnet (GPT-6.1 Sol first on Copilot) | Near-frontier implementer and default verifier. The workhorse floor. |
+| **Cheap** | Haiku 5.5 on Claude Code (T45) · GPT-6 Luna (Copilot), + Mechanical-class peers | Tightly-scoped leaves behind a verifier. Fails *silently* — never unverified. |
 | **Script** | No model — an existing script | A deterministic action an already-written script performs. Zero cost, zero drift. |
 
-Both Lunas measure Mechanical (AA 37.3, `model-classes.md`). GPT-6 Luna
+Both Lunas measure Mechanical (AA 37.3 and 38.1, `model-classes.md`). GPT-6 Luna
 holds Copilot's Cheap seat and is its session ceiling (`copilot.md`).
 Class decides which leaves one may take. The seat decides its ceiling.
 
@@ -55,7 +57,7 @@ serves Claude at 264K against a native 1M (`copilot.md`, read 2026-08-06,
 before Opus 5.5). So **"beyond one
 context" is a live regime there and nearly unreachable in Claude Code: the
 same task routes differently per harness.** Within one, a subagent's window
-is its *own* model's — five Haiku seats give five 200k, not five 1M — so
+is its *own* model's — five Haiku 4.5 seats give five 200k, not 1M — so
 scale argues for fan-out only at the same tier, via a fork, or on Sonnet
 seats. Routing down shrinks the window you fanned out to get.
 
@@ -77,8 +79,9 @@ seats. Routing down shrinks the window you fanned out to get.
 
 **Escalation:** governed by flow.md's fail-twice rule (Cheap → Mid →
 Strong; Strong strike-out → orchestrator takes the leaf over). A target
-above the session seat is asked for first. A Cheap seat stops instead
-(hard floor #6). Attempts persist in `run-state.md`.
+above the session seat is asked for first. A Cheap seat offers a
+stronger session instead (hard floor #6). Attempts persist in
+`run-state.md`.
 
 ## Seat-aware pre-flight — when the seat is below the work
 
@@ -119,8 +122,9 @@ itself starts Mid** — at that density the bounce is likelier than not.
 **A tier above the seat is an ask before it is a dispatch** (SKILL.md §
 Seat ceiling). The artifact rule and the ask compose rather than
 compete: write the check or the brief, ask in one line, dispatch on the
-yes. What waits on the user is the spend, never the writing. A Cheap
-seat skips the ask and stops with the artifact written (hard floor #6).
+yes. What waits on the user is the spend, never the writing. On a no,
+the seat verifies in a fresh context of its own and names the gap. A
+Cheap seat skips the ask and offers a stronger session (hard floor #6).
 
 This is prediction, which the class floors above already do. What stays
 banned is escalating on a hunch: no signal fires, start at the floor and
@@ -263,10 +267,11 @@ intent: a tier that silently resolved elsewhere voids the comparison.
 Pre-registered validation: `the development repo's benchmark records
 t41-cost-ceiling-validation-prereg.md`.
 
-## Hard floors for the Cheap class (non-negotiable)
+## Hard floors for the Cheap class
 
 1. **Never plan, decompose, or make cross-cutting decisions.** Not even
-   "just a small refactor plan."
+   "just a small refactor plan." A Cheap session with no stronger
+   planner on offer plans anyway, flagged at the human gate.
 2. **Never run unbriefed.** A Cheap-class executor gets a smartbrief or it
    gets nothing.
 3. **Never merge unverified.** smartcheck gates every Cheap-produced diff.
@@ -291,13 +296,15 @@ t41-cost-ceiling-validation-prereg.md`.
    higher on input or output (`model-classes.md`), or a script. The
    general form of this rule binds every seat: see § The cost ceiling. A cheaper
    model never stands in for the verify its own work needs. That check
-   stays the script (`check.md` § Tiering). It never asks for more. Work
-   that needs a stronger model needs a stronger session, which the user
-   picks. Planning stays off this seat (#1). Its fan-out is mechanical
-   leaves whose check is fully scripted (`check.md` § Tiering). Where the
-   work needs more (a Mid verify, the spiral diagnosis, a fail-twice
-   target, a never-Cheap class), it writes the brief or the ESCALATION
-   REPORT in full, stops, and names the session model to switch to.
+   stays the script (`check.md` § Tiering). It never asks for more. A
+   stronger model comes from a stronger session, which the user picks.
+   Its fan-out favours mechanical leaves whose check is fully scripted
+   (`check.md` § Tiering). Where the work wants more (a Mid verify, the
+   spiral diagnosis, a fail-twice target, a never-Cheap class), it
+   writes the brief or the ESCALATION REPORT in full, offers the session
+   model that would suit, and carries on at its own tier: oracle first,
+   a fresh context for the verify or diagnosis, UNKNOWN on judgment it
+   can't settle, the gap in `run-state.md`.
    Copilot's Luna ceiling asks for that one dispatch instead (`copilot.md`).
 
 ## Harness dispatch notes

@@ -67,7 +67,7 @@ and ultracode and rides a per-call `model: opus` (`claude-code.md`,
 probed 2026-09-22). Mid leaves and their escalations run medium, and
 Strong verify high, in every mode. The cheaper Effort cells land on
 the plan turn (stock Opus 5.5 runs medium). Set it with `--effort` at
-launch, since `/effort` saves per model. Haiku 4.5 has no dial.
+launch, since `/effort` saves per model. Haiku 4.5 has no dial. 5.5 does.
 Budget's mechanical Mid lands only as a workflow `agent()` effort.
 
 **Inline output ceiling — the narration cap.**
@@ -130,6 +130,9 @@ micro-leaves where it can't pay.
   no initial pick prices above the incumbent, whatever the dial says
   (`routing.md` § The cost ceiling). The modes move floors and verify
   machinery, never that invariant.
+- **Offered, never required.** No floor here demands a model the user
+  declines or the plan doesn't serve. It falls to the strongest on
+  offer, named at the gate (`routing.md`).
 - **Byte-verbatim code/paths/errors** in every register.
 
 ## Harness mapping

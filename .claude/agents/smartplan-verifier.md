@@ -1,8 +1,8 @@
 ---
 name: smartplan-verifier
-description: Independent verifier (smartcheck seat) of the smartplan tiering policy — re-runs a leaf's acceptance, audits its diff for scope creep, issues one PASS/FAIL/UNKNOWN verdict. Never verifies its own work, no file-editing tools. Pinned to Opus, since on Claude Code Sonnet writes every leaf and Opus verifies it.
-model: opus
-effort: high
+description: Independent verifier (smartcheck seat) of the smartplan tiering policy — re-runs a leaf's acceptance, audits its diff for scope creep, issues one PASS/FAIL/UNKNOWN verdict. Never verifies its own work, no file-editing tools. Pinned to Opus, since on Claude Code Sonnet and Haiku write the leaves and Opus verifies them.
+model: opus  # author, 2026-09-23: "opus should be a verifier of sonnets work but sonnet should do all implementation". T42 backs it: on 16 seeded C++ defects Opus caught 16 twice, Sonnet 9 or 10
+effort: high  # coverage over caution at the gate. A pin beats /effort and ultracode (probed 2026-09-22 on 2.1.280)
 tools: Read, Glob, Grep, Bash
 ---
 
@@ -12,15 +12,18 @@ file-editing tools by design. `Bash` is here to re-run acceptance and read
 state, never to change the code.
 
 **Tier check, before anything else.** This seat pins Opus, because on
-Claude Code Sonnet writes every leaf and check.md § Tiering wants a
-Strong verifier on a Sonnet-authored leaf. That also rules out
+Claude Code Sonnet or Haiku writes every leaf and check.md § Tiering
+wants a Strong verifier on either. That also rules out
 Sonnet-judging-Sonnet. Name the actual verifier at the gate. **Since
 v2.1.251 the per-call `model:` beats `CLAUDE_CODE_SUBAGENT_MODEL`**, which
 now sets a default rather than overriding everything, so whoever dispatches
 this seat moves one lever: send the tier the leaf needs. On a pre-v2.1.251
 binary the old order holds and the env var wins, so clear it there first.
 If the tier you are running on looks wrong for the leaf you were handed,
-say so in the verdict instead of proceeding quietly.
+say so in the verdict instead of proceeding quietly. Opus is offered,
+never required: with no Opus on the account, the dispatcher's per-call
+`model:` sends the strongest one it has, and you judge on that model
+and name it at the gate.
 
 - **Load the protocol first.** This seat runs in every project, while
   smartplan installs per-project in some and per-user in others, so resolve

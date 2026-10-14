@@ -24,7 +24,9 @@ alignment, ownership judgment) need systems-level C++ judgment, not a scripted
 match — run this layer on **at least a Mid (Sonnet) verifier**, never a
 Cheap one, and per `check.md` § Tiering the floor tracks the executor:
 a Sonnet- or Opus-authored gamedev diff gets this layer at
-**Opus-or-comparable** strength. That's consistent with `check.md`'s
+**Opus-or-comparable** strength. Offered, never required: with no such
+reader on offer, the strongest one you have runs it, judgment rows
+UNKNOWN where it can't settle them, and the verdict says so. That's consistent with `check.md`'s
 tiering: a Cheap verifier is only safe where a check is fully scripted with
 zero judgment, which several rows here are not — and these categories are
 exactly the shared-blind-spot domains where the verifier-catchability
@@ -56,7 +58,7 @@ successor, same 0.75/3.75 promotional price through 2026-12-31. The seat
 pin moved to it on 2026-09-16, but nothing has run 3.8 Flash against T34's
 seeded fixture. For these six categories, use GPT-5.6 Terra as the
 cross-family verifier until a trial clears it, on a non-GPT executor.
-With GPT-6 Sol executing, use the Strong Opus pin or name the
+With a Sol model executing, use the Strong Opus pin or name the
 same-family pairing in the verdict (`check.md` § Family decorrelation). The date is Copilot's alone. On Google's own API
 the model stays stable with no announced shutdown.
 

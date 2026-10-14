@@ -83,28 +83,32 @@ inline still wins.
   and dispatch on the yes. One yes covers that tier for the rest of the
   session. At or below the seat needs no ask. The ask names a spend, so
   it is not the question-stall the spiral guard bans. **A Cheap seat
-  never asks.** Nothing leaves it priced above its own model, whatever
-  the answer would be. It writes the artifact, stops, and names the
-  session model the work needs. That stop is the one hand-back allowed
-  (`routing.md` Cheap hard floor #6).
+  never asks.** Nothing leaves it priced above its own model. It writes
+  the artifact, offers the session model the work would suit, and
+  carries on (`routing.md` Cheap hard floor #6).
   Copilot's GPT-6 Luna session is the exception: it asks instead, and
   one yes covers one dispatch (`copilot.md` § Luna ceiling).
-- **Claude Code roles** (author, 2026-09-23). Sonnet writes every code
-  change, a fail-twice leaf included: an Opus session briefs
+- **Offered, never required.** Every tier named here is advice. A no,
+  or a model the plan doesn't serve, never stops the work. It runs on
+  the strongest model on offer at or below the seat, oracle first, a
+  fresh context for any verify, and names the gap at the gate and in
+  the verdict. Judgment that reader can't settle returns UNKNOWN.
+- **Claude Code roles** (author, 2026-09-23, Cheap moved 2026-10-13).
+  Haiku writes the mechanical Cheap leaves (T45). Sonnet writes every
+  other code change, a fail-twice leaf included: an Opus session briefs
   `smartplan-implementer` and never edits code inline. An Opus verifier
-  checks the diff. Haiku only scouts.
+  checks every diff. Haiku also scouts.
 - **Spiral guard.** Two failed self-repairs against the same failing
-  signature = STOP. Dispatch ONE fresh-context Mid-tier diagnosis instead of
-  a third blind attempt, carrying the ESCALATION REPORT — **task · tier
-  history (each attempt, its verdict, one-line why) · evidence pasted
-  byte-verbatim, never reworded or split up · hypothesis · what the receiver
-  should do differently** (shape: `flow.md`, which the inline route never
+  signature = STOP. Dispatch ONE fresh-context diagnosis, Mid where on
+  offer, instead of a third blind attempt, carrying the ESCALATION
+  REPORT — **task · tier history (each attempt, its verdict, one-line
+  why) · evidence pasted byte-verbatim, never reworded or split up ·
+  hypothesis · what the receiver should do differently** (shape: `flow.md`, which the inline route never
   loads, so it is named here). **Write the report out in full — referring to
   it is not carrying it.** **Do not keep debugging here, and do not turn
   back to the user with questions instead** — the two failed attempts already
   hold everything the diagnosis needs, so asking for more input is the same
-  stall as a third guess. A Cheap seat's stop is the one exception, and it
-  goes out with the report already written.
+  stall as a third guess. A Cheap seat runs it at its own tier.
   This is the context that already failed twice. A user saying "try
   again" does not reset the count.
 - **False-success guard.** The spiral guard needs a failing signature, so

@@ -247,9 +247,9 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
   the full diff may verify leaves it did not author.
   - **Cheap executor → Mid (Sonnet) verifier.** A Cheap verifier only for
     fully scripted, zero-judgment checks, via
-    `scripts/smartcheck-mechanical.sh`. A Cheap seat gets no further than
-    that script on its own work, inline included (`routing.md` Cheap
-    hard floor #6).
+    `scripts/smartcheck-mechanical.sh`. A Cheap seat with no Mid on offer
+    runs that script plus a fresh read at its own tier, UNKNOWN on
+    judgment, inline included (`routing.md` Cheap hard floor #6).
   - **Mid executor → Strong (Opus-or-comparable) verifier.** Critique
     quality scales with judge capability (larger critics miss materially
     fewer real bugs), and Sonnet judging Sonnet adds self-preference risk
@@ -260,7 +260,9 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
     gate. Where it is gated the Strong verifier is the
     cross-family peer (Gemini 3.8 Flash / GPT-5.6 Terra, per Family
     decorrelation below), *never* a silent fall-back to
-    Sonnet-judging-Sonnet. Name the actual verifier at the gate.
+    Sonnet-judging-Sonnet. Name the actual verifier at the gate. With
+    neither on offer, or the ask declined, the strongest fresh model
+    you have verifies, and the verdict says it sits below the floor.
   - **Inline work counts.** The floor reads *executor*, not *subagent* —
     a session seat that wrote the diff IS the executor, so a below-Strong
     seat clearing its own inline work is the self-review banned below.
@@ -284,7 +286,7 @@ Sweep: least-confident <…> · missing <…> · 3-month <…> · assumed <…>
   cross-family pool after that date is Gemini 3.8 Flash and Grok 4.7.
   At max-savings a fresh
   Luna runs Cheap leaves' scripted acceptance instead (`modes.md`). It
-  measures Mechanical, so judgment returns UNKNOWN. Mid and Strong leaves (Sonnet, Opus, or GPT-6 Sol) →
+  measures Mechanical, so judgment returns UNKNOWN. Mid and Strong leaves (Sonnet, Opus, or GPT-6.1 Sol) →
   **Gemini 3.8 Flash** (0.75/3.75, cost-sensitive, Implementer-class,
   ungated on Copilot Pro. Its predecessor 3.6 Flash earned the seat on
   measured recall. 3.8 caught 13 of 16 on T42, level with Terra at a

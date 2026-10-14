@@ -170,8 +170,9 @@ floor.
   Ownership, threading, and lifetime judgment take at least a Mid tier, and
   the floor tracks the executor: a Sonnet- or Opus-authored diff gets the
   hunt at Opus-or-comparable strength. On a seat below that, it's an ask
-  first (smartplan's Seat ceiling). Run inline unless the fileset won't
-  fit one context.
+  first (smartplan's Seat ceiling). On a no, the seat runs the hunt and
+  the report names the gap. Run inline unless the fileset won't fit one
+  context.
 - **Verify before the merge (see smartcheck).** This seat sits at the merge
   gate, so the verify floor holds at any size: a risky merge takes an
   independent check, and this seat can't be it. When it fixes findings

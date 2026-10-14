@@ -3,7 +3,7 @@
 *This page is meant as a quick reference on practical cost control for
 GitHub Copilot CLI. [The model guide](https://dougfessler.com/smartplan-plugin/copilot-model-guide.html) tells you
 what to pick. This page tells you how to spend less once you've picked.
-Rates, rosters, and CLI behavior were last read 2026-09-22 to 2026-09-29
+Rates, rosters, and CLI behavior were last read 2026-09-22 to 2026-09-30
 from the sources at the end.*
 
 ## How Copilot Billing Works (the Mental Model)
@@ -19,7 +19,8 @@ whatever your billing date. Four things drive the bill:
   table](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing)).
   Haiku 4.5 is half that. GPT-6 Luna, GA on every paid plan since
   2026-09-22, is the cheapest Copilot-dispatchable model on every axis at
-  $0.10/$0.50. GPT-5.6 Luna is $0.20/$1.20. GPT-5 mini is $0.25/$2 and no
+  $0.10/$0.50. Haiku 5.5 (GA 2026-10-07) matches that on prompts to 100K
+  tokens and scores far higher. Stable CLI 1.0.94 and later list it, and it backs Luna on the Cheap implementer seat (T46). GPT-5.6 Luna is $0.20/$1.20. GPT-5 mini is $0.25/$2 and no
   longer free. Pro+ and up add GPT-6 Sol and GPT-6.1 Sol at Sonnet's
   price and Opus 5.5 at $4/$20. Opus 5 and Opus 4.8 are $5/$25. Fable 5 (legacy since
   2026-09-07), Fable 5.1, Opus 4.8 fast mode, and GPT-6 Astra's lower tier
@@ -52,14 +53,12 @@ avoid the accidents below.
      scores it 29.5 against GPT-5.6 Luna's 25.0 and Sonnet 5's 28.1, at
      about $0.02 a task against Sonnet 5's $1.00. We haven't trialed it
      yet. A Pro+ probe served it on CLI 1.0.83.
-   - When a fix fails twice, move up to the Mid seat: GPT-6 Sol on Pro+
-     and up, Sonnet 5.5 otherwise. Sonnet 5.5 shipped 2026-09-28 at Sonnet
+   - When a fix fails twice, move up to the Mid seat: GPT-6.1 Sol on Pro+
+     and up (CLI 1.0.90 or later), Sonnet 5.5 otherwise. Sonnet 5.5 shipped 2026-09-28 at Sonnet
      5's price, and AA scores it 40.7 at medium for about $0.59 a task.
-   - Two older cheap models are worth an A/B trial while they last. GPT-5
-     mini's one measured run cost about 39% of Haiku's. It retires from
-     Copilot on 2026-10-19. Kimi K2.7 Code ($0.95/$4, open-weight) retires
-     on 2026-10-02. Its always-on thinking bills as output, and its cache
-     reads cost 0.2× input, double the usual ratio.
+   - One older cheap model is worth an A/B trial while it lasts. GPT-5
+     mini's one measured run cost about 39% of Haiku 4.5's. It retires from
+     Copilot on 2026-10-19. Kimi K2.7 Code left on 2026-10-02.
    - Save Opus for a hard *one-shot* plan, and Fable or fast mode for the
      single hardest decision.
 3. **Turn on Auto for a [10% discount on paid plans](https://docs.github.com/en/copilot/concepts/models/auto-model-selection).**
@@ -104,8 +103,8 @@ Astra, all priced well above the session model. Opus 5.5, GPT-6 Sol, and
 GPT-6 Luna aren't in Auto's pool, so you reach them only by picking them.
 Stable CLI 1.0.89 (2026-09-28) lists GPT-6 Sol and GPT-6 Luna in its
 model picker and names `claude-opus-5.5`. Prereleases 1.0.89-1 and 1.0.89-0
-carried them first. At time of writing no build names a Sonnet 5.5 or
-GPT-6.1 Sol slug.
+carried them first. Stable 1.0.90 (2026-09-30) adds GPT-6.1 Sol and also
+names `claude-sonnet-5.5`.
 
 ## Watch the Meter
 
